@@ -18,7 +18,7 @@ AEnemy::AEnemy()
 
 	///A standard box collider with Overlap Events:
 	Root = CreateDefaultSubobject<UBoxComponent>(TEXT("MyEnemyCollider"));
-	RootComponent = Root;
+	SetRootComponent(Root);
 	Root->SetGenerateOverlapEvents(true);
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(Root);
@@ -39,7 +39,10 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	MoveDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
+	MoveDirection.Normalize();
+	SetActorRotation(MoveDirection.Rotation());
+	Root->AddRelativeLocation(GetActorForwardVector());
 }
 
 void AEnemy::IsHit()
