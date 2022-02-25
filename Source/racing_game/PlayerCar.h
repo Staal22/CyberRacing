@@ -34,6 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
 	class UStaticMeshComponent* PlayerMesh = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UFloatingPawnMovement* PawnMovementComponent = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ship")
 	class UCameraComponent* Camera = nullptr;
 

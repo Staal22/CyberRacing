@@ -5,6 +5,7 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include <Components/WidgetComponent.h>
 #include "DrawDebugHelpers.h"
 
@@ -20,6 +21,9 @@ APlayerCar::APlayerCar()
 
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
 	SetRootComponent(PlayerMesh);
+
+	PawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMoveComp"));
+	
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
@@ -55,12 +59,21 @@ void APlayerCar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UWorld* World = GetWorld();
-
-	ForwardForce *= MoveSpeed;
-	TurnForce *= TurnSpeed;
+	//if (FVector::DotProduct(GetVelocity().GetSafeNormal(), GetActorForwardVector()) < 0.f)
+	//{
+	//	PawnMovementComponent->MaxSpeed = 400;
+	//	PawnMovementComponent->Acceleration = 100;
+	//}
+	//else
+	//{
+	//	PawnMovementComponent->MaxSpeed = 800;
+	//	PawnMovementComponent->Acceleration = 400;
+	//}
+	//ForwardForce *= MoveSpeed;
+	//TurnForce *= TurnSpeed;
 	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnForce, 0.f));
 	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
-	PlayerMesh->AddRelativeLocation(GetActorForwardVector() * ForwardForce);
+	/*PlayerMesh->AddRelativeLocation(GetActorForwardVector() * ForwardForce);*/
 	/*PlayerMesh->AddRelativeLocation(FVector(ForwardForce, 0.f, 0.f) * MoveSpeed);*/
 
 
@@ -79,7 +92,8 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void APlayerCar::Drive(float Force)
 {
-	ForwardForce = Force;
+	//ForwardForce = Force;
+	AddMovementInput(GetActorForwardVector(), Force);
 }
 
 void APlayerCar::Turn(float TurnDirection)
