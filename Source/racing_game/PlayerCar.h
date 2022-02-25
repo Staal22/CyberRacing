@@ -4,9 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Components/ArrowComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
 #include "PlayerCar.generated.h"
 
 UCLASS()
@@ -35,19 +32,22 @@ public:
 	//UArrowComponent* Arrow = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
-	UStaticMeshComponent* PlayerMesh = nullptr;
+	class UStaticMeshComponent* PlayerMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ship")
-	UCameraComponent* Camera = nullptr;
+	class UCameraComponent* Camera = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ship")
-	USpringArmComponent* SpringArm = nullptr;
+	class USpringArmComponent* SpringArm = nullptr;
 
 	UFUNCTION()
 	void Drive(float Force);
 
 	UFUNCTION()
 	void Turn(float TurnDirection);
+
+	UFUNCTION()
+	void Shoot();
 
 	UFUNCTION()
 	float GetAmmo();

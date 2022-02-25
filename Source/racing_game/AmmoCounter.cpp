@@ -16,4 +16,5 @@ void UAmmoCounter::AmmoUpdate()
 	Opts.SetMaximumFractionalDigits(0);
 	CurrentAmmoLabel->SetText(FText::AsNumber(OwnerCar->GetAmmo(), &Opts));
 	MaxAmmoLabel->SetText(FText::AsNumber(OwnerCar->GetMaxAmmo(), &Opts));
+
 }
