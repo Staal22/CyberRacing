@@ -81,4 +81,7 @@ private:
 	UPROPERTY()
 	int MaxAmmo = 20;
 
+	UPROPERTY()
+	class UAmmoCounter* AmmoCounter;
+
 };

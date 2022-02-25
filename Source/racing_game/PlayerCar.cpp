@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include <Components/WidgetComponent.h>
+#include "AmmoCounter.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -44,6 +45,7 @@ APlayerCar::APlayerCar()
 	Ammo = MaxAmmo;
 
 
+
 }
 
 // Called when the game starts or when spawned
@@ -51,6 +53,10 @@ void APlayerCar::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
+	AmmoCounter->SetOwnerShip(this);
+
+	AmmoCounter->AmmoUpdate();
 }
 
 // Called every frame
@@ -59,16 +65,16 @@ void APlayerCar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UWorld* World = GetWorld();
-	//if (FVector::DotProduct(GetVelocity().GetSafeNormal(), GetActorForwardVector()) < 0.f)
-	//{
-	//	PawnMovementComponent->MaxSpeed = 400;
-	//	PawnMovementComponent->Acceleration = 100;
-	//}
-	//else
-	//{
-	//	PawnMovementComponent->MaxSpeed = 800;
-	//	PawnMovementComponent->Acceleration = 400;
-	//}
+	if (FVector::DotProduct(GetVelocity().GetSafeNormal(), GetActorForwardVector()) < 0.f)
+	{
+		PawnMovementComponent->MaxSpeed = 400;
+		PawnMovementComponent->Acceleration = 100;
+	}
+	else
+	{
+		PawnMovementComponent->MaxSpeed = 800;
+		PawnMovementComponent->Acceleration = 400;
+	}
 	//ForwardForce *= MoveSpeed;
 	//TurnForce *= TurnSpeed;
 	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnForce, 0.f));
@@ -87,7 +93,7 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("Forward", this, &APlayerCar::Drive);
 	PlayerInputComponent->BindAxis("TurnL", this, &APlayerCar::Turn);
 
-
+	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerCar::Shoot);
 }
 
 void APlayerCar::Drive(float Force)
@@ -103,7 +109,8 @@ void APlayerCar::Turn(float TurnDirection)
 
 void APlayerCar::Shoot()
 {
-
+	Ammo--;
+	AmmoCounter->AmmoUpdate();
 }
 
 float APlayerCar::GetAmmo()
