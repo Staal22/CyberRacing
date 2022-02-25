@@ -5,6 +5,7 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include <Components/WidgetComponent.h>
 #include "DrawDebugHelpers.h"
 
 
@@ -33,6 +34,12 @@ APlayerCar::APlayerCar()
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
+	AmmoComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	AmmoComp->SetupAttachment(GetRootComponent());
+
+	Ammo = MaxAmmo;
+
+
 }
 
 // Called when the game starts or when spawned
@@ -52,7 +59,7 @@ void APlayerCar::Tick(float DeltaTime)
 	ForwardForce *= MoveSpeed;
 	TurnForce *= TurnSpeed;
 	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnForce, 0.f));
-	/*DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);*/
+	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
 	PlayerMesh->AddRelativeLocation(GetActorForwardVector() * ForwardForce);
 	/*PlayerMesh->AddRelativeLocation(FVector(ForwardForce, 0.f, 0.f) * MoveSpeed);*/
 
