@@ -73,7 +73,7 @@ private:
 	float TurnForce = 0.f;
 
 	UPROPERTY()
-	int Ammo = 20;
+	int Ammo = 0;
 
 	UPROPERTY()
 	int MaxAmmo = 20;
