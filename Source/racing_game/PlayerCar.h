@@ -63,17 +63,11 @@ protected:
 	class UWidgetComponent* AmmoComp;
 
 private:
-	UPROPERTY()
-	float MoveSpeed = 15.f;
+	//UPROPERTY()
+	//float MoveSpeed = 15.f;
 
 	UPROPERTY()
 	float TurnSpeed = 2.f;
-
-	UPROPERTY()
-	float ForwardForce = 0.f;
-
-	UPROPERTY()
-	float TurnForce = 0.f;
 
 	UPROPERTY()
 	int Ammo = 0;

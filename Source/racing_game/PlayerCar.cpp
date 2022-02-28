@@ -30,7 +30,7 @@ APlayerCar::APlayerCar()
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
 	SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
-	SpringArm->TargetArmLength = 1200;
+	SpringArm->TargetArmLength = 600;
 	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 5.f;
 	SpringArm->SetupAttachment(PlayerMesh);
@@ -65,22 +65,17 @@ void APlayerCar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UWorld* World = GetWorld();
-	if (FVector::DotProduct(GetVelocity().GetSafeNormal(), GetActorForwardVector()) < 0.f)
-	{
-		PawnMovementComponent->MaxSpeed = 400;
-		PawnMovementComponent->Acceleration = 100;
-	}
-	else
-	{
-		PawnMovementComponent->MaxSpeed = 800;
-		PawnMovementComponent->Acceleration = 400;
-	}
-	//ForwardForce *= MoveSpeed;
-	//TurnForce *= TurnSpeed;
-	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnForce, 0.f));
+	//if (FVector::DotProduct(GetVelocity().GetSafeNormal(), GetActorForwardVector()) < 0.f)
+	//{
+	//	PawnMovementComponent->MaxSpeed = 400;
+	//	PawnMovementComponent->Acceleration = 100;
+	//}
+	//else
+	//{
+	//	PawnMovementComponent->MaxSpeed = 800;
+	//	PawnMovementComponent->Acceleration = 400;
+	//}
 	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
-	/*PlayerMesh->AddRelativeLocation(GetActorForwardVector() * ForwardForce);*/
-	/*PlayerMesh->AddRelativeLocation(FVector(ForwardForce, 0.f, 0.f) * MoveSpeed);*/
 
 
 }
@@ -104,7 +99,7 @@ void APlayerCar::Drive(float Force)
 
 void APlayerCar::Turn(float TurnDirection)
 {
-	TurnForce = TurnDirection;
+	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnDirection, 0.f));
 }
 
 void APlayerCar::Shoot()
