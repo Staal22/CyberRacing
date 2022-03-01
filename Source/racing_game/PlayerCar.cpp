@@ -77,7 +77,6 @@ void APlayerCar::Tick(float DeltaTime)
 	//}
 	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
 
-
 }
 
 // Called to bind functionality to input
@@ -93,7 +92,6 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void APlayerCar::Drive(float Force)
 {
-	//ForwardForce = Force;
 	AddMovementInput(GetActorForwardVector(), Force);
 }
 
