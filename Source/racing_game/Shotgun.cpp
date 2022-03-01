@@ -34,7 +34,38 @@ void AShotgun::BeginPlay()
 void AShotgun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	bounceTime += DeltaTime;
+	if (bounceTime < 1.f && bounceUp == true)
+	{
+		FVector NewLocation = GetActorLocation();
+		NewLocation += GetActorUpVector() * Speed * DeltaTime;
+		SetActorLocation(NewLocation);
+	}
+	if (bounceTime > 1.f && bounceUp == true)
+	{
+		bounceUp = false;
+		bounceTime = 0.f;
+	}
+	if (bounceTime < 1.f && bounceUp == false)
+	{
+		FVector NewLocation = GetActorLocation();
+		NewLocation += GetActorUpVector() * Speed * -1 * DeltaTime;
+		SetActorLocation(NewLocation);
+		UE_LOG(LogTemp, Warning, TEXT(" cock and balls, even"));
+	}
+	if (bounceTime > 1.f && bounceUp == false)
+	{
+		bounceUp = true;
+		bounceTime = 0.f;
+	}
 
+	Turn += DeltaTime;
+	if (Turn > 9.f)
+	{
+		Turn = 0.f;
+	}
+
+	ShotgunMesh->SetRelativeRotation(FRotator(30.f, Turn*40, 0.f));
 }
 
 void AShotgun::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

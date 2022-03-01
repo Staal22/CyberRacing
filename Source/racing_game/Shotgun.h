@@ -37,6 +37,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ShotgunThings)
 		class USphereComponent* Collision{};
 
+	float Speed = 50.f;
+	bool bounceUp = true;
+	float bounceTime = 0.f;
+	float Turn = 0.f;
+
 public:
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -27,7 +27,7 @@ void APowerUpSpawner::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	PUSTime += DeltaTime;
-	if (PUSTime > 15.f && PUActive == false)
+	if (PUSTime > 5.f && PUActive == false)
 	{
 		PUActive = true;
 		SpawnPowerUp();
