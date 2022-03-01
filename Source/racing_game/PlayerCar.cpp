@@ -29,7 +29,7 @@ APlayerCar::APlayerCar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
-	SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+	SpringArm->SetRelativeRotation(FRotator(-35.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 600;
 	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 5.f;
