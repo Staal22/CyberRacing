@@ -5,6 +5,9 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
+#include <Components/WidgetComponent.h>
+#include "AmmoCounter.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -20,11 +23,14 @@ APlayerCar::APlayerCar()
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
 	SetRootComponent(PlayerMesh);
 
+	PawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMoveComp"));
+	
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
 	SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
-	SpringArm->TargetArmLength = 1200;
+	SpringArm->TargetArmLength = 600;
 	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 5.f;
 	SpringArm->SetupAttachment(PlayerMesh);
@@ -33,6 +39,13 @@ APlayerCar::APlayerCar()
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
+	AmmoComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	AmmoComp->SetupAttachment(GetRootComponent());
+
+	Ammo = MaxAmmo;
+
+
+
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +53,10 @@ void APlayerCar::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
+	AmmoCounter->SetOwnerShip(this);
+
+	AmmoCounter->AmmoUpdate();
 }
 
 // Called every frame
@@ -48,14 +65,17 @@ void APlayerCar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UWorld* World = GetWorld();
-
-	ForwardForce *= MoveSpeed;
-	TurnForce *= TurnSpeed;
-	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnForce, 0.f));
-	/*DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);*/
-	PlayerMesh->AddRelativeLocation(GetActorForwardVector() * ForwardForce);
-	/*PlayerMesh->AddRelativeLocation(FVector(ForwardForce, 0.f, 0.f) * MoveSpeed);*/
-
+	//if (FVector::DotProduct(GetVelocity().GetSafeNormal(), GetActorForwardVector()) < 0.f)
+	//{
+	//	PawnMovementComponent->MaxSpeed = 400;
+	//	PawnMovementComponent->Acceleration = 100;
+	//}
+	//else
+	//{
+	//	PawnMovementComponent->MaxSpeed = 800;
+	//	PawnMovementComponent->Acceleration = 400;
+	//}
+	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
 
 }
 
@@ -67,22 +87,23 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("Forward", this, &APlayerCar::Drive);
 	PlayerInputComponent->BindAxis("TurnL", this, &APlayerCar::Turn);
 
-
+	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerCar::Shoot);
 }
 
 void APlayerCar::Drive(float Force)
 {
-	ForwardForce = Force;
+	AddMovementInput(GetActorForwardVector(), Force);
 }
 
 void APlayerCar::Turn(float TurnDirection)
 {
-	TurnForce = TurnDirection;
+	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnDirection, 0.f));
 }
 
 void APlayerCar::Shoot()
 {
-
+	Ammo--;
+	AmmoCounter->AmmoUpdate();
 }
 
 float APlayerCar::GetAmmo()
