@@ -37,10 +37,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UFloatingPawnMovement* PawnMovementComponent = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ship")
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<AActor> BulletToSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
 	class UCameraComponent* Camera = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ship")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
 	class USpringArmComponent* SpringArm = nullptr;
 
 	UFUNCTION()
@@ -48,6 +51,9 @@ public:
 
 	UFUNCTION()
 	void Turn(float TurnDirection);
+
+	UFUNCTION()
+	void OnEnemyHit(AActor* Actor);
 
 	UFUNCTION()
 	void Shoot();
@@ -78,4 +84,6 @@ private:
 	UPROPERTY()
 	class UAmmoCounter* AmmoCounter;
 
+	UPROPERTY()
+	class ABullet* Bullet;
 };

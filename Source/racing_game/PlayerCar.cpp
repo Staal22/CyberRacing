@@ -9,6 +9,8 @@
 #include <Components/WidgetComponent.h>
 #include "AmmoCounter.h"
 #include "DrawDebugHelpers.h"
+#include <Kismet/GameplayStatics.h>
+#include "Bullet.h"
 
 
 // Sets default values
@@ -100,10 +102,56 @@ void APlayerCar::Turn(float TurnDirection)
 	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnDirection, 0.f));
 }
 
+void APlayerCar::OnEnemyHit(AActor* Actor)
+{
+	//if (Actor->IsA<AEnemy>())
+	//{
+	//	Cast<AEnemy>(Actor)->Death();
+	//	if (SpaceInvaderGameMode)
+	//	{
+	//		SpaceInvaderGameMode->EnemyDied();
+	//	}
+	//	ScoreCounter->ScoreUpdate();
+	//	Bullet->Destroy();
+	//}
+
+	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
+}
+
 void APlayerCar::Shoot()
 {
 	Ammo--;
 	AmmoCounter->AmmoUpdate();
+
+	if (Ammo > 0)
+	{
+		Ammo--;
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT(" %d "), Ammo), false);
+
+		UWorld* World = GetWorld();
+
+		if (World)
+		{
+			FVector Location = GetActorLocation();
+			Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + FVector(150.f, 0.f, 0.f), GetActorRotation());
+			//UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f, 0);
+
+			if (Bullet)
+			{
+				Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+			}
+		}
+
+		if (Ammo == 0)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
+
+		}
+
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Shooting"));
+
 }
 
 float APlayerCar::GetAmmo()
