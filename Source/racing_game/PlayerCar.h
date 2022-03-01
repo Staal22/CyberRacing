@@ -73,6 +73,9 @@ private:
 	//float MoveSpeed = 15.f;
 
 	UPROPERTY()
+	class Aracing_gameGameModeBase* RacingGameMode;
+
+	UPROPERTY()
 	float TurnSpeed = 2.f;
 
 	UPROPERTY()

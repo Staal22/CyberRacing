@@ -11,6 +11,8 @@
 #include "DrawDebugHelpers.h"
 #include <Kismet/GameplayStatics.h>
 #include "Bullet.h"
+#include "Enemy.h"
+#include "racing_gameGameModeBase.h"
 
 
 // Sets default values
@@ -104,16 +106,16 @@ void APlayerCar::Turn(float TurnDirection)
 
 void APlayerCar::OnEnemyHit(AActor* Actor)
 {
-	//if (Actor->IsA<AEnemy>())
-	//{
-	//	Cast<AEnemy>(Actor)->Death();
-	//	if (SpaceInvaderGameMode)
-	//	{
-	//		SpaceInvaderGameMode->EnemyDied();
-	//	}
-	//	ScoreCounter->ScoreUpdate();
-	//	Bullet->Destroy();
-	//}
+	if (Actor->IsA<AEnemy>())
+	{
+		Cast<AEnemy>(Actor)->IsHit();
+		if (RacingGameMode)
+		{
+			//RacingGameMode->EnemyDied();
+		}
+		//ScoreCounter->ScoreUpdate();
+		Bullet->Destroy();
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
 }
