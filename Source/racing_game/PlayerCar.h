@@ -99,6 +99,9 @@ private:
 	UPROPERTY()
 	class ABullet* Bullet;
 
+	//UPROPERTY()
+	//TArray<class ABullet*> Bullets;
+
 	FTimerHandle TimerHandle;
 	FTimerDelegate TimerDelegate;
 

@@ -33,8 +33,8 @@ APlayerCar::APlayerCar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
-	SpringArm->SetRelativeRotation(FRotator(-35.f, 0.f, 0.f));
-	SpringArm->TargetArmLength = 600;
+	SpringArm->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
+	SpringArm->TargetArmLength = 800;
 	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 5.f;
 	SpringArm->SetupAttachment(PlayerMesh);
@@ -115,7 +115,6 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 			//RacingGameMode->EnemyDied();
 		}
 		//ScoreCounter->ScoreUpdate();
-		Bullet->Destroy();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
@@ -123,7 +122,7 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 
 void APlayerCar::Shoot()
 {
-	if (Ammo < 0)
+	if (Ammo <= 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
 
@@ -134,12 +133,21 @@ void APlayerCar::Shoot()
 		FVector Location = GetActorLocation();
 		if (bShotgun == true)
 		{
+			TArray<ABullet*> Bullets;
 			Ammo -= 3;
-			Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + FVector(150.f, -50.f, 0.f), GetActorRotation());
-			Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + FVector(150.f, 0.f, 0.f), GetActorRotation());
-			Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + FVector(150.f, 50.f, 0.f), GetActorRotation());
+			if (Ammo < 0)
+			{
+				Ammo = 0;
+			}
+			//implement TArray of actors and so on
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + FVector::CrossProduct(GetActorForwardVector(), GetActorUpVector() * -50.f), GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + FVector::CrossProduct(GetActorForwardVector(), GetActorUpVector() * 50.f), GetActorRotation()));
+			for (int i = 0; i < 3; i++)
+			{
+				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+			}
 		}
-
 		else
 		{
 			Ammo--;
