@@ -59,6 +59,12 @@ public:
 	void Shoot();
 
 	UFUNCTION()
+	void ShotgunPU();
+
+	UFUNCTION()
+	void Reload();
+
+	UFUNCTION()
 	float GetAmmo();
 
 	UFUNCTION()
@@ -71,6 +77,9 @@ protected:
 private:
 	//UPROPERTY()
 	//float MoveSpeed = 15.f;
+
+	UPROPERTY()
+	bool bShotgun = false;
 
 	UPROPERTY()
 	class Aracing_gameGameModeBase* RacingGameMode;
@@ -89,4 +98,8 @@ private:
 
 	UPROPERTY()
 	class ABullet* Bullet;
+
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+
 };
