@@ -74,6 +74,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* AmmoComp;
 
+	UPROPERTY(VisibleAnywhere)
+	class UWidgetComponent* ScoreComp;
+
 private:
 	//UPROPERTY()
 	//float MoveSpeed = 15.f;
@@ -95,6 +98,9 @@ private:
 
 	UPROPERTY()
 	class UAmmoCounter* AmmoCounter;
+
+	UPROPERTY()
+	class UScoreCounter* ScoreCounter;
 
 	UPROPERTY()
 	class ABullet* Bullet;

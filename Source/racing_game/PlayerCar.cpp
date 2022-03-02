@@ -13,6 +13,7 @@
 #include "Bullet.h"
 #include "Enemy.h"
 #include "racing_gameGameModeBase.h"
+#include "ScoreCounter.h"
 
 
 // Sets default values
@@ -45,9 +46,10 @@ APlayerCar::APlayerCar()
 
 	AmmoComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	AmmoComp->SetupAttachment(GetRootComponent());
-
 	Ammo = MaxAmmo;
 
+	ScoreComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ScoreCounter"));
+	ScoreComp->SetupAttachment(GetRootComponent());
 
 
 }
@@ -57,10 +59,18 @@ void APlayerCar::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
-	AmmoCounter->SetOwnerShip(this);
+	FVector InitLocation = GetActorLocation();
+	UWorld* World = GetWorld();
+	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 
+	AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
+	AmmoCounter->SetOwner(this);
 	AmmoCounter->AmmoUpdate();
+
+	ScoreCounter = Cast<UScoreCounter>(ScoreComp->GetUserWidgetObject());
+	ScoreCounter->SetOwner(this);
+	ScoreCounter->ScoreUpdate();
+
 }
 
 // Called every frame
@@ -112,9 +122,9 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 		Cast<AEnemy>(Actor)->IsHit();
 		if (RacingGameMode)
 		{
-			//RacingGameMode->EnemyDied();
+			RacingGameMode->EnemyDied();
 		}
-		//ScoreCounter->ScoreUpdate();
+		ScoreCounter->ScoreUpdate();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
