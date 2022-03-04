@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "racing_gameGameModeBase.h"
 #include "ScoreCounter.h"
+#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -22,34 +23,34 @@ APlayerCar::APlayerCar()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
-	//SetRootComponent(Arrow);
+	//Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	//SetRootComponent(Box);
 
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
+	//PlayerMesh->SetupAttachment(GetRootComponent());
 	SetRootComponent(PlayerMesh);
 
 	PawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMoveComp"));
-	
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
-	SpringArm->SetUsingAbsoluteRotation(true);
+	SpringArm->SetUsingAbsoluteRotation(false);
 	SpringArm->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 800;
-	SpringArm->bEnableCameraLag = false;
-	SpringArm->CameraLagSpeed = 5.f;
-	SpringArm->SetupAttachment(PlayerMesh);
+	SpringArm->bEnableCameraLag = true;
+	SpringArm->CameraLagSpeed = 2.f;
+	SpringArm->SetupAttachment(GetRootComponent());
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
 	AmmoComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
-	AmmoComp->SetupAttachment(GetRootComponent());
+	AmmoComp->SetupAttachment(PlayerMesh);
 	Ammo = MaxAmmo;
 
 	ScoreComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ScoreCounter"));
-	ScoreComp->SetupAttachment(GetRootComponent());
+	ScoreComp->SetupAttachment(PlayerMesh);
 
 
 }
@@ -91,6 +92,13 @@ void APlayerCar::Tick(float DeltaTime)
 	//}
 	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
 
+	//PlayerMesh->AddRelativeLocation(FVector(0.f, TurnSpeed, 0.f));
+	
+	AddMovementInput(GetActorForwardVector(), MoveSpeed);
+
+	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 20000);
+
+	//PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 20000);
 }
 
 // Called to bind functionality to input
@@ -107,12 +115,14 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void APlayerCar::Drive(float Force)
 {
-	AddMovementInput(GetActorForwardVector(), Force);
+	MoveSpeed = Force;
+	PitchRadian = Force;
+	
 }
 
 void APlayerCar::Turn(float TurnDirection)
 {
-	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnDirection, 0.f));
+	TurnSpeed = TurnDirection;
 }
 
 void APlayerCar::OnEnemyHit(AActor* Actor)
@@ -164,7 +174,7 @@ void APlayerCar::Shoot()
 			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT(" %d "), Ammo), false);
 			if (World)
 			{
-				Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + FVector(150.f, 0.f, 0.f), GetActorRotation());
+				Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 				//UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f, 0);
 				if (Bullet)
 				{

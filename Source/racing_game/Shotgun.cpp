@@ -51,7 +51,7 @@ void AShotgun::Tick(float DeltaTime)
 		FVector NewLocation = GetActorLocation();
 		NewLocation += GetActorUpVector() * Speed * -1 * DeltaTime;
 		SetActorLocation(NewLocation);
-		UE_LOG(LogTemp, Warning, TEXT(" cock and balls, even"));
+		//UE_LOG(LogTemp, Warning, TEXT(" cock and balls, even"));
 	}
 	if (bounceTime > 1.f && bounceUp == false)
 	{
