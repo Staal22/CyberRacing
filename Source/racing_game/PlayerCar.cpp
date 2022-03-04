@@ -38,7 +38,7 @@ APlayerCar::APlayerCar()
 	SpringArm->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 800;
 	SpringArm->bEnableCameraLag = true;
-	SpringArm->CameraLagSpeed = 2.f;
+	SpringArm->CameraLagSpeed = 4.f;
 	SpringArm->SetupAttachment(GetRootComponent());
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -96,7 +96,7 @@ void APlayerCar::Tick(float DeltaTime)
 	
 	AddMovementInput(GetActorForwardVector(), MoveSpeed);
 
-	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 20000);
+	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 60000);
 
 	//PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 20000);
 }
