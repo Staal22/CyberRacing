@@ -78,17 +78,17 @@ protected:
 	class UWidgetComponent* ScoreComp;
 
 private:
-	//UPROPERTY()
-	//float MoveSpeed = 15.f;
+	UPROPERTY()
+	float MoveSpeed = 0.f;
+
+	UPROPERTY()
+	float TurnSpeed = 0.f;
 
 	UPROPERTY()
 	bool bShotgun = false;
 
 	UPROPERTY()
 	class Aracing_gameGameModeBase* RacingGameMode;
-
-	UPROPERTY()
-	float TurnSpeed = 2.f;
 
 	UPROPERTY()
 	int Ammo = 0;

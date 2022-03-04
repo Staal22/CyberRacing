@@ -29,11 +29,10 @@ APlayerCar::APlayerCar()
 	SetRootComponent(PlayerMesh);
 
 	PawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMoveComp"));
-	
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
-	SpringArm->SetUsingAbsoluteRotation(true);
+	SpringArm->SetUsingAbsoluteRotation(false);
 	SpringArm->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 800;
 	SpringArm->bEnableCameraLag = false;
@@ -91,6 +90,11 @@ void APlayerCar::Tick(float DeltaTime)
 	//}
 	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
 
+	//PlayerMesh->AddRelativeLocation(FVector(0.f, TurnSpeed, 0.f));
+	
+	AddMovementInput(GetActorForwardVector(), MoveSpeed);
+
+	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 20000);
 }
 
 // Called to bind functionality to input
@@ -107,12 +111,13 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void APlayerCar::Drive(float Force)
 {
-	AddMovementInput(GetActorForwardVector(), Force);
+	MoveSpeed = Force;
+	
 }
 
 void APlayerCar::Turn(float TurnDirection)
 {
-	PlayerMesh->AddRelativeRotation(FRotator(0.f, TurnDirection, 0.f));
+	TurnSpeed = TurnDirection;
 }
 
 void APlayerCar::OnEnemyHit(AActor* Actor)
