@@ -28,8 +28,8 @@ public:
 
 
 public:
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
-	//UArrowComponent* Arrow = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
+	class UBoxComponent * Box = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
 	class UStaticMeshComponent* PlayerMesh = nullptr;
@@ -80,6 +80,9 @@ protected:
 private:
 	UPROPERTY()
 	float MoveSpeed = 0.f;
+
+	UPROPERTY()
+	float PitchRadian = 0.f;
 
 	UPROPERTY()
 	float TurnSpeed = 0.f;
