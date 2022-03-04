@@ -3,6 +3,7 @@
 
 #include "Bullet.h"
 #include <Components/SphereComponent.h>
+#include "Enemy.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -46,11 +47,16 @@ void ABullet::Tick(float DeltaTime)
 
 void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor == this)
+	if (OtherActor->IsA<ABullet>())
 	{
 		return;
 	}
 
-	OnBulletHitEnemy.Broadcast(OtherActor);
+	if (OtherActor->IsA<AEnemy>())
+	{
+		OnBulletHitEnemy.Broadcast(OtherActor);
+		Destroy();
+	}
+
 }
 

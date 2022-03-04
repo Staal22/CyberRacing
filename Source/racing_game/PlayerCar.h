@@ -59,6 +59,12 @@ public:
 	void Shoot();
 
 	UFUNCTION()
+	void ShotgunPU();
+
+	UFUNCTION()
+	void Reload();
+
+	UFUNCTION()
 	float GetAmmo();
 
 	UFUNCTION()
@@ -68,9 +74,15 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* AmmoComp;
 
+	UPROPERTY(VisibleAnywhere)
+	class UWidgetComponent* ScoreComp;
+
 private:
 	//UPROPERTY()
 	//float MoveSpeed = 15.f;
+
+	UPROPERTY()
+	bool bShotgun = false;
 
 	UPROPERTY()
 	class Aracing_gameGameModeBase* RacingGameMode;
@@ -88,5 +100,15 @@ private:
 	class UAmmoCounter* AmmoCounter;
 
 	UPROPERTY()
+	class UScoreCounter* ScoreCounter;
+
+	UPROPERTY()
 	class ABullet* Bullet;
+
+	//UPROPERTY()
+	//TArray<class ABullet*> Bullets;
+
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+
 };

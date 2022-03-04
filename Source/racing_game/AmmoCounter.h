@@ -14,7 +14,7 @@ class RACING_GAME_API UAmmoCounter : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetOwnerShip(APlayerCar* InCar)
+	void SetOwner(APlayerCar* InCar)
 	{
 		OwnerCar = InCar;
 	}

@@ -13,6 +13,7 @@
 #include "Bullet.h"
 #include "Enemy.h"
 #include "racing_gameGameModeBase.h"
+#include "ScoreCounter.h"
 
 
 // Sets default values
@@ -33,7 +34,7 @@ APlayerCar::APlayerCar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
-	SpringArm->SetRelativeRotation(FRotator(-35.f, 0.f, 0.f));
+	SpringArm->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 800;
 	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 5.f;
@@ -45,9 +46,10 @@ APlayerCar::APlayerCar()
 
 	AmmoComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	AmmoComp->SetupAttachment(GetRootComponent());
-
 	Ammo = MaxAmmo;
 
+	ScoreComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ScoreCounter"));
+	ScoreComp->SetupAttachment(GetRootComponent());
 
 
 }
@@ -57,10 +59,18 @@ void APlayerCar::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
-	AmmoCounter->SetOwnerShip(this);
+	FVector InitLocation = GetActorLocation();
+	UWorld* World = GetWorld();
+	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 
+	AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
+	AmmoCounter->SetOwner(this);
 	AmmoCounter->AmmoUpdate();
+
+	ScoreCounter = Cast<UScoreCounter>(ScoreComp->GetUserWidgetObject());
+	ScoreCounter->SetOwner(this);
+	ScoreCounter->ScoreUpdate();
+
 }
 
 // Called every frame
@@ -92,6 +102,7 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("TurnL", this, &APlayerCar::Turn);
 
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerCar::Shoot);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerCar::Reload);
 }
 
 void APlayerCar::Drive(float Force)
@@ -111,10 +122,9 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 		Cast<AEnemy>(Actor)->IsHit();
 		if (RacingGameMode)
 		{
-			//RacingGameMode->EnemyDied();
+			RacingGameMode->EnemyDied();
 		}
-		//ScoreCounter->ScoreUpdate();
-		Bullet->Destroy();
+		ScoreCounter->ScoreUpdate();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
@@ -122,37 +132,72 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 
 void APlayerCar::Shoot()
 {
-	Ammo--;
-	AmmoCounter->AmmoUpdate();
-
-	if (Ammo > 0)
+	if (Ammo <= 0)
 	{
-		Ammo--;
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT(" %d "), Ammo), false);
-
-		UWorld* World = GetWorld();
-
-		if (World)
-		{
-			FVector Location = GetActorLocation();
-			Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + FVector(150.f, 0.f, 0.f), GetActorRotation());
-			//UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f, 0);
-
-			if (Bullet)
-			{
-				Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
-			}
-		}
-
-		if (Ammo == 0)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
-
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
 
 	}
-
+	if (Ammo > 0)
+	{
+		UWorld* World = GetWorld();
+		FVector Location = GetActorLocation();
+		if (bShotgun == true)
+		{
+			TArray<ABullet*> Bullets;
+			Ammo -= 3;
+			if (Ammo < 0)
+			{
+				Ammo = 0;
+			}
+			//implement TArray of actors and so on
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + FVector::CrossProduct(GetActorForwardVector(), GetActorUpVector() * -50.f), GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + FVector::CrossProduct(GetActorForwardVector(), GetActorUpVector() * 50.f), GetActorRotation()));
+			for (int i = 0; i < 3; i++)
+			{
+				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+			}
+		}
+		else
+		{
+			Ammo--;
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT(" %d "), Ammo), false);
+			if (World)
+			{
+				Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + FVector(150.f, 0.f, 0.f), GetActorRotation());
+				//UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f, 0);
+				if (Bullet)
+				{
+					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+				}
+			}
+		}
+	}
+	AmmoCounter->AmmoUpdate();
 	UE_LOG(LogTemp, Warning, TEXT("Shooting"));
+
+}
+
+void APlayerCar::ShotgunPU()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("SHOTGUN")));
+	bShotgun = true;
+}
+
+void APlayerCar::Reload()
+{
+	UWorld* World = GetWorld();
+	//UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
+	GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
+
+	TimerDelegate.BindLambda([&]
+		{
+			Ammo = 20;
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Reloaded")));
+			AmmoCounter->AmmoUpdate();
+		});
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1, false);
 
 }
 

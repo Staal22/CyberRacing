@@ -5,7 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
-//#include "Player.h"
+#include "PlayerCar.h"
 #include "PowerUpSpawner.h"
 
 // Sets default values
@@ -83,13 +83,12 @@ void AShotgun::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* 
 
 	OnPowerUpHitPlayer.Broadcast(OtherActor);
 
-	// edit cast here
-	//if (OtherActor->IsA<APlayerCar>())
-	//{
-	//	a cast to activate shotgun powerup here
-	//  Destruction();
-	//	UE_LOG(LogTemp, Warning, TEXT("PowerUp obtained"));
-	//}
+	if (OtherActor->IsA<APlayerCar>())
+	{
+		Cast<APlayerCar>(OtherActor)->ShotgunPU();
+		Destruction();
+		UE_LOG(LogTemp, Warning, TEXT("Shotgun power-up obtained"));
+	}
 
 }
 

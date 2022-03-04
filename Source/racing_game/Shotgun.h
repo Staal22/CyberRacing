@@ -34,7 +34,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotgunMesh")
 		UStaticMeshComponent* ShotgunMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ShotgunThings)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotgunThings")
 		class USphereComponent* Collision{};
 
 	float Speed = 50.f;
@@ -49,5 +49,6 @@ public:
 			bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-		void Destruction();
+	void Destruction();
+
 };
