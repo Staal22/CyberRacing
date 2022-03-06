@@ -90,7 +90,6 @@ void APlayerCar::Tick(float DeltaTime)
 	//	PawnMovementComponent->MaxSpeed = 800;
 	//	PawnMovementComponent->Acceleration = 400;
 	//}
-
 	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
 
 	FRotator NoRoll = GetActorRotation();
@@ -101,7 +100,7 @@ void APlayerCar::Tick(float DeltaTime)
 	
 	AddMovementInput(GetActorForwardVector(), MoveSpeed);
 
-	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 30000);
+	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 250000);
 
 	if (MoveSpeed > 0.f)
 	{
@@ -130,6 +129,8 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerCar::Shoot);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerCar::Reload);
+	PlayerInputComponent->BindAction("Boost", IE_Pressed, this, &APlayerCar::BoostOn);
+	PlayerInputComponent->BindAction("Boost", IE_Released, this, &APlayerCar::BoostOff);
 }
 
 void APlayerCar::Drive(float Force)
@@ -233,6 +234,22 @@ void APlayerCar::Reload()
 float APlayerCar::GetAmmo()
 {
 	return Ammo;
+}
+
+void APlayerCar::BoostOn()
+{
+	if (PawnMovementComponent->Acceleration != 270)
+	{
+		PawnMovementComponent->Acceleration = 270;
+	}
+}
+
+void APlayerCar::BoostOff()
+{
+	if (PawnMovementComponent->Acceleration != 210)
+	{
+		PawnMovementComponent->Acceleration = 210;
+	}
 }
 
 float APlayerCar::GetMaxAmmo()

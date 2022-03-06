@@ -68,6 +68,12 @@ public:
 	float GetAmmo();
 
 	UFUNCTION()
+	void BoostOn();
+
+	UFUNCTION()
+	void BoostOff();
+
+	UFUNCTION()
 	float GetMaxAmmo();
 
 protected:
