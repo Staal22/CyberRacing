@@ -35,11 +35,13 @@ APlayerCar::APlayerCar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
-	SpringArm->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
+	SpringArm->SetRelativeRotation(FRotator(-20.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 800;
-	SpringArm->bEnableCameraLag = true;
-	SpringArm->CameraLagSpeed = 4.f;
+	SpringArm->bEnableCameraLag = false;
+	SpringArm->CameraLagSpeed = 20.f;
 	SpringArm->SetupAttachment(GetRootComponent());
+	SpringArm->SetRelativeLocation(FVector(3000.f, 0.f, 100.f));
+
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = false;
@@ -90,7 +92,8 @@ void APlayerCar::Tick(float DeltaTime)
 	//	PawnMovementComponent->MaxSpeed = 800;
 	//	PawnMovementComponent->Acceleration = 400;
 	//}
-	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
+	DrawDebugLine(World, GetActorLocation() + GetActorForwardVector() * -20.f + GetActorRightVector() * -50.f, GetActorLocation() + GetActorForwardVector() * -60.f + GetActorRightVector() * -50.f, FColor(0, 0, 255), false, 3.0f, 0.0f, 4.0f);
+	DrawDebugLine(World, GetActorLocation() + GetActorForwardVector() * -20.f + GetActorRightVector() * 50.f, GetActorLocation() + GetActorForwardVector() * -60.f + GetActorRightVector() * 50.f, FColor(0, 0, 255), false, 3.0f, 0.0f, 4.0f);
 
 	FRotator NoRoll = GetActorRotation();
 	NoRoll.Roll = 0.f;
@@ -180,9 +183,9 @@ void APlayerCar::Shoot()
 				Ammo = 0;
 			}
 			//implement TArray of actors and so on
-			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + FVector::CrossProduct(GetActorForwardVector(), GetActorUpVector() * -50.f), GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
 			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation()));
-			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + FVector::CrossProduct(GetActorForwardVector(), GetActorUpVector() * 50.f), GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
 			for (int i = 0; i < 3; i++)
 			{
 				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
