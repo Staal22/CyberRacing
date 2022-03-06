@@ -79,6 +79,9 @@ protected:
 
 private:
 	UPROPERTY()
+	FVector Forward;
+
+	UPROPERTY()
 	float MoveSpeed = 0.f;
 
 	UPROPERTY()

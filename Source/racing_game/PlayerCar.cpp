@@ -60,7 +60,7 @@ void APlayerCar::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	FVector InitLocation = GetActorLocation();
+	//Forward = GetActorForwardVector();
 	UWorld* World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 
@@ -90,15 +90,34 @@ void APlayerCar::Tick(float DeltaTime)
 	//	PawnMovementComponent->MaxSpeed = 800;
 	//	PawnMovementComponent->Acceleration = 400;
 	//}
+
 	DrawDebugLine(World, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 15.f, FColor(255, 0, 0), false, 3.0f, 0.0f, 4.0f);
+
+	FRotator NoRoll = GetActorRotation();
+	NoRoll.Roll = 0.f;
+	PlayerMesh->SetRelativeRotation(NoRoll);
 
 	//PlayerMesh->AddRelativeLocation(FVector(0.f, TurnSpeed, 0.f));
 	
 	AddMovementInput(GetActorForwardVector(), MoveSpeed);
 
-	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 60000);
+	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 30000);
 
-	//PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 20000);
+	if (MoveSpeed > 0.f)
+	{
+		if (GetActorRotation().Pitch > -5.f)
+		{
+			PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 3000);
+		}
+	}
+	else if (MoveSpeed < 0.f)
+	{
+		if (GetActorRotation().Pitch < 5.f)
+		{
+			PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 6000);
+		}
+	}
+		
 }
 
 // Called to bind functionality to input
