@@ -28,8 +28,8 @@ public:
 
 
 public:
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
-	// class UBoxComponent * Box = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
+	class USphereComponent * Sphere = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
 	class UStaticMeshComponent* PlayerMesh = nullptr;
@@ -65,6 +65,9 @@ public:
 	void Reload();
 
 	UFUNCTION()
+	void AileronRoll();
+
+	UFUNCTION()
 	float GetAmmo();
 
 	UFUNCTION()
@@ -97,8 +100,20 @@ private:
 	float TurnSpeed = 0.f;
 
 	UPROPERTY()
+	float TimeElapsed = 0.f;
+
+	UPROPERTY()
+	float AileronDuration = 1.f;
+
+	UPROPERTY()
+	float Target = 180.f;
+
+	UPROPERTY()
 	bool bShotgun = false;
 
+	UPROPERTY()
+	bool bDoARoll = false;
+	
 	UPROPERTY()
 	class Aracing_gameGameModeBase* RacingGameMode;
 

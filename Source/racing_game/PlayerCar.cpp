@@ -14,7 +14,7 @@
 #include "Enemy.h"
 #include "racing_gameGameModeBase.h"
 #include "ScoreCounter.h"
-// #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -23,23 +23,24 @@ APlayerCar::APlayerCar()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
-	//SetRootComponent(Box);
+	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
+	SetRootComponent(Sphere);
 
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
-	//PlayerMesh->SetupAttachment(GetRootComponent());
-	SetRootComponent(PlayerMesh);
+	PlayerMesh->SetupAttachment(GetRootComponent());
+	// SetRootComponent(PlayerMesh);
 
 	PawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMoveComp"));
+	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
+	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->SetRelativeRotation(FRotator(-20.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 800;
 	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 20.f;
-	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->SetRelativeLocation(FVector(3000.f, 0.f, 100.f));
+	// SpringArm->SetRelativeLocation(FVector(3000.f, 0.f, 100.f));
 
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -81,41 +82,52 @@ void APlayerCar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UWorld* World = GetWorld();
-	//if (FVector::DotProduct(GetVelocity().GetSafeNormal(), GetActorForwardVector()) < 0.f)
-	//{
-	//	PawnMovementComponent->MaxSpeed = 400;
-	//	PawnMovementComponent->Acceleration = 100;
-	//}
-	//else
-	//{
-	//	PawnMovementComponent->MaxSpeed = 800;
-	//	PawnMovementComponent->Acceleration = 400;
-	//}
-	DrawDebugLine(World, GetActorLocation() + GetActorForwardVector() * -20.f + GetActorRightVector() * -50.f, GetActorLocation() + GetActorForwardVector() * -60.f + GetActorRightVector() * -50.f, FColor(0, 0, 255), false, 3.0f, 0.0f, 4.0f);
-	DrawDebugLine(World, GetActorLocation() + GetActorForwardVector() * -20.f + GetActorRightVector() * 50.f, GetActorLocation() + GetActorForwardVector() * -60.f + GetActorRightVector() * 50.f, FColor(0, 0, 255), false, 3.0f, 0.0f, 4.0f);
+	FRotator Rotation = PlayerMesh->GetRelativeRotation();
+	// Rotation.Normalize();
 
-	FRotator NoRoll = GetActorRotation();
-	NoRoll.Roll = 0.f;
-	PlayerMesh->SetRelativeRotation(NoRoll);
-
-	//PlayerMesh->AddRelativeLocation(FVector(0.f, TurnSpeed, 0.f));
+	if (FMath::IsNearlyEqual(Rotation.Roll, -3.f, 2.f))
+	{
+		bDoARoll = false;
+		PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
+	}
 	
-	AddMovementInput(GetActorForwardVector(), MoveSpeed);
-
-	PlayerMesh->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 250000);
-
 	if (MoveSpeed > 0.f)
 	{
-		if (GetActorRotation().Pitch > -5.f)
+		PawnMovementComponent->MaxSpeed = 2400;
+		PawnMovementComponent->Acceleration = 200;
+	}
+	else if (MoveSpeed < 0.f)
+	{
+		PawnMovementComponent->MaxSpeed = 1000;
+		PawnMovementComponent->Acceleration = 400;
+	}
+	// DrawDebugLine(World, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetRelativeLocation() * -20.f + PlayerMesh->GetRelativeLocation() * -50.f, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetForwardVector() * -60.f + PlayerMesh->GetRightVector() * -50.f, FColor(0, 0, 255), false, 2.0f, 0.0f, 4.0f);
+	// DrawDebugLine(World, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetRelativeLocation() * -20.f + PlayerMesh->GetRelativeLocation() * 50.f, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetForwardVector() * -60.f + PlayerMesh->GetRightVector() * 50.f, FColor(0, 0, 255), false, 2.0f, 0.0f, 4.0f);
+	
+	AddMovementInput(Sphere->GetForwardVector(), MoveSpeed);
+
+	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 75000);
+	
+	if (bDoARoll == true)
+	{
+		PlayerMesh->SetRelativeRotation(FMath::RInterpTo(Rotation, FRotator(Rotation.Pitch, Rotation.Yaw, Rotation.Roll + 10.f), DeltaTime, 40.f));
+		// TimeElapsed += DeltaTime;
+	}
+	
+	if (MoveSpeed > 0.f)
+	{
+		if (PlayerMesh->GetRelativeRotation().Pitch > -7.f)
 		{
-			PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 3000);
+			// PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 3000);
+			PlayerMesh->AddRelativeRotation(FRotator(-0.1f, 0.f, 0.f));
 		}
 	}
 	else if (MoveSpeed < 0.f)
 	{
-		if (GetActorRotation().Pitch < 5.f)
+		if (PlayerMesh->GetRelativeRotation().Pitch < 10.f)
 		{
-			PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 6000);
+			// PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 6000);
+			PlayerMesh->AddRelativeRotation(FRotator(0.1f, 0.f, 0.f));
 		}
 	}
 		
@@ -131,6 +143,7 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerCar::Shoot);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerCar::Reload);
+	PlayerInputComponent->BindAction("AileronRoll", IE_Pressed, this, &APlayerCar::AileronRoll);
 	PlayerInputComponent->BindAction("Boost", IE_Pressed, this, &APlayerCar::BoostOn);
 	PlayerInputComponent->BindAction("Boost", IE_Released, this, &APlayerCar::BoostOff);
 }
@@ -139,7 +152,6 @@ void APlayerCar::Drive(float Force)
 {
 	MoveSpeed = Force;
 	PitchRadian = Force;
-	
 }
 
 void APlayerCar::Turn(float TurnDirection)
@@ -221,7 +233,7 @@ void APlayerCar::Reload()
 	// UWorld* World = GetWorld();
 	//UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
 	GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
-
+	
 	TimerDelegate.BindLambda([&]
 		{
 			Ammo = 20;
@@ -233,9 +245,19 @@ void APlayerCar::Reload()
 
 }
 
+void APlayerCar::AileronRoll()
+{
+	bDoARoll = true;
+}
+
 float APlayerCar::GetAmmo()
 {
 	return Ammo;
+}
+
+float APlayerCar::GetMaxAmmo()
+{
+	return MaxAmmo;
 }
 
 void APlayerCar::BoostOn()
@@ -252,10 +274,5 @@ void APlayerCar::BoostOff()
 	{
 		PawnMovementComponent->Acceleration = 210;
 	}
-}
-
-float APlayerCar::GetMaxAmmo()
-{
-	return MaxAmmo;
 }
 
