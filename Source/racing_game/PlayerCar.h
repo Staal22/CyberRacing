@@ -28,8 +28,8 @@ public:
 
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
-	class UBoxComponent * Box = nullptr;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
+	// class UBoxComponent * Box = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
 	class UStaticMeshComponent* PlayerMesh = nullptr;

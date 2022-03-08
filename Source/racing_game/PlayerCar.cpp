@@ -14,7 +14,7 @@
 #include "Enemy.h"
 #include "racing_gameGameModeBase.h"
 #include "ScoreCounter.h"
-#include "Components/BoxComponent.h"
+// #include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -31,7 +31,6 @@ APlayerCar::APlayerCar()
 	SetRootComponent(PlayerMesh);
 
 	PawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMoveComp"));
-
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
@@ -63,7 +62,7 @@ void APlayerCar::BeginPlay()
 	Super::BeginPlay();
 	
 	//Forward = GetActorForwardVector();
-	UWorld* World = GetWorld();
+	// UWorld* World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
@@ -219,7 +218,7 @@ void APlayerCar::ShotgunPU()
 
 void APlayerCar::Reload()
 {
-	UWorld* World = GetWorld();
+	// UWorld* World = GetWorld();
 	//UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
 	GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
 
