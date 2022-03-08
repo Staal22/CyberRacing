@@ -23,7 +23,7 @@ public:
 	void CoinAcquired();
 
 protected:
-
+	
 
 private:
 	UPROPERTY(EditAnywhere, Category = "GameRules")

@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "racing_gameGameModeBase.h"
 #include "ScoreCounter.h"
+#include "Speedometer.h"
 #include "Components/SphereComponent.h"
 
 
@@ -38,23 +39,22 @@ APlayerCar::APlayerCar()
 	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->SetRelativeRotation(FRotator(-20.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 800;
-	SpringArm->bEnableCameraLag = false;
+	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 20.f;
-	// SpringArm->SetRelativeLocation(FVector(3000.f, 0.f, 100.f));
-
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
-	AmmoComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
-	AmmoComp->SetupAttachment(PlayerMesh);
+	// AmmoComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	// AmmoComp->SetupAttachment(GetRootComponent());
 	Ammo = MaxAmmo;
 
-	ScoreComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ScoreCounter"));
-	ScoreComp->SetupAttachment(PlayerMesh);
-
-
+	// ScoreComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ScoreCounter"));
+	// ScoreComp->SetupAttachment(GetRootComponent());
+	//
+	// SpeedComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Speedometer"));
+	// SpeedComp->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -63,17 +63,34 @@ void APlayerCar::BeginPlay()
 	Super::BeginPlay();
 	
 	//Forward = GetActorForwardVector();
-	// UWorld* World = GetWorld();
+	UWorld* World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 
-	AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
+	AmmoCounter = Cast<UAmmoCounter>(CreateWidget(World, AmmoWidgetClass));
 	AmmoCounter->SetOwner(this);
+	AmmoCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
+	AmmoCounter->SetPositionInViewport(FVector2D(0.f, 40.f));
+	AmmoCounter->AddToViewport();
 	AmmoCounter->AmmoUpdate();
-
-	ScoreCounter = Cast<UScoreCounter>(ScoreComp->GetUserWidgetObject());
+	
+	ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
 	ScoreCounter->SetOwner(this);
+	ScoreCounter->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
+	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 0.f));
+	ScoreCounter->AddToViewport();
 	ScoreCounter->ScoreUpdate();
-
+	
+	Speedometer = Cast<USpeedometer>(CreateWidget(World, SpeedWidgetClass));
+	Speedometer->SetOwner(this);
+	Speedometer->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
+	Speedometer->SetPositionInViewport(FVector2D(0.f, 80.f));
+	Speedometer->AddToViewport();
+	Speedometer->SpeedUpdate();
+	
+	// AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
+	// ScoreCounter = Cast<UScoreCounter>(ScoreComp->GetUserWidgetObject());
+	// Speedometer = Cast<USpeedometer>(SpeedComp->GetUserWidgetObject());
+	
 }
 
 // Called every frame
@@ -83,28 +100,34 @@ void APlayerCar::Tick(float DeltaTime)
 
 	UWorld* World = GetWorld();
 	FRotator Rotation = PlayerMesh->GetRelativeRotation();
-	// Rotation.Normalize();
+	Speed = FMath::Clamp(PawnMovementComponent->Velocity.Size(), 0.f, 2400.f) / PawnMovementComponent->MaxSpeed;
+	
+	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
+	Speedometer->SpeedUpdate();
+	
 	if (FMath::IsNearlyEqual(Rotation.Roll, -3.f, 2.f))
 	{
 		bDoARoll = false;
 		PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
 	}
 	
-	if (MoveSpeed > 0.f)
+	if (MoveForce > 0.f)
 	{
+		CameraPos = Speed * 350.f;
 		PawnMovementComponent->MaxSpeed = 2400;
-		PawnMovementComponent->Acceleration = 200;
-	}
-	else if (MoveSpeed < 0.f)
-	{
-		PawnMovementComponent->MaxSpeed = 1000;
 		PawnMovementComponent->Acceleration = 400;
+	}
+	else if (MoveForce < 0.f)
+	{
+		CameraPos = 100.f;
+		PawnMovementComponent->MaxSpeed = 1200;
+		PawnMovementComponent->Acceleration = 600;
 	}
 	// DrawDebugLine(World, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetRelativeLocation() * -20.f + PlayerMesh->GetRelativeLocation() * -50.f, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetForwardVector() * -60.f + PlayerMesh->GetRightVector() * -50.f, FColor(0, 0, 255), false, 2.0f, 0.0f, 4.0f);
 	// DrawDebugLine(World, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetRelativeLocation() * -20.f + PlayerMesh->GetRelativeLocation() * 50.f, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetForwardVector() * -60.f + PlayerMesh->GetRightVector() * 50.f, FColor(0, 0, 255), false, 2.0f, 0.0f, 4.0f);
 	
-	AddMovementInput(Sphere->GetForwardVector(), MoveSpeed);
+	AddMovementInput(Sphere->GetForwardVector(), MoveForce);
 
 	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 75000);
 	
@@ -114,7 +137,7 @@ void APlayerCar::Tick(float DeltaTime)
 		// TimeElapsed += DeltaTime;
 	}
 	
-	if (MoveSpeed > 0.f)
+	if (MoveForce > 0.f)
 	{
 		if (PlayerMesh->GetRelativeRotation().Pitch > -7.f)
 		{
@@ -122,7 +145,7 @@ void APlayerCar::Tick(float DeltaTime)
 			PlayerMesh->AddRelativeRotation(FRotator(-0.1f, 0.f, 0.f));
 		}
 	}
-	else if (MoveSpeed < 0.f)
+	else if (MoveForce < 0.f)
 	{
 		if (PlayerMesh->GetRelativeRotation().Pitch < 10.f)
 		{
@@ -150,7 +173,7 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void APlayerCar::Drive(float Force)
 {
-	MoveSpeed = Force;
+	MoveForce = Force;
 	PitchRadian = Force;
 }
 
@@ -205,7 +228,6 @@ void APlayerCar::Shoot()
 		else
 		{
 			Ammo--;
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT(" %d "), Ammo), false);
 			if (World)
 			{
 				Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
@@ -260,19 +282,22 @@ float APlayerCar::GetMaxAmmo()
 	return MaxAmmo;
 }
 
+float APlayerCar::GetSpeed()
+{
+	if (MoveForce < 0.f)
+	{
+		return 0.f;
+	}
+	return Speed;
+}
+
 void APlayerCar::BoostOn()
 {
-	if (PawnMovementComponent->Acceleration != 270)
-	{
-		PawnMovementComponent->Acceleration = 270;
-	}
+
 }
 
 void APlayerCar::BoostOff()
 {
-	if (PawnMovementComponent->Acceleration != 210)
-	{
-		PawnMovementComponent->Acceleration = 210;
-	}
+
 }
 

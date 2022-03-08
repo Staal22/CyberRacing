@@ -69,6 +69,12 @@ public:
 
 	UFUNCTION()
 	float GetAmmo();
+	
+	UFUNCTION()
+	float GetMaxAmmo();
+	
+	UFUNCTION()
+	float GetSpeed();
 
 	UFUNCTION()
 	void BoostOn();
@@ -76,22 +82,46 @@ public:
 	UFUNCTION()
 	void BoostOff();
 
-	UFUNCTION()
-	float GetMaxAmmo();
-
 protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> AmmoWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> ScoreWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> SpeedWidgetClass;
+	
 	UPROPERTY(VisibleAnywhere)
-	class UWidgetComponent* AmmoComp;
+	class UAmmoCounter* AmmoCounter;
 
 	UPROPERTY(VisibleAnywhere)
-	class UWidgetComponent* ScoreComp;
+	class UScoreCounter* ScoreCounter;
+
+	UPROPERTY(VisibleAnywhere)
+	class USpeedometer* Speedometer;
+	
+	// UPROPERTY(VisibleAnywhere)
+	// class UWidgetComponent* AmmoComp;
+	//
+	// UPROPERTY(VisibleAnywhere)
+	// UWidgetComponent* ScoreComp;
+	//
+	// UPROPERTY(VisibleAnywhere)
+	// UWidgetComponent* SpeedComp;
 
 private:
 	UPROPERTY()
 	FVector Forward;
 
 	UPROPERTY()
-	float MoveSpeed = 0.f;
+	float MoveForce = 0.f;
+
+	UPROPERTY()
+	float Speed = 0.f;
+
+	UPROPERTY()
+	float CameraPos = 0.f;
 
 	UPROPERTY()
 	float PitchRadian = 0.f;
@@ -122,12 +152,6 @@ private:
 
 	UPROPERTY()
 	int MaxAmmo = 20;
-
-	UPROPERTY()
-	class UAmmoCounter* AmmoCounter;
-
-	UPROPERTY()
-	class UScoreCounter* ScoreCounter;
 
 	UPROPERTY()
 	class ABullet* Bullet;
