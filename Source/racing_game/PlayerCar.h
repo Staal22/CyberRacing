@@ -72,6 +72,12 @@ public:
 	
 	UFUNCTION()
 	float GetMaxAmmo();
+
+	UFUNCTION()
+	float GetHealth();
+
+	UFUNCTION()
+	float GetMaxHealth();
 	
 	UFUNCTION()
 	float GetSpeed();
@@ -91,6 +97,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> SpeedWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> HealthWidgetClass;
 	
 	UPROPERTY(VisibleAnywhere)
 	class UAmmoCounter* AmmoCounter;
@@ -100,6 +109,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class USpeedometer* Speedometer;
+
+	UPROPERTY(VisibleAnywhere)
+	class UHealthBar* HealthBar;
 	
 	// UPROPERTY(VisibleAnywhere)
 	// class UWidgetComponent* AmmoComp;
@@ -114,6 +126,18 @@ private:
 	UPROPERTY()
 	FVector Forward;
 
+	UPROPERTY()
+	FVector Velocity;
+
+	UPROPERTY()
+	float ToRoll;
+	
+	UPROPERTY()
+	float TimeSinceAileron = 0.f;
+
+	UPROPERTY()
+	float Timer = 0.f;
+	
 	UPROPERTY()
 	float MoveForce = 0.f;
 
@@ -154,12 +178,22 @@ private:
 	int MaxAmmo = 20;
 
 	UPROPERTY()
+	int Health = 0;
+
+	UPROPERTY()
+	int MaxHealth = 3;
+
+	UPROPERTY()
 	class ABullet* Bullet;
 
-	//UPROPERTY()
-	//TArray<class ABullet*> Bullets;
+	// UPROPERTY()
+	// TArray<class ABullet*> Bullets;
 
 	FTimerHandle TimerHandle;
 	FTimerDelegate TimerDelegate;
 
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
+		bool bFromSweep, const FHitResult& SweepResult);
+	
 };

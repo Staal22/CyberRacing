@@ -6,16 +6,18 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
-#include <Components/WidgetComponent.h>
+#include "Kismet/KismetMathLibrary.h"
 #include "AmmoCounter.h"
 #include <Kismet/GameplayStatics.h>
 #include "Bullet.h"
 #include "Enemy.h"
+#include "HealthBar.h"
 #include "racing_gameGameModeBase.h"
 #include "ScoreCounter.h"
 #include "Speedometer.h"
 #include "Components/SphereComponent.h"
 // #include "DrawDebugHelpers.h"
+// #include <Components/WidgetComponent.h>
 
 // Sets default values
 APlayerCar::APlayerCar()
@@ -44,16 +46,9 @@ APlayerCar::APlayerCar()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-
-	// AmmoComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
-	// AmmoComp->SetupAttachment(GetRootComponent());
+	
 	Ammo = MaxAmmo;
-
-	// ScoreComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ScoreCounter"));
-	// ScoreComp->SetupAttachment(GetRootComponent());
-	//
-	// SpeedComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Speedometer"));
-	// SpeedComp->SetupAttachment(GetRootComponent());
+	Health = MaxHealth;
 }
 
 // Called when the game starts or when spawned
@@ -62,7 +57,7 @@ void APlayerCar::BeginPlay()
 	Super::BeginPlay();
 	
 	//Forward = GetActorForwardVector();
-	UWorld* World = GetWorld();
+	const auto World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	if (IsValid(AmmoWidgetClass))
@@ -88,10 +83,16 @@ void APlayerCar::BeginPlay()
 	Speedometer->SetPositionInViewport(FVector2D(0.f, 80.f));
 	Speedometer->AddToViewport();
 	Speedometer->SpeedUpdate();
+
+	if (IsValid(HealthWidgetClass))
+		HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
+	HealthBar->SetOwner(this);
+	HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
+	HealthBar->SetPositionInViewport(FVector2D(0.f, 120.f));
+	HealthBar->AddToViewport();
+	HealthBar->HealthUpdate();
 	
-	// AmmoCounter = Cast<UAmmoCounter>(AmmoComp->GetUserWidgetObject());
-	// ScoreCounter = Cast<UScoreCounter>(ScoreComp->GetUserWidgetObject());
-	// Speedometer = Cast<USpeedometer>(SpeedComp->GetUserWidgetObject());
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
 	
 }
 
@@ -100,9 +101,11 @@ void APlayerCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UWorld* World = GetWorld();
-	FRotator Rotation = PlayerMesh->GetRelativeRotation();
-	Speed = FMath::Clamp(PawnMovementComponent->Velocity.Size(), 0.f, 2400.f) / PawnMovementComponent->MaxSpeed;
+	auto World = GetWorld();
+	const FRotator Rotation = PlayerMesh->GetRelativeRotation();
+	Forward = PlayerMesh->GetForwardVector();
+	Velocity = PawnMovementComponent->Velocity;
+	Speed = FMath::Clamp(Velocity.Size(), 0.f, 2400.f) / PawnMovementComponent->MaxSpeed;
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
@@ -130,6 +133,18 @@ void APlayerCar::Tick(float DeltaTime)
 
 	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 450000);
 	// Sphere->AddRelativeRotation(FRotator(0.f, TurnSpeed * 40.f * DeltaTime, 0.f));
+
+	// if (bDoARoll == false)
+	// {
+	// 	// Velocity.Z = 0;
+	// 	// Velocity.Y = 0;
+	// 	Forward = PlayerMesh->GetForwardVector();
+	// 	Velocity.Normalize();
+	// 	Forward.Normalize();
+	// 	ToRoll = UKismetMathLibrary::FindLookAtRotation(Forward, Velocity).Yaw * -0.1f;
+	// 	PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw,
+	// 		FMath::Clamp(ToRoll, -45.f, 45.f)));
+	// }
 	
 	if (bDoARoll == true)
 	{
@@ -180,6 +195,8 @@ void APlayerCar::Drive(float Force)
 void APlayerCar::Turn(float TurnDirection)
 {
 	TurnSpeed = TurnDirection;
+	// if (FMath::IsNearlyEqual(MoveForce, 0.f, 0.1f) && !FMath::IsNearlyEqual(TurnSpeed, 0.f, 0.1f))
+	// 	AddMovementInput(Sphere->GetForwardVector(), 1);
 }
 
 void APlayerCar::OnEnemyHit(AActor* Actor)
@@ -201,7 +218,8 @@ void APlayerCar::Shoot()
 {
 	if (Ammo <= 0)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
+		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
+		AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
 
 	}
 	if (Ammo > 0)
@@ -253,13 +271,14 @@ void APlayerCar::ShotgunPU()
 void APlayerCar::Reload()
 {
 	// UWorld* World = GetWorld();
-	//UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
-	GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
+	// UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
+	// GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
 	
 	TimerDelegate.BindLambda([&]
 		{
 			Ammo = 20;
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Reloaded")));
+			AmmoCounter->SetColorAndOpacity(FLinearColor(255, 255, 255));
+			// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Reloaded")));
 			AmmoCounter->AmmoUpdate();
 		});
 
@@ -269,7 +288,13 @@ void APlayerCar::Reload()
 
 void APlayerCar::AileronRoll()
 {
-	bDoARoll = true;
+	const auto World = GetWorld();
+	Timer = World->GetTimeSeconds();
+	if (Timer > TimeSinceAileron)
+	{
+		bDoARoll = true;
+		TimeSinceAileron = Timer + 3.f;
+	}
 }
 
 float APlayerCar::GetAmmo()
@@ -280,6 +305,16 @@ float APlayerCar::GetAmmo()
 float APlayerCar::GetMaxAmmo()
 {
 	return MaxAmmo;
+}
+
+float APlayerCar::GetHealth()
+{
+	return Health;
+}
+
+float APlayerCar::GetMaxHealth()
+{
+	return MaxHealth;
 }
 
 float APlayerCar::GetSpeed()
@@ -299,5 +334,14 @@ void APlayerCar::BoostOn()
 void APlayerCar::BoostOff()
 {
 
+}
+
+void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->IsA<AEnemy>())
+	{
+		Health--;
+	}
 }
 
