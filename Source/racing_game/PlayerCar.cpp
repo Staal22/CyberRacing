@@ -8,7 +8,6 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include <Components/WidgetComponent.h>
 #include "AmmoCounter.h"
-#include "DrawDebugHelpers.h"
 #include <Kismet/GameplayStatics.h>
 #include "Bullet.h"
 #include "Enemy.h"
@@ -16,7 +15,7 @@
 #include "ScoreCounter.h"
 #include "Speedometer.h"
 #include "Components/SphereComponent.h"
-
+// #include "DrawDebugHelpers.h"
 
 // Sets default values
 APlayerCar::APlayerCar()
@@ -109,7 +108,7 @@ void APlayerCar::Tick(float DeltaTime)
 
 	Speedometer->SpeedUpdate();
 	
-	if (FMath::IsNearlyEqual(Rotation.Roll, -5.f, 4.f))
+	if (FMath::IsNearlyEqual(Rotation.Roll, -10.f, 9.f))
 	{
 		bDoARoll = false;
 		PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
@@ -127,16 +126,13 @@ void APlayerCar::Tick(float DeltaTime)
 		PawnMovementComponent->MaxSpeed = 1200;
 		PawnMovementComponent->Acceleration = 600;
 	}
-	// DrawDebugLine(World, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetRelativeLocation() * -20.f + PlayerMesh->GetRelativeLocation() * -50.f, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetForwardVector() * -60.f + PlayerMesh->GetRightVector() * -50.f, FColor(0, 0, 255), false, 2.0f, 0.0f, 4.0f);
-	// DrawDebugLine(World, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetRelativeLocation() * -20.f + PlayerMesh->GetRelativeLocation() * 50.f, PlayerMesh->GetRelativeLocation() + PlayerMesh->GetForwardVector() * -60.f + PlayerMesh->GetRightVector() * 50.f, FColor(0, 0, 255), false, 2.0f, 0.0f, 4.0f);
-	
 	AddMovementInput(Sphere->GetForwardVector(), MoveForce);
 
 	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 75000);
 	
 	if (bDoARoll == true)
 	{
-		PlayerMesh->SetRelativeRotation(FMath::RInterpTo(Rotation, FRotator(Rotation.Pitch, Rotation.Yaw, Rotation.Roll + 10.f), DeltaTime, 40.f));
+		PlayerMesh->SetRelativeRotation(FMath::RInterpTo(Rotation, FRotator(Rotation.Pitch, Rotation.Yaw, Rotation.Roll + 13.f), DeltaTime, 40.f));
 		// TimeElapsed += DeltaTime;
 	}
 	
