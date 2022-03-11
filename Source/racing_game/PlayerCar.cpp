@@ -66,21 +66,24 @@ void APlayerCar::BeginPlay()
 	UWorld* World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 
-	AmmoCounter = Cast<UAmmoCounter>(CreateWidget(World, AmmoWidgetClass));
+	if (IsValid(AmmoWidgetClass))
+		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(World, AmmoWidgetClass));
 	AmmoCounter->SetOwner(this);
 	AmmoCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
 	AmmoCounter->SetPositionInViewport(FVector2D(0.f, 40.f));
 	AmmoCounter->AddToViewport();
 	AmmoCounter->AmmoUpdate();
-	
-	ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
+
+	if (IsValid(ScoreWidgetClass))
+		ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
 	ScoreCounter->SetOwner(this);
 	ScoreCounter->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
 	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 0.f));
 	ScoreCounter->AddToViewport();
 	ScoreCounter->ScoreUpdate();
-	
-	Speedometer = Cast<USpeedometer>(CreateWidget(World, SpeedWidgetClass));
+
+	if (IsValid(SpeedWidgetClass))
+		Speedometer = Cast<USpeedometer>(CreateWidget(World, SpeedWidgetClass));
 	Speedometer->SetOwner(this);
 	Speedometer->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
 	Speedometer->SetPositionInViewport(FVector2D(0.f, 80.f));
@@ -106,7 +109,7 @@ void APlayerCar::Tick(float DeltaTime)
 
 	Speedometer->SpeedUpdate();
 	
-	if (FMath::IsNearlyEqual(Rotation.Roll, -3.f, 2.f))
+	if (FMath::IsNearlyEqual(Rotation.Roll, -5.f, 4.f))
 	{
 		bDoARoll = false;
 		PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
