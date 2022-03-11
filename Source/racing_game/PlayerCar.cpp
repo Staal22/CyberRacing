@@ -128,7 +128,8 @@ void APlayerCar::Tick(float DeltaTime)
 	}
 	AddMovementInput(Sphere->GetForwardVector(), MoveForce);
 
-	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 75000);
+	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 450000);
+	// Sphere->AddRelativeRotation(FRotator(0.f, TurnSpeed * 40.f * DeltaTime, 0.f));
 	
 	if (bDoARoll == true)
 	{
