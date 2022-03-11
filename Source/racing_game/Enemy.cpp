@@ -47,7 +47,7 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::IsHit()
 {
-	//destroys actor
+							//destroys actor
 	Destroy();
 }
 
