@@ -40,5 +40,13 @@ public:
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
+
+private:
+	UPROPERTY()
+	class Aracing_gameGameModeBase* RacingGameMode;
+
+
+
+	
 };
 

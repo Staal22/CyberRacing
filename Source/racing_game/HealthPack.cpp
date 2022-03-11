@@ -86,7 +86,7 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 
 	if (OtherActor->IsA<APlayerCar>())
 	{
-		//Cast<APlayerCar>(OtherActor)->HealthPackPU();
+		Cast<APlayerCar>(OtherActor)->HealthPack();
 		Destruction();
 		UE_LOG(LogTemp, Warning, TEXT("HealthPack power-up obtained"));
 	}

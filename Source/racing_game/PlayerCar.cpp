@@ -68,14 +68,6 @@ void APlayerCar::BeginPlay()
 	AmmoCounter->AddToViewport();
 	AmmoCounter->AmmoUpdate();
 
-	if (IsValid(ScoreWidgetClass))
-		ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
-	ScoreCounter->SetOwner(this);
-	ScoreCounter->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
-	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 0.f));
-	ScoreCounter->AddToViewport();
-	ScoreCounter->ScoreUpdate();
-
 	if (IsValid(SpeedWidgetClass))
 		Speedometer = Cast<USpeedometer>(CreateWidget(World, SpeedWidgetClass));
 	Speedometer->SetOwner(this);
@@ -199,21 +191,6 @@ void APlayerCar::Turn(float TurnDirection)
 	// 	AddMovementInput(Sphere->GetForwardVector(), 1);
 }
 
-void APlayerCar::OnEnemyHit(AActor* Actor)
-{
-	if (Actor->IsA<AEnemy>())
-	{
-		Cast<AEnemy>(Actor)->IsHit();
-		if (RacingGameMode)
-		{
-			RacingGameMode->EnemyDied();
-		}
-		ScoreCounter->ScoreUpdate();
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
-}
-
 void APlayerCar::Shoot()
 {
 	if (Ammo <= 0)
@@ -262,6 +239,20 @@ void APlayerCar::Shoot()
 
 }
 
+void APlayerCar::OnEnemyHit(AActor* Actor)
+{
+	if (Actor->IsA<AEnemy>())
+	{
+		Cast<AEnemy>(Actor)->IsHit();
+		if (RacingGameMode)
+		{
+			RacingGameMode->EnemyDied();
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
+}
+
 void APlayerCar::ShotgunPU()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("SHOTGUN")));
@@ -290,10 +281,10 @@ void APlayerCar::AileronRoll()
 {
 	const auto World = GetWorld();
 	Timer = World->GetTimeSeconds();
-	if (Timer > TimeSinceAileron)
+	if (Timer > TimeSinceEvent)
 	{
 		bDoARoll = true;
-		TimeSinceAileron = Timer + 3.f;
+		TimeSinceEvent = Timer + 3.f;
 	}
 }
 
@@ -315,6 +306,12 @@ float APlayerCar::GetHealth()
 float APlayerCar::GetMaxHealth()
 {
 	return MaxHealth;
+}
+
+void APlayerCar::HealthPack()
+{
+	Health++;
+	HealthBar->HealthUpdate();
 }
 
 float APlayerCar::GetSpeed()
@@ -339,9 +336,20 @@ void APlayerCar::BoostOff()
 void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	const auto World = GetWorld();
+	Timer = World->GetTimeSeconds();
 	if (OtherActor->IsA<AEnemy>())
 	{
-		Health--;
+		if (Timer > TimeSinceEvent)
+		{
+			Health--;
+			HealthBar->HealthUpdate();
+			if (Health <= 0)
+			{
+				// do something;
+			}
+			TimeSinceEvent = Timer + 2.f;
+		}
 	}
 }
 

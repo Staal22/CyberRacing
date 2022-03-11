@@ -10,11 +10,11 @@ void UHealthBar::HealthUpdate()
 	if (!OwnerCar->IsValidLowLevel())
 		return;
 
-	HealthBar->SetPercent(OwnerCar->GetAmmo() / OwnerCar->GetMaxAmmo());
+	HealthBar->SetPercent(OwnerCar->GetHealth() / OwnerCar->GetMaxHealth());
 	
 	FNumberFormattingOptions Opts;
 	Opts.SetMaximumFractionalDigits(0);
-	CurrentHealthLabel->SetText(FText::AsNumber(OwnerCar->GetAmmo(), &Opts));
-	MaxHealthLabel->SetText(FText::AsNumber(OwnerCar->GetMaxAmmo(), &Opts));
+	CurrentHealthLabel->SetText(FText::AsNumber(OwnerCar->GetHealth(), &Opts));
+	MaxHealthLabel->SetText(FText::AsNumber(OwnerCar->GetMaxHealth(), &Opts));
 
 }

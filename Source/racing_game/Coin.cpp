@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "PlayerCar.h"
+#include "racing_gameGameModeBase.h"
 
 // Sets default values
 ACoin::ACoin()
@@ -26,6 +27,9 @@ void ACoin::BeginPlay()
 {
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACoin::OnOverlapBegin);
+	
+	const auto World = GetWorld();
+	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame
@@ -60,6 +64,10 @@ void ACoin::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (OtherActor->IsA<APlayerCar>())
 	{
 		//Cast<APlayerCar>(OtherActor)->CoinPU();
+		if (RacingGameMode)
+		{
+			RacingGameMode->CoinAcquired();
+		}
 		Destroy();
 		UE_LOG(LogTemp, Warning, TEXT("Coin obtained"));
 	}

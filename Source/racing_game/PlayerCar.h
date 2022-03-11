@@ -78,6 +78,9 @@ public:
 
 	UFUNCTION()
 	float GetMaxHealth();
+
+	UFUNCTION()
+	void HealthPack();
 	
 	UFUNCTION()
 	float GetSpeed();
@@ -93,9 +96,6 @@ protected:
 	TSubclassOf<UUserWidget> AmmoWidgetClass;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> ScoreWidgetClass;
-
-	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> SpeedWidgetClass;
 
 	UPROPERTY(EditAnywhere)
@@ -103,9 +103,6 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	class UAmmoCounter* AmmoCounter;
-
-	UPROPERTY(VisibleAnywhere)
-	class UScoreCounter* ScoreCounter;
 
 	UPROPERTY(VisibleAnywhere)
 	class USpeedometer* Speedometer;
@@ -133,7 +130,7 @@ private:
 	float ToRoll;
 	
 	UPROPERTY()
-	float TimeSinceAileron = 0.f;
+	float TimeSinceEvent = 0.f;
 
 	UPROPERTY()
 	float Timer = 0.f;

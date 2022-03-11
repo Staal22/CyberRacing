@@ -13,17 +13,9 @@ class RACING_GAME_API UScoreCounter : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	void SetOwner(APlayerCar* InCar)
-	{
-		OwnerCar = InCar;
-	}
-
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* CurrentScore;
-
-	TWeakObjectPtr<APlayerCar> OwnerCar;
 
 private:
 	UPROPERTY()
