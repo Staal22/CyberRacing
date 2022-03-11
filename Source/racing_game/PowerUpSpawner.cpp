@@ -2,6 +2,7 @@
 
 
 #include "PowerUpSpawner.h"
+#include "HealthPack.h"
 #include "Shotgun.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -40,14 +41,31 @@ void APowerUpSpawner::SpawnPowerUp()
 	UWorld* World = GetWorld();
 
 	FVector Location = GetActorLocation();
-
-	AShotgun* Shotgun = World->SpawnActor<AShotgun>(ActorToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
-	Shotgun->OnPUDestroyed.AddDynamic(this, &APowerUpSpawner::PowerUpDestroyed);
+	if (WhichPU == 0)
+	{
+		AShotgun* Shotgun = World->SpawnActor<AShotgun>(ActorToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
+		Shotgun->OnPUDestroyed.AddDynamic(this, &APowerUpSpawner::PowerUpDestroyed);
+	}
+	else if (WhichPU == 1)
+	{
+		AHealthPack* HealthPack = World->SpawnActor<AHealthPack>(HealthToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
+		HealthPack->OnHPDestroyed.AddDynamic(this, &APowerUpSpawner::HealthPackDestroyed);
+	}
+	
 }
 
 void APowerUpSpawner::PowerUpDestroyed()
 {
 	PUSTime = 0.f;
+	WhichPU = 1;
+	PUActive = false;
+	UE_LOG(LogTemp, Warning, TEXT("Power-Up-cooldown started"));
+}
+
+void APowerUpSpawner::HealthPackDestroyed()
+{
+	PUSTime = 0.f;
+	WhichPU = 0;
 	PUActive = false;
 	UE_LOG(LogTemp, Warning, TEXT("Power-Up-cooldown started"));
 }

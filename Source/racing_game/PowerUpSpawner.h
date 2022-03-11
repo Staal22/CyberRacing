@@ -28,11 +28,17 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
 	TSubclassOf<AActor> ActorToSpawn;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<AActor> HealthToSpawn;
 
 	UFUNCTION()
 		void PowerUpDestroyed();
 
+	UFUNCTION()
+		void HealthPackDestroyed();
+
 	bool PUActive = false;
+	int WhichPU = 0;
 
 	float PUSTime = 0.f;
 	
