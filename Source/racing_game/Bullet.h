@@ -51,6 +51,5 @@ private:
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
-
-
+	
 };

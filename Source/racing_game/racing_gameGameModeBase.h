@@ -23,8 +23,15 @@ public:
 	void CoinAcquired();
 
 protected:
-	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> ScoreWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	class UScoreCounter* ScoreCounter;
+	
 private:
 	UPROPERTY(EditAnywhere, Category = "GameRules")
 	int KillCounter = 0;

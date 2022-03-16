@@ -7,10 +7,10 @@
 
 void UScoreCounter::ScoreUpdate()
 {
-	if (!OwnerCar->IsValidLowLevel())
-		return;
-
 	RacingGameMode = Cast <Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	if (!RacingGameMode)
+		return;
 
 	CurrentScore->SetText(FText::FromString(FString::Printf(TEXT("Score : %i"), RacingGameMode->GetScore())));
 }
