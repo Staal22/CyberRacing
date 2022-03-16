@@ -7,6 +7,8 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include"Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AEnemy::AEnemy()
@@ -20,9 +22,10 @@ AEnemy::AEnemy()
 	Root = CreateDefaultSubobject<UBoxComponent>(TEXT("MyEnemyCollider"));
 	SetRootComponent(Root);
 	Root->SetGenerateOverlapEvents(true);
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));	//apply in BP
 	MeshComponent->SetupAttachment(Root);
-	//Mesh is chosen in BP.
+	
 
 }
 
@@ -42,12 +45,17 @@ void AEnemy::Tick(float DeltaTime)
 	MoveDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
 	MoveDirection.Normalize();
 	SetActorRotation(MoveDirection.Rotation());
-	Root->AddRelativeLocation(GetActorForwardVector());
+	Root->AddRelativeLocation(GetActorForwardVector()*Speed);
 }
 
 void AEnemy::IsHit()
-{
-							//destroys actor
+{						//destroys actor
+	//explosions fx
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
+	//death sound
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
+
 	Destroy();
+
 }
 

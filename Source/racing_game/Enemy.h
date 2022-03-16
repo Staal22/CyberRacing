@@ -32,7 +32,7 @@ public:
 private:
     //Speed of enemy
     UPROPERTY(EditAnywhere, category="EnemyVariables")
-        float Speed{ 150.f };
+        float Speed{ 15.f };
 
     //mnaximun turndelay (towards player)
     UPROPERTY(EditAnywhere, category = "EnemyVariables")
@@ -42,6 +42,7 @@ private:
     UPROPERTY(EditAnywhere, category = "EnemyVariables")
         float TurnDelayMin{ 1.f };
 
+    UPROPERTY(EditAnywhere, category = "EnemyVariables")
     float CurrentTurnDelay{ 0.f };
 
     //collider component
@@ -50,4 +51,11 @@ private:
 
     UPROPERTY(EditAnywhere)
         class UStaticMeshComponent* MeshComponent {nullptr};
+
+    //DeathFX, init through blueprint
+    UPROPERTY(EditAnywhere, Category = "EnemyFX")
+        UParticleSystem* ExplosionUponDeath = nullptr;
+    
+    UPROPERTY(EditAnywhere, Category = "EnemyFX")
+        USoundBase* DeathSound = nullptr;
 };
