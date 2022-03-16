@@ -85,7 +85,8 @@ void APlayerCar::BeginPlay()
 	HealthBar->HealthUpdate();
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
-	
+
+	World->GetTimerManager().SetTimer(TimerHandle, this, &APlayerCar::SpeedLimit, 3, false);
 }
 
 // Called every frame
@@ -247,6 +248,8 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 		if (RacingGameMode)
 		{
 			RacingGameMode->EnemyDied();
+			Bullet->Death();
+			
 		}
 	}
 
@@ -257,6 +260,14 @@ void APlayerCar::ShotgunPU()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("SHOTGUN")));
 	bShotgun = true;
+}
+
+void APlayerCar::SpeedPU()
+{
+	const auto World = GetWorld();
+	PawnMovementComponent->MaxSpeed = 10000.f;
+	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 1000.f);
+	SpeedLimit();
 }
 
 void APlayerCar::Reload()
@@ -273,7 +284,7 @@ void APlayerCar::Reload()
 			AmmoCounter->AmmoUpdate();
 		});
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, false);
 
 }
 
@@ -312,6 +323,11 @@ void APlayerCar::HealthPack()
 {
 	Health++;
 	HealthBar->HealthUpdate();
+}
+
+void APlayerCar::SpeedLimit()
+{
+	PawnMovementComponent->MaxSpeed = 2400.f;
 }
 
 float APlayerCar::GetSpeed()

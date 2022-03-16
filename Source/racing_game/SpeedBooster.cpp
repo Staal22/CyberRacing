@@ -54,7 +54,7 @@ void ASpeedBooster::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 
 	if (OtherActor->IsA<APlayerCar>())
 	{
-		//Cast<APlayerCar>(OtherActor)->SpeedBoosterPU();
+		Cast<APlayerCar>(OtherActor)->SpeedPU();
 		UE_LOG(LogTemp, Warning, TEXT("Speed boosted"));
 	}
 

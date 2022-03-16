@@ -30,11 +30,14 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet")
-	class UStaticMeshComponent* BulletMesh = nullptr;
+	UStaticMeshComponent* BulletMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet")
 	class USphereComponent* Collision = nullptr;
-
+	
+	UFUNCTION()
+	void Death();
+	
 protected:
 
 

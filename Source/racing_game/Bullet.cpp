@@ -55,8 +55,12 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 	if (OtherActor->IsA<AEnemy>())
 	{
 		OnBulletHitEnemy.Broadcast(OtherActor);
-		Destroy();
 	}
 
+}
+
+void ABullet::Death()
+{
+	Destroy();
 }
 

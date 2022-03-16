@@ -32,7 +32,7 @@ public:
 private:
     //Speed of enemy
     UPROPERTY(EditAnywhere, category="EnemyVariables")
-        float Speed{ 15.f };
+        float Speed{ 5.f };
 
     //mnaximun turndelay (towards player)
     UPROPERTY(EditAnywhere, category = "EnemyVariables")

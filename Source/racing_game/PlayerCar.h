@@ -62,6 +62,9 @@ public:
 	void ShotgunPU();
 
 	UFUNCTION()
+	void SpeedPU();
+
+	UFUNCTION()
 	void Reload();
 
 	UFUNCTION()
@@ -81,6 +84,9 @@ public:
 
 	UFUNCTION()
 	void HealthPack();
+
+	UFUNCTION()
+	void SpeedLimit();
 	
 	UFUNCTION()
 	float GetSpeed();
