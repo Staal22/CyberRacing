@@ -50,7 +50,7 @@ private:
         class UShapeComponent* Root {nullptr};
 
     UPROPERTY(EditAnywhere)
-        class UStaticMeshComponent* MeshComponent {nullptr};
+        class USkeletalMeshComponent* SkeletalMesh {nullptr};
 
     //DeathFX, init through blueprint
     UPROPERTY(EditAnywhere, Category = "EnemyFX")

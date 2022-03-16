@@ -7,6 +7,8 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include"Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Animation/AnimInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -23,8 +25,8 @@ AEnemy::AEnemy()
 	SetRootComponent(Root);
 	Root->SetGenerateOverlapEvents(true);
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));	//apply in BP
-	MeshComponent->SetupAttachment(Root);
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));	//apply in BP
+	SkeletalMesh->SetupAttachment(Root);
 	
 
 }
