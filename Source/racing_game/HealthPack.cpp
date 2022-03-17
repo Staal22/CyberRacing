@@ -87,7 +87,7 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 
 	if (OtherActor->IsA<APlayerCar>())
 	{
-		if (Cast<APlayerCar>(OtherActor)->GetMaxHealth() < 3)
+		if (Cast<APlayerCar>(OtherActor)->GetHealth() < 3)
 			Cast<APlayerCar>(OtherActor)->HealthPack();
 		else
 		{
