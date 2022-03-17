@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PowerUpSpawner.h"
+#include "racing_gameGameModeBase.h"
 #include "HealthPack.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthPackHitPlayerSignature, AActor*, PlayerHit);
@@ -50,4 +51,9 @@ public:
 	
 	UFUNCTION()
 		void Destruction();
+
+protected:
+	UPROPERTY()
+	Aracing_gameGameModeBase* RacingGameMode;
+	
 };

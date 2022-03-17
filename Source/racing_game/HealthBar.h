@@ -21,10 +21,10 @@ public:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UProgressBar* HealthBar;
+	UProgressBar* HealthBar;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* CurrentHealthLabel;
+	UTextBlock* CurrentHealthLabel;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MaxHealthLabel;

@@ -27,7 +27,8 @@ void AHealthPack::BeginPlay()
 {
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AHealthPack::OnOverlapBegin);
-
+	
+	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame
@@ -86,7 +87,12 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 
 	if (OtherActor->IsA<APlayerCar>())
 	{
-		Cast<APlayerCar>(OtherActor)->HealthPack();
+		if (Cast<APlayerCar>(OtherActor)->GetMaxHealth() < 3)
+			Cast<APlayerCar>(OtherActor)->HealthPack();
+		else
+		{
+			RacingGameMode->CoinAcquired();
+		}
 		Destruction();
 		UE_LOG(LogTemp, Warning, TEXT("HealthPack power-up obtained"));
 	}

@@ -46,6 +46,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class USpringArmComponent* SpringArm = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "PlayerCar")
+	USoundBase* ShootingSound = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "PlayerCar")
+	USoundBase* ReloadingSound = nullptr;
+	
 	UFUNCTION()
 	void Drive(float Force);
 

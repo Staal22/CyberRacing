@@ -212,6 +212,7 @@ void APlayerCar::Shoot()
 			{
 				Ammo = 0;
 			}
+			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 			//implement TArray of actors and so on
 			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
 			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation()));
@@ -227,7 +228,7 @@ void APlayerCar::Shoot()
 			if (World)
 			{
 				Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
-				//UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f, 0);
+				UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 				if (Bullet)
 				{
 					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
@@ -272,8 +273,8 @@ void APlayerCar::SpeedPU()
 
 void APlayerCar::Reload()
 {
-	// UWorld* World = GetWorld();
-	// UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
+	const auto World = GetWorld();
+	UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
 	// GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
 	
 	TimerDelegate.BindLambda([&]
@@ -321,7 +322,8 @@ float APlayerCar::GetMaxHealth()
 
 void APlayerCar::HealthPack()
 {
-	Health++;
+	if (Health < 3)
+		Health++;
 	HealthBar->HealthUpdate();
 }
 
