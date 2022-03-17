@@ -10,7 +10,7 @@ void UHealthBar::HealthUpdate()
 	if (!OwnerCar->IsValidLowLevel())
 		return;
 
-	HealthBar->SetPercent(OwnerCar->GetHealth() / OwnerCar->GetMaxHealth());
+	HealthBar->SetPercent(static_cast<float>(OwnerCar->GetHealth()) / static_cast<float>(OwnerCar->GetMaxHealth()));
 	
 	FNumberFormattingOptions Opts;
 	Opts.SetMaximumFractionalDigits(0);

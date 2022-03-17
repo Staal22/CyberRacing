@@ -10,7 +10,7 @@ void UAmmoCounter::AmmoUpdate()
 	if (!OwnerCar->IsValidLowLevel())
 		return;
 
-	AmmoBar->SetPercent(OwnerCar->GetAmmo() / OwnerCar->GetMaxAmmo());
+	AmmoBar->SetPercent(static_cast<float>(OwnerCar->GetAmmo()) / static_cast<float>(OwnerCar->GetMaxAmmo()));
 
 	FNumberFormattingOptions Opts;
 	Opts.SetMaximumFractionalDigits(0);
