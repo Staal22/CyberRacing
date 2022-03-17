@@ -300,22 +300,22 @@ void APlayerCar::AileronRoll()
 	}
 }
 
-float APlayerCar::GetAmmo()
+int APlayerCar::GetAmmo()
 {
 	return Ammo;
 }
 
-float APlayerCar::GetMaxAmmo()
+int APlayerCar::GetMaxAmmo()
 {
 	return MaxAmmo;
 }
 
-float APlayerCar::GetHealth()
+int APlayerCar::GetHealth()
 {
 	return Health;
 }
 
-float APlayerCar::GetMaxHealth()
+int APlayerCar::GetMaxHealth()
 {
 	return MaxHealth;
 }

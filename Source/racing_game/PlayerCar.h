@@ -32,7 +32,7 @@ public:
 	class USphereComponent * Sphere = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
-	class UStaticMeshComponent* PlayerMesh = nullptr;
+	UStaticMeshComponent* PlayerMesh = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UFloatingPawnMovement* PawnMovementComponent = nullptr;
@@ -80,16 +80,16 @@ public:
 	void AileronRoll();
 
 	UFUNCTION()
-	float GetAmmo();
+	int GetAmmo();
 	
 	UFUNCTION()
-	float GetMaxAmmo();
+	int GetMaxAmmo();
 
 	UFUNCTION()
-	float GetHealth();
+	int GetHealth();
 
 	UFUNCTION()
-	float GetMaxHealth();
+	int GetMaxHealth();
 
 	UFUNCTION()
 	void HealthPack();
