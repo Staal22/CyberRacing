@@ -28,10 +28,10 @@ public:
 
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class USphereComponent * Sphere = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class UStaticMeshComponent* PlayerMesh = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -40,10 +40,10 @@ public:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
 	TSubclassOf<AActor> BulletToSpawn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class UCameraComponent* Camera = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerCar")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class USpringArmComponent* SpringArm = nullptr;
 
 	UFUNCTION()
@@ -57,6 +57,9 @@ public:
 
 	UFUNCTION()
 	void Shoot();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void Checkpoint();
 
 	UFUNCTION()
 	void ShotgunPU();
@@ -115,6 +118,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class UHealthBar* HealthBar;
+	
+	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
+	int Checkpoints = 0;
 	
 	// UPROPERTY(VisibleAnywhere)
 	// class UWidgetComponent* AmmoComp;

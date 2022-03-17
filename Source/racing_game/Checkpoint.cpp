@@ -53,7 +53,7 @@ void ACheckpoint::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 
 	if (OtherActor->IsA<APlayerCar>())
 	{
-		//Cast<APlayerCar>(OtherActor)->Checkpoint();
+		Cast<APlayerCar>(OtherActor)->Checkpoint();
 		UE_LOG(LogTemp, Warning, TEXT("Check pointed"));
 
 		Destroy();
