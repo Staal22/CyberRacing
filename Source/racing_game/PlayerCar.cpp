@@ -269,6 +269,7 @@ void APlayerCar::SpeedPU()
 	const auto World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
+	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 1;
 	PawnMovementComponent->MaxSpeed = 10000.f;
 	SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
@@ -286,6 +287,7 @@ void APlayerCar::SpeedLimit()
 		HoverForce = 500000.f;
 		TraceLength = 250.f;
 		SpringArm->CameraLagSpeed = 20.f;
+		Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		// CommandString = "r.MotionBlur.Amount 0";
 		// World->Exec(World, *CommandString);
 	});

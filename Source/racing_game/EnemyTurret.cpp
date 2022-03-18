@@ -28,6 +28,10 @@ AEnemyTurret::AEnemyTurret()
 }
 
 
+void AEnemyTurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+}
+
 // Called when the game starts or when spawned
 void AEnemyTurret::BeginPlay()
 {
