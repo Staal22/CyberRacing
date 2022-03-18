@@ -44,12 +44,18 @@ void APowerUpSpawner::SpawnPowerUp()
 	if (WhichPU == 0)
 	{
 		AShotgun* Shotgun = World->SpawnActor<AShotgun>(ActorToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
-		Shotgun->OnPUDestroyed.AddDynamic(this, &APowerUpSpawner::PowerUpDestroyed);
+		if (Shotgun)
+		{
+			Shotgun->OnPUDestroyed.AddDynamic(this, &APowerUpSpawner::PowerUpDestroyed);
+		}
 	}
 	else if (WhichPU == 1)
 	{
 		AHealthPack* HealthPack = World->SpawnActor<AHealthPack>(HealthToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
-		HealthPack->OnHPDestroyed.AddDynamic(this, &APowerUpSpawner::HealthPackDestroyed);
+		if (HealthPack)
+		{
+			HealthPack->OnHPDestroyed.AddDynamic(this, &APowerUpSpawner::HealthPackDestroyed);
+		}
 	}
 	
 }

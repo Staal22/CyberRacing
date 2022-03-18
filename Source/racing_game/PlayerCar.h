@@ -145,6 +145,9 @@ protected:
 
 private:
 	UPROPERTY()
+	FString CommandString = "";
+	
+	UPROPERTY()
 	FVector Forward;
 
 	UPROPERTY()
