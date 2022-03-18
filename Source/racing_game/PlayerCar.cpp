@@ -85,8 +85,9 @@ void APlayerCar::BeginPlay()
 	HealthBar->HealthUpdate();
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
-
-	World->GetTimerManager().SetTimer(TimerHandle, this, &APlayerCar::SpeedLimit, 3, false);
+	
+	HoverForce = 500000.f;
+	TraceLength = 250.f;
 }
 
 // Called every frame
@@ -268,7 +269,21 @@ void APlayerCar::SpeedPU()
 	const auto World = GetWorld();
 	PawnMovementComponent->MaxSpeed = 10000.f;
 	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
+	HoverForce = 800000.f;
+	TraceLength = 300.f;
 	SpeedLimit();
+}
+
+void APlayerCar::SpeedLimit()
+{
+	TimerDelegate.BindLambda([&]
+	{
+		PawnMovementComponent->MaxSpeed = 2400.f;
+		HoverForce = 500000.f;
+		TraceLength = 250.f;
+	});
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, false);
 }
 
 void APlayerCar::Reload()
@@ -325,11 +340,6 @@ void APlayerCar::HealthPack()
 	if (Health < 3)
 		Health++;
 	HealthBar->HealthUpdate();
-}
-
-void APlayerCar::SpeedLimit()
-{
-	PawnMovementComponent->MaxSpeed = 2400.f;
 }
 
 float APlayerCar::GetSpeed()

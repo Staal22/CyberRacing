@@ -127,6 +127,12 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
 	int Checkpoints = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
+	float HoverForce;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
+	float TraceLength;
 	
 	// UPROPERTY(VisibleAnywhere)
 	// class UWidgetComponent* AmmoComp;
