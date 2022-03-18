@@ -28,6 +28,8 @@ public:
 
     FVector MoveDirection = FVector(1.f, 0.f, 0.f);
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        class USkeletalMeshComponent* SkeletalMesh {nullptr};
 
 private:
     //Speed of enemy
@@ -49,8 +51,6 @@ private:
     UPROPERTY(EditAnywhere)
         class UShapeComponent* Root {nullptr};
 
-    UPROPERTY(EditAnywhere)
-        class USkeletalMeshComponent* SkeletalMesh {nullptr};
 
     //DeathFX, init through blueprint
     UPROPERTY(EditAnywhere, Category = "EnemyFX")
