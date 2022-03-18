@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "Bullet.h"
 #include "EnemyTurret.generated.h"
 
 
 UCLASS()
-class RACING_GAME_API AEnemyTurret : public AActor
+class RACING_GAME_API AEnemyTurret : public APawn
 {
 	GENERATED_BODY()
 	
@@ -30,6 +30,8 @@ public:
 
 	UPROPERTY()
 	FVector RotationDirection = FVector(1.f, 0.f, 0.f);
+	UPROPERTY()
+	FVector DistanceToPlayer = FVector(1.f, 0.f, 0.f);
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
 	TSubclassOf<AActor> BulletToSpawn;
@@ -47,6 +49,8 @@ private:
 	//DeathFX, init through blueprint
 	UPROPERTY(EditAnywhere, Category = "EnemyFX")
 		USoundBase* DeathSound = nullptr;
+	UPROPERTY(EditAnywhere, Category = "EnemyFX")
+		class UBehaviorTree* EnemyTurretBehaviorTree = nullptr;
 
 	//bullet
 	UPROPERTY()

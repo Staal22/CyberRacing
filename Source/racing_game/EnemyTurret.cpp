@@ -8,6 +8,8 @@
 #include"Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
+#include "AIController.h"//redundant?
+#include "BehaviorTree/BehaviorTree.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -23,19 +25,6 @@ AEnemyTurret::AEnemyTurret()
 
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));	//apply in BP
 	SkeletalMesh->SetupAttachment(Root);
-
-
-}
-
-
-void AEnemyTurret::IsHit()
-{
-	//explosions fx
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
-	//death sound
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
-	//removes actor from world
-	Destroy();
 }
 
 
@@ -47,18 +36,16 @@ void AEnemyTurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 void AEnemyTurret::BeginPlay()
 {
 	Super::BeginPlay();
+	//gets AI Controller
+	GetController();
+	Cast<AAIController>(GetController())->RunBehaviorTree(EnemyTurretBehaviorTree);
 	//rotates turret towards player
 	RotationDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
 	RotationDirection.Normalize();
 	SetActorRotation(RotationDirection.Rotation());
+
 }
 
-void AEnemyTurret::Shoot()
-{
-	UWorld* World = GetWorld();
-	FVector Location = GetActorLocation();
-	Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
-}
 // Called every frame
 void AEnemyTurret::Tick(float DeltaTime)
 {
@@ -68,3 +55,27 @@ void AEnemyTurret::Tick(float DeltaTime)
 	SetActorRotation(RotationDirection.Rotation());
 }
 
+void AEnemyTurret::Shoot()
+{
+	//DistanceToPlayer = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
+	//if (DistanceToPlayer.Size() < 10000)//10m
+	//{
+	UWorld* World = GetWorld();
+	FVector Location = GetActorLocation();
+	Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+	/*}*/
+}
+void AEnemyTurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+}
+
+void AEnemyTurret::IsHit()
+{
+	//explosions fx
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
+	//death sound
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
+	//removes actor from world
+	Destroy();
+}
