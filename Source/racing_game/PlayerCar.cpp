@@ -267,7 +267,7 @@ void APlayerCar::SpeedPU()
 {
 	const auto World = GetWorld();
 	PawnMovementComponent->MaxSpeed = 10000.f;
-	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 1000.f);
+	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
 	SpeedLimit();
 }
 
