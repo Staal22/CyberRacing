@@ -25,7 +25,7 @@ AEnemy::AEnemy()
 	SetRootComponent(Root);
 	Root->SetGenerateOverlapEvents(true);
 
-	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));	//apply in BP
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));	//apply in BP
 	SkeletalMesh->SetupAttachment(Root);
 	
 
@@ -38,6 +38,8 @@ void AEnemy::BeginPlay()
 	MoveDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
 	MoveDirection.Normalize();
 	SetActorRotation(MoveDirection.Rotation());
+
+	
 }
 
 // Called every frame
