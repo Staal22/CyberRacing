@@ -267,7 +267,10 @@ void APlayerCar::ShotgunPU()
 void APlayerCar::SpeedPU()
 {
 	const auto World = GetWorld();
+	// CommandString = "r.MotionBlur.Amount 0.5";
+	// World->Exec(World, *CommandString);
 	PawnMovementComponent->MaxSpeed = 10000.f;
+	SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = 800000.f;
 	TraceLength = 300.f;
@@ -276,11 +279,15 @@ void APlayerCar::SpeedPU()
 
 void APlayerCar::SpeedLimit()
 {
+	const auto World = GetWorld();
 	TimerDelegate.BindLambda([&]
 	{
 		PawnMovementComponent->MaxSpeed = 2400.f;
 		HoverForce = 500000.f;
 		TraceLength = 250.f;
+		SpringArm->CameraLagSpeed = 20.f;
+		// CommandString = "r.MotionBlur.Amount 0";
+		// World->Exec(World, *CommandString);
 	});
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, false);
