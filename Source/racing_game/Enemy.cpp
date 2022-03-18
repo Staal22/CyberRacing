@@ -58,6 +58,5 @@ void AEnemy::IsHit()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 
 	Destroy();
-
 }
 
