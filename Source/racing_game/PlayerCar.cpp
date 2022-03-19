@@ -13,9 +13,9 @@
 #include "Enemy.h"
 #include "HealthBar.h"
 #include "racing_gameGameModeBase.h"
-#include "ScoreCounter.h"
 #include "Speedometer.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 // #include "DrawDebugHelpers.h"
 // #include <Components/WidgetComponent.h>
 
@@ -46,6 +46,10 @@ APlayerCar::APlayerCar()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+	// remember to remove after comp 3
+	HPComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	HPComp->SetupAttachment(GetRootComponent());
 	
 	Ammo = MaxAmmo;
 	Health = MaxHealth;
@@ -76,12 +80,18 @@ void APlayerCar::BeginPlay()
 	Speedometer->AddToViewport();
 	Speedometer->SpeedUpdate();
 
-	if (IsValid(HealthWidgetClass))
-		HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
+	// IMO this looks way better, but I guess it will follow the player for the compulsory, since that was a requirement
+	// if (IsValid(HealthWidgetClass))
+	// 	HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
+	// HealthBar->SetOwner(this);
+	// HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
+	// HealthBar->SetPositionInViewport(FVector2D(0.f, 120.f));
+	// HealthBar->AddToViewport();
+	// HealthBar->HealthUpdate();
+
+	// Temporary version that follows the player for comp 3 version
+	HealthBar = Cast<UHealthBar>(HPComp->GetUserWidgetObject());
 	HealthBar->SetOwner(this);
-	HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
-	HealthBar->SetPositionInViewport(FVector2D(0.f, 120.f));
-	HealthBar->AddToViewport();
 	HealthBar->HealthUpdate();
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
@@ -269,7 +279,7 @@ void APlayerCar::SpeedPU()
 	const auto World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
-	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 1;
+	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.5;
 	PawnMovementComponent->MaxSpeed = 10000.f;
 	// SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);

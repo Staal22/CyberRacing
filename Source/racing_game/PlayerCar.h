@@ -113,8 +113,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> SpeedWidgetClass;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> HealthWidgetClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<UUserWidget> HealthWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	class UWidgetComponent* HPComp;
 	
 	UPROPERTY(VisibleAnywhere)
 	class UAmmoCounter* AmmoCounter;

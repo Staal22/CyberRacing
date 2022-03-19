@@ -65,10 +65,6 @@ void AEnemyTurret::Shoot()
 	Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 	/*}*/
 }
-void AEnemyTurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-
-}
 
 void AEnemyTurret::IsHit()
 {
