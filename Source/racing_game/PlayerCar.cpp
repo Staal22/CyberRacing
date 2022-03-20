@@ -95,7 +95,7 @@ void APlayerCar::BeginPlay()
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
 	
-	HoverForce = 500000.f;
+	HoverForce = 700000.f;
 	TraceLength = 250.f;
 }
 
@@ -117,6 +117,7 @@ void APlayerCar::Tick(float DeltaTime)
 	if (FMath::IsNearlyEqual(Rotation.Roll, -10.f, 9.f) && bDoARoll == true)
 	{
 		bDoARoll = false;
+		// Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 3000.f);
 		PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
 	}
 	
@@ -155,22 +156,22 @@ void APlayerCar::Tick(float DeltaTime)
 		// TimeElapsed += DeltaTime;
 	}
 	
-	if (MoveForce > 0.f)
-	{
-		if (PlayerMesh->GetRelativeRotation().Pitch > -7.f)
-		{
-			// PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 3000);
-			PlayerMesh->AddRelativeRotation(FRotator(-0.1f, 0.f, 0.f));
-		}
-	}
-	else if (MoveForce < 0.f)
-	{
-		if (PlayerMesh->GetRelativeRotation().Pitch < 10.f)
-		{
-			// PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 6000);
-			PlayerMesh->AddRelativeRotation(FRotator(0.1f, 0.f, 0.f));
-		}
-	}
+	// if (MoveForce > 0.f)
+	// {
+	// 	if (PlayerMesh->GetRelativeRotation().Pitch > -7.f)
+	// 	{
+	// 		// PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 3000);
+	// 		PlayerMesh->AddRelativeRotation(FRotator(-0.1f, 0.f, 0.f));
+	// 	}
+	// }
+	// else if (MoveForce < 0.f)
+	// {
+	// 	if (PlayerMesh->GetRelativeRotation().Pitch < 10.f)
+	// 	{
+	// 		// PlayerMesh->AddTorqueInRadians(GetActorRightVector() * PitchRadian * 6000);
+	// 		PlayerMesh->AddRelativeRotation(FRotator(0.1f, 0.f, 0.f));
+	// 	}
+	// }
 		
 }
 
@@ -284,7 +285,7 @@ void APlayerCar::SpeedPU()
 	PawnMovementComponent->MaxSpeed = 10000.f;
 	// SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
-	HoverForce = 800000.f;
+	HoverForce = 1100000.f;
 	RoadTest = World->GetCurrentLevel()->GetName();
 	TraceLength = 300.f;
 	SpeedLimit();
@@ -299,7 +300,7 @@ void APlayerCar::SpeedLimit()
 		if (World->GetCurrentLevel()->GetName() == RoadTest)
 		{
 			PawnMovementComponent->MaxSpeed = 2400.f;
-			HoverForce = 500000.f;
+			HoverForce = 700000.f;
 			TraceLength = 250.f;
 			Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		}

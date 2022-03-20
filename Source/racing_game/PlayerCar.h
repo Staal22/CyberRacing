@@ -140,6 +140,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
 	float TraceLength;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	bool bDoARoll = false;
+	
 	// UPROPERTY(VisibleAnywhere)
 	// class UWidgetComponent* AmmoComp;
 	//
@@ -194,9 +197,6 @@ private:
 
 	UPROPERTY()
 	bool bShotgun = false;
-
-	UPROPERTY()
-	bool bDoARoll = false;
 	
 	UPROPERTY()
 	class Aracing_gameGameModeBase* RacingGameMode;
