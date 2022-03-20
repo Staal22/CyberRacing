@@ -26,6 +26,7 @@ ASpeedBooster::ASpeedBooster()
 void ASpeedBooster::BeginPlay()
 {
 	Super::BeginPlay();
+	// when collision is detected run OnOverlapBegin
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ASpeedBooster::OnOverlapBegin);
 
 }
@@ -41,6 +42,7 @@ void ASpeedBooster::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+	// if statement to make sure the speedbooster doesnt "collide with itself"
 	if (OtherActor == this)
 		return;
 
@@ -51,7 +53,7 @@ void ASpeedBooster::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 
 
 	OnSpeedBoosterHitPlayer.Broadcast(OtherActor);
-
+	//if the object that overlaps the speedbooster is PlayerCar run the SpeedPU function in PlayerCar
 	if (OtherActor->IsA<APlayerCar>())
 	{
 		Cast<APlayerCar>(OtherActor)->SpeedPU();

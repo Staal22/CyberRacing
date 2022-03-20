@@ -26,6 +26,7 @@ AShotgun::AShotgun()
 void AShotgun::BeginPlay()
 {
 	Super::BeginPlay();
+	// when collision is detected run OnOverlapBegin
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AShotgun::OnOverlapBegin);
 	
 }
@@ -33,6 +34,7 @@ void AShotgun::BeginPlay()
 // Called every frame
 void AShotgun::Tick(float DeltaTime)
 {
+	// turning and "bouncing" the object
 	Super::Tick(DeltaTime);
 	bounceTime += DeltaTime;
 	if (bounceTime < 1.f && bounceUp == true)
@@ -51,7 +53,7 @@ void AShotgun::Tick(float DeltaTime)
 		FVector NewLocation = GetActorLocation();
 		NewLocation += GetActorUpVector() * Speed * -1 * DeltaTime;
 		SetActorLocation(NewLocation);
-		//UE_LOG(LogTemp, Warning, TEXT(" cock and balls, even"));
+		//UE_LOG(LogTemp, Warning, TEXT(" "));
 	}
 	if (bounceTime > 1.f && bounceUp == false)
 	{
@@ -72,6 +74,7 @@ void AShotgun::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* 
 	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+	// if statement to make sure the object doesnt "collide with itself"
 	if (OtherActor == this)
 		return;
 
@@ -82,7 +85,8 @@ void AShotgun::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* 
 
 
 	OnPowerUpHitPlayer.Broadcast(OtherActor);
-
+	//if the object that overlaps the shotgun is PlayerCar run the ShotgunPU function in PlayerCar
+	//then run Destruction()
 	if (OtherActor->IsA<APlayerCar>())
 	{
 		Cast<APlayerCar>(OtherActor)->ShotgunPU();
@@ -91,7 +95,7 @@ void AShotgun::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 
 }
-
+//broadcast to PowerUpSpawner, then destroy the shotgun object
 void AShotgun::Destruction()
 {
 	OnPUDestroyed.Broadcast();

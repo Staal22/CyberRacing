@@ -25,6 +25,7 @@ ACoin::ACoin()
 // Called when the game starts or when spawned
 void ACoin::BeginPlay()
 {
+	// when collision is detected run OnOverlapBegin
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACoin::OnOverlapBegin);
 	
@@ -36,7 +37,7 @@ void ACoin::BeginPlay()
 void ACoin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//rotating the coin a full rotation for 9 seconds then after a full turn the float is reset to 0 (9*40 = 360)
 	Turn += DeltaTime;
 	if (Turn > 9.f)
 	{
@@ -50,6 +51,7 @@ void ACoin::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+	// if statement to make sure the coin doesnt "collide with itself"
 	if (OtherActor == this)
 		return;
 
@@ -61,6 +63,7 @@ void ACoin::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 	OnCoinHitPlayer.Broadcast(OtherActor);
 
+	//if the object that overlaps the coin is PlayerCar run the CoinAcquired function in RacingGameMode and destroy the checkpoint
 	if (OtherActor->IsA<APlayerCar>())
 	{
 		//Cast<APlayerCar>(OtherActor)->CoinPU();

@@ -13,7 +13,7 @@ ACheckpoint::ACheckpoint()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	SetRootComponent(Collision);
 
@@ -25,6 +25,7 @@ ACheckpoint::ACheckpoint()
 void ACheckpoint::BeginPlay()
 {
 	Super::BeginPlay();
+	// when collision is detected run OnOverlapBegin
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACheckpoint::OnOverlapBegin);
 
 }
@@ -40,10 +41,11 @@ void ACheckpoint::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+	// if statement to make sure the checkpoint doesnt "collide with itself"
 	if (OtherActor == this)
 		return;
 
-
+	//debug for log
 	UE_LOG(LogTemp, Warning, TEXT("%s overlapping with %s at location %s"), *GetName(),
 		*OtherActor->GetName(),
 		*GetActorLocation().ToString());
@@ -51,6 +53,7 @@ void ACheckpoint::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 
 	OnCheckpointHitPlayer.Broadcast(OtherActor);
 
+	//if the object that overlaps the checkpoint is PlayerCar run the Checkpoint function in PlayerCar and destroy the checkpoint
 	if (OtherActor->IsA<APlayerCar>())
 	{
 		Cast<APlayerCar>(OtherActor)->Checkpoint();

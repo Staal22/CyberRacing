@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Checkpoint.generated.h"
 
+//setting up delegate for casting to PlayerCar when collision with the checkpoint is detected
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCheckpointHitPlayerSignature, AActor*, PlayerHit);
 
 UCLASS()
@@ -27,6 +28,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	// setting up mesh component and collision component for checkpoint
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CPMesh")
 		UStaticMeshComponent* CPMesh = nullptr;
 
@@ -34,6 +36,7 @@ public:
 		class UBoxComponent* Collision{};
 
 public:
+	// the function to be called when collision (overlap) is detected
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,

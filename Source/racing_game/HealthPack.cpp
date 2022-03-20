@@ -25,6 +25,7 @@ AHealthPack::AHealthPack()
 // Called when the game starts or when spawned
 void AHealthPack::BeginPlay()
 {
+	// when collision is detected run OnOverlapBegin
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AHealthPack::OnOverlapBegin);
 	
@@ -34,6 +35,7 @@ void AHealthPack::BeginPlay()
 // Called every frame
 void AHealthPack::Tick(float DeltaTime)
 {
+	// turning and "bouncing" the object
 	Super::Tick(DeltaTime);
 	bounceTime += DeltaTime;
 	if (bounceTime < 1.f && bounceUp == true)
@@ -52,7 +54,7 @@ void AHealthPack::Tick(float DeltaTime)
 		FVector NewLocation = GetActorLocation();
 		NewLocation += GetActorUpVector() * Speed * -1 * DeltaTime;
 		SetActorLocation(NewLocation);
-		//UE_LOG(LogTemp, Warning, TEXT(" cock and balls, even"));
+		//UE_LOG(LogTemp, Warning, TEXT(" "));
 	}
 	if (bounceTime > 1.f && bounceUp == false)
 	{
@@ -74,6 +76,7 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+	// if statement to make sure the object doesnt "collide with itself"
 	if (OtherActor == this)
 		return;
 
@@ -84,7 +87,9 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 
 
 	OnHealthPackHitPlayer.Broadcast(OtherActor);
-
+	//if the object that overlaps the healthpack is PlayerCar run the GetHealth and HealthPack functions in PlayerCar
+	//if health is full run CoinAcquired which grants the player 1000 points
+	//then run Destruction()
 	if (OtherActor->IsA<APlayerCar>())
 	{
 		if (Cast<APlayerCar>(OtherActor)->GetHealth() < 3)
@@ -98,7 +103,7 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	}
 
 }
-
+//broadcast to PowerUpSpawner, then destroy the healthpack object
 void AHealthPack::Destruction()
 {
 	OnHPDestroyed.Broadcast();

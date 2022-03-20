@@ -26,7 +26,7 @@ void APowerUpSpawner::BeginPlay()
 void APowerUpSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	// spawn a power up if there is currently no power up spawned and the cooldown (5 secs) is over
 	PUSTime += DeltaTime;
 	if (PUSTime > 5.f && PUActive == false)
 	{
@@ -38,28 +38,29 @@ void APowerUpSpawner::Tick(float DeltaTime)
 
 void APowerUpSpawner::SpawnPowerUp()
 {
+	//get location of spawner
 	UWorld* World = GetWorld();
 
 	FVector Location = GetActorLocation();
-	if (WhichPU == 0)
+	if (WhichPU == 0) // spawn shotgun
 	{
 		AShotgun* Shotgun = World->SpawnActor<AShotgun>(ActorToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
 		if (Shotgun)
 		{
-			Shotgun->OnPUDestroyed.AddDynamic(this, &APowerUpSpawner::PowerUpDestroyed);
+			Shotgun->OnPUDestroyed.AddDynamic(this, &APowerUpSpawner::PowerUpDestroyed); //for broadcasting back to PUSpawner when PU destroyed
 		}
 	}
-	else if (WhichPU == 1)
+	else if (WhichPU == 1) //spawn healthpack
 	{
 		AHealthPack* HealthPack = World->SpawnActor<AHealthPack>(HealthToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
 		if (HealthPack)
 		{
-			HealthPack->OnHPDestroyed.AddDynamic(this, &APowerUpSpawner::HealthPackDestroyed);
+			HealthPack->OnHPDestroyed.AddDynamic(this, &APowerUpSpawner::HealthPackDestroyed);//for broadcasting back to PUSpawner when PU destroyed
 		}
 	}
 	
 }
-
+// ran from Shotgun.cpp when shotgun object is destroyed
 void APowerUpSpawner::PowerUpDestroyed()
 {
 	PUSTime = 0.f;
@@ -67,7 +68,7 @@ void APowerUpSpawner::PowerUpDestroyed()
 	PUActive = false;
 	UE_LOG(LogTemp, Warning, TEXT("Power-Up-cooldown started"));
 }
-
+// ran from HealthPack.cpp when shotgun object is destroyed
 void APowerUpSpawner::HealthPackDestroyed()
 {
 	PUSTime = 0.f;

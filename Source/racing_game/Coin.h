@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Coin.generated.h"
 
+//setting up delegate for casting to PlayerCar when collision with the coin is detected
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCoinHitPlayerSignature, AActor*, PlayerHit);
 
 UCLASS()
@@ -27,15 +28,18 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	// setting up mesh component and collision component for coin
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CoinMesh")
 		UStaticMeshComponent* CoinMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CoinThings")
 		class USphereComponent* Collision{};
 
+	// a float purposed for how many degrees the coin has turned
 	float Turn = 0.f;
 
 public:
+	// the function to be called when collision (overlap) is detected
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
