@@ -17,7 +17,6 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 // #include "DrawDebugHelpers.h"
-// #include <Components/WidgetComponent.h>
 
 // Sets default values
 APlayerCar::APlayerCar()
@@ -115,7 +114,7 @@ void APlayerCar::Tick(float DeltaTime)
 
 	Speedometer->SpeedUpdate();
 	
-	if (FMath::IsNearlyEqual(Rotation.Roll, -10.f, 9.f))
+	if (FMath::IsNearlyEqual(Rotation.Roll, -10.f, 9.f) && bDoARoll == true)
 	{
 		bDoARoll = false;
 		PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
@@ -260,8 +259,10 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 		if (RacingGameMode)
 		{
 			RacingGameMode->EnemyDied();
-			Bullet->Death();
-			
+			if (Bullet)
+			{
+				Bullet->Death();
+			}
 		}
 	}
 
@@ -279,30 +280,34 @@ void APlayerCar::SpeedPU()
 	const auto World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
-	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.5;
+	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.2;
 	PawnMovementComponent->MaxSpeed = 10000.f;
 	// SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = 800000.f;
+	RoadTest = World->GetCurrentLevel()->GetName();
 	TraceLength = 300.f;
 	SpeedLimit();
 }
 
 void APlayerCar::SpeedLimit()
 {
-	const auto World = GetWorld();
 	TimerDelegate.BindLambda([&]
 	{
-		PawnMovementComponent->MaxSpeed = 2400.f;
-		HoverForce = 500000.f;
-		TraceLength = 250.f;
+		const auto World = GetWorld();
 		// SpringArm->CameraLagSpeed = 20.f;
-		Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
+		if (World->GetCurrentLevel()->GetName() == RoadTest)
+		{
+			PawnMovementComponent->MaxSpeed = 2400.f;
+			HoverForce = 500000.f;
+			TraceLength = 250.f;
+			Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
+		}
 		// CommandString = "r.MotionBlur.Amount 0";
 		// World->Exec(World, *CommandString);
 	});
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.5f, false);
 }
 
 void APlayerCar::Reload()
@@ -393,9 +398,9 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 			HealthBar->HealthUpdate();
 			if (Health <= 0)
 			{
-				// do something;
+				RacingGameMode->GameOver();
 			}
-			TimeSinceEvent = Timer + 2.f;
+			TimeSinceEvent = Timer + 1.5f;
 		}
 	}
 }

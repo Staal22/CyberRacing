@@ -52,6 +52,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "PlayerCar")
 	USoundBase* ReloadingSound = nullptr;
 	
+	UPROPERTY()
+	FString RoadTest = "";
+	
 	UFUNCTION()
 	void Drive(float Force);
 

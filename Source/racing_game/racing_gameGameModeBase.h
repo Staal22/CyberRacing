@@ -21,7 +21,10 @@ public:
 
 	UFUNCTION()
 	void CoinAcquired();
-
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void GameOver();	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
