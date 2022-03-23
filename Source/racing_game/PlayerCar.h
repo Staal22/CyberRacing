@@ -181,7 +181,7 @@ private:
 	float DefaultTraceLength = 200.f;
 
 	UPROPERTY()
-	float DefaultHoverForce = 1000000.f;
+	float DefaultHoverForce = 1400000.f;
 	
 	UPROPERTY()
 	float MoveForce = 0.f;
