@@ -33,9 +33,8 @@ void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector NewLocation = GetActorLocation();
-	NewLocation += (GetActorForwardVector() * Speed * DeltaTime);
-	SetActorLocation(NewLocation);
+	Collision->AddRelativeLocation(GetActorForwardVector() * Speed * DeltaTime);
+	
 	TimeLived += DeltaTime;
 
 	if (TimeLived >= TimeToLive)

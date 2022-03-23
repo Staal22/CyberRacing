@@ -37,7 +37,7 @@ APlayerCar::APlayerCar()
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
 	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->SetRelativeRotation(FRotator(-20.f, 0.f, 0.f));
+	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 800;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 20.f;
@@ -95,8 +95,8 @@ void APlayerCar::BeginPlay()
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
 	
-	HoverForce = 700000.f;
-	TraceLength = 250.f;
+	HoverForce = DefaultHoverForce;
+	TraceLength = DefaultTraceLength;
 }
 
 // Called every frame
@@ -105,10 +105,10 @@ void APlayerCar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	auto World = GetWorld();
-	const FRotator Rotation = PlayerMesh->GetRelativeRotation();
+	Rotation = PlayerMesh->GetRelativeRotation();
 	Forward = PlayerMesh->GetForwardVector();
 	Velocity = PawnMovementComponent->Velocity;
-	Speed = FMath::Clamp(Velocity.Size(), 0.f, 2400.f) / PawnMovementComponent->MaxSpeed;
+	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
@@ -124,17 +124,24 @@ void APlayerCar::Tick(float DeltaTime)
 	if (MoveForce > 0.f)
 	{
 		CameraPos = Speed * 350.f;
-		PawnMovementComponent->MaxSpeed = 2400;
-		PawnMovementComponent->Acceleration = 400;
+		PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
+		PawnMovementComponent->Acceleration = MaxMoveSpeed/10.f;
 	}
 	else if (MoveForce < 0.f)
 	{
 		CameraPos = 100.f;
-		PawnMovementComponent->MaxSpeed = 1200;
-		PawnMovementComponent->Acceleration = 600;
+		PawnMovementComponent->MaxSpeed = MaxMoveSpeed/2;
+		PawnMovementComponent->Acceleration = MaxMoveSpeed/2.5f;
 	}
 	AddMovementInput(Sphere->GetForwardVector(), MoveForce);
 
+	// scuffed custom friction/deceleration
+	if (Speed > 0.01f && MoveForce == 0.f)
+	{
+		Velocity.Normalize();
+		AddMovementInput(-1*Velocity, Speed-0.01f);
+	}
+	
 	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 450000);
 	// Sphere->AddRelativeRotation(FRotator(0.f, TurnSpeed * 40.f * DeltaTime, 0.f));
 
@@ -214,7 +221,9 @@ void APlayerCar::Shoot()
 	if (Ammo > 0)
 	{
 		UWorld* World = GetWorld();
-		FVector Location = GetActorLocation();
+		const FVector Location = GetActorLocation();
+		const FVector Right = PlayerMesh->GetRightVector();
+		
 		if (bShotgun == true)
 		{
 			TArray<ABullet*> Bullets;
@@ -226,7 +235,7 @@ void APlayerCar::Shoot()
 			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 			//implement TArray of actors and so on
 			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
-			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
 			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
 			for (int i = 0; i < 3; i++)
 			{
@@ -282,12 +291,12 @@ void APlayerCar::SpeedPU()
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
 	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.2;
-	PawnMovementComponent->MaxSpeed = 10000.f;
+	PawnMovementComponent->MaxSpeed = MaxMoveSpeed*3;
 	// SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
-	HoverForce = 1100000.f;
+	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
-	TraceLength = 300.f;
+	TraceLength = DefaultTraceLength + 50.f;
 	SpeedLimit();
 }
 
@@ -299,9 +308,9 @@ void APlayerCar::SpeedLimit()
 		// SpringArm->CameraLagSpeed = 20.f;
 		if (World->GetCurrentLevel()->GetName() == RoadTest)
 		{
-			PawnMovementComponent->MaxSpeed = 2400.f;
-			HoverForce = 700000.f;
-			TraceLength = 250.f;
+			PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
+			HoverForce = DefaultHoverForce;
+			TraceLength = DefaultTraceLength;
 			Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		}
 		// CommandString = "r.MotionBlur.Amount 0";

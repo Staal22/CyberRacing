@@ -160,6 +160,9 @@ private:
 	FVector Forward;
 
 	UPROPERTY()
+	FRotator Rotation;
+
+	UPROPERTY()
 	FVector Velocity;
 
 	UPROPERTY()
@@ -170,6 +173,15 @@ private:
 
 	UPROPERTY()
 	float Timer = 0.f;
+	
+	UPROPERTY()
+	float MaxMoveSpeed = 3400.f;
+
+	UPROPERTY()
+	float DefaultTraceLength = 250.f;
+
+	UPROPERTY()
+	float DefaultHoverForce = 700000.f;
 	
 	UPROPERTY()
 	float MoveForce = 0.f;
