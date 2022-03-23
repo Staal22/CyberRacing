@@ -114,12 +114,12 @@ void APlayerCar::Tick(float DeltaTime)
 
 	Speedometer->SpeedUpdate();
 	
-	if (FMath::IsNearlyEqual(Rotation.Roll, -10.f, 9.f) && bDoARoll == true)
-	{
-		bDoARoll = false;
-		// Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 3000.f);
-		PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
-	}
+	// if (FMath::IsNearlyEqual(Rotation.Roll, -10.f, 9.f) && bDoARoll == true)
+	// {
+	// 	bDoARoll = false;
+	// 	// Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 3000.f);
+	// 	PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
+	// }
 	
 	if (MoveForce > 0.f)
 	{
@@ -143,24 +143,10 @@ void APlayerCar::Tick(float DeltaTime)
 	}
 	
 	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 450000);
-	// Sphere->AddRelativeRotation(FRotator(0.f, TurnSpeed * 40.f * DeltaTime, 0.f));
-
-	// if (bDoARoll == false)
-	// {
-	// 	// Velocity.Z = 0;
-	// 	// Velocity.Y = 0;
-	// 	Forward = PlayerMesh->GetForwardVector();
-	// 	Velocity.Normalize();
-	// 	Forward.Normalize();
-	// 	ToRoll = UKismetMathLibrary::FindLookAtRotation(Forward, Velocity).Yaw * -0.1f;
-	// 	PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw,
-	// 		FMath::Clamp(ToRoll, -45.f, 45.f)));
-	// }
 	
 	if (bDoARoll == true)
 	{
 		PlayerMesh->SetRelativeRotation(FMath::RInterpTo(Rotation, FRotator(Rotation.Pitch, Rotation.Yaw, Rotation.Roll + 13.f), DeltaTime, 40.f));
-		// TimeElapsed += DeltaTime;
 	}
 	
 	// if (MoveForce > 0.f)
@@ -179,7 +165,6 @@ void APlayerCar::Tick(float DeltaTime)
 	// 		PlayerMesh->AddRelativeRotation(FRotator(0.1f, 0.f, 0.f));
 	// 	}
 	// }
-		
 }
 
 // Called to bind functionality to input
@@ -346,6 +331,12 @@ void APlayerCar::AileronRoll()
 	{
 		bDoARoll = true;
 		TimeSinceEvent = Timer + 3.f;
+		TimerDelegate.BindLambda([&]
+		{
+			// PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
+			bDoARoll = false;
+		});
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.7f, false);
 	}
 }
 

@@ -199,9 +199,6 @@ private:
 	float TurnSpeed = 0.f;
 
 	UPROPERTY()
-	float TimeElapsed = 0.f;
-
-	UPROPERTY()
 	float AileronDuration = 1.f;
 
 	UPROPERTY()
