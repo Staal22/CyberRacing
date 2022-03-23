@@ -175,13 +175,13 @@ private:
 	float Timer = 0.f;
 	
 	UPROPERTY()
-	float MaxMoveSpeed = 3400.f;
+	float MaxMoveSpeed = 6000.f;
 
 	UPROPERTY()
-	float DefaultTraceLength = 250.f;
+	float DefaultTraceLength = 200.f;
 
 	UPROPERTY()
-	float DefaultHoverForce = 700000.f;
+	float DefaultHoverForce = 1000000.f;
 	
 	UPROPERTY()
 	float MoveForce = 0.f;

@@ -33,7 +33,7 @@ void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Collision->AddRelativeLocation(GetActorForwardVector() * Speed * DeltaTime);
+	Collision->AddRelativeLocation(BulletMesh->GetForwardVector() * Speed * DeltaTime);
 	
 	TimeLived += DeltaTime;
 

@@ -125,13 +125,13 @@ void APlayerCar::Tick(float DeltaTime)
 	{
 		CameraPos = Speed * 350.f;
 		PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
-		PawnMovementComponent->Acceleration = MaxMoveSpeed/10.f;
+		PawnMovementComponent->Acceleration = MaxMoveSpeed/15.f;
 	}
 	else if (MoveForce < 0.f)
 	{
 		CameraPos = 100.f;
 		PawnMovementComponent->MaxSpeed = MaxMoveSpeed/2;
-		PawnMovementComponent->Acceleration = MaxMoveSpeed/2.5f;
+		PawnMovementComponent->Acceleration = MaxMoveSpeed/5.f;
 	}
 	AddMovementInput(Sphere->GetForwardVector(), MoveForce);
 
