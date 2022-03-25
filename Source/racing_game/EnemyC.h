@@ -20,16 +20,23 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=AI)
 	class USphereComponent* PlayerSensingSphere{nullptr};
 
-	UPROPERTY(EditAnywhere,Category=PlayerReference)
-	class APlayerCar* PlayerCar {nullptr};
+	// UPROPERTY(EditAnywhere)
+	// class UShapeComponent* Root {nullptr};
+	//
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// class USkeletalMeshComponent* SkeletalMesh {nullptr};
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex);
+	UFUNCTION()
+	void MoveToTarget(class APlayerCar* RefPlayerCar);
 private:
 
+	UPROPERTY(EditAnywhere)
+	float MaxWalkSpeed;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
