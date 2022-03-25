@@ -58,4 +58,7 @@ private:
     
     UPROPERTY(EditAnywhere, Category = "EnemyFX")
         USoundBase* DeathSound = nullptr;
+    UPROPERTY(EditAnywhere, Category = "EnemyAIController")
+        class AAIController* AIController = nullptr;
+   
 };

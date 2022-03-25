@@ -10,6 +10,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "AIController.h"
+#include "PlayerCar.h"
 
 
 // Sets default values
@@ -25,6 +27,8 @@ AEnemy::AEnemy()
 
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));	//apply in BP
 	SkeletalMesh->SetupAttachment(Root);
+	AIController = CreateDefaultSubobject<AAIController>(TEXT("EnemyAIController"));
+
 	
 
 }
@@ -43,11 +47,16 @@ void AEnemy::BeginPlay()
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
+	
+	APlayerCar* PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	Super::Tick(DeltaTime);
 	MoveDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
 	MoveDirection.Normalize();
 	SetActorRotation(MoveDirection.Rotation());
 	Root->AddRelativeLocation(GetActorForwardVector()*Speed);
+
+	AIController->AAIController::MoveToActor(PlayerCar, 1);
+	
 }
 
 void AEnemy::IsHit()
