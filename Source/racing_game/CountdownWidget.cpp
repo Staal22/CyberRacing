@@ -12,6 +12,7 @@ void UCountdownWidget::CountdownUpdate()
 	if (!RacingGameMode)
 		return;
 
-	CurrentCount->SetText(FText::FromString(FString::Printf(TEXT("%f"), RacingGameMode->CountdownTime())));
-	
+	FNumberFormattingOptions Opts;
+	Opts.SetMaximumFractionalDigits(0);
+	CurrentCount->SetText(FText::AsNumber(RacingGameMode->CountdownTime(), &Opts));
 }
