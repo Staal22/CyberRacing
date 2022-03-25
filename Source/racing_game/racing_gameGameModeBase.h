@@ -13,6 +13,9 @@ class RACING_GAME_API Aracing_gameGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
 	UFUNCTION(BlueprintCallable, Category = "GameRules")
 	int GetScore();
 
@@ -25,7 +28,10 @@ public:
 	void SetGamePaused(bool bIsPaused);
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void GameOver();	
+	void GameOver();
+
+	UFUNCTION()
+	float CountdownTime();
 	
 protected:
 	// Called when the game starts or when spawned

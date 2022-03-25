@@ -6,9 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "CountdownWidget.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RACING_GAME_API UCountdownWidget : public UUserWidget
 {
