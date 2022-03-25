@@ -3,6 +3,7 @@
 
 #include "CountdownWidget.h"
 #include "racing_gameGameModeBase.h"
+#include "Components/TextBlock.h"
 
 void UCountdownWidget::CountdownUpdate()
 {
@@ -11,6 +12,6 @@ void UCountdownWidget::CountdownUpdate()
 	if (!RacingGameMode)
 		return;
 
-
+	CurrentCount->SetText(FText::FromString(FString::Printf(TEXT("%f"), RacingGameMode->CountdownTime())));
 	
 }

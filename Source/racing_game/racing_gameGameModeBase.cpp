@@ -2,7 +2,6 @@
 
 
 #include "racing_gameGameModeBase.h"
-
 #include "CountdownWidget.h"
 #include "ScoreCounter.h"
 #include "Blueprint/UserWidget.h"
@@ -31,12 +30,22 @@ void Aracing_gameGameModeBase::BeginPlay()
 	ScoreCounter->ScoreUpdate();
 
 	if (IsValid(CountdownWidgetClass))
-		CountdownWidget = Cast<UCountdownWidget>(CreateWidget(World, ScoreWidgetClass));
+		CountdownWidget = Cast<UCountdownWidget>(CreateWidget(World, CountdownWidgetClass));
 	CountdownWidget->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
 	CountdownWidget->SetPositionInViewport(FVector2D(120.f, 120.f));
 	CountdownWidget->AddToViewport();
 	CountdownWidget->CountdownUpdate();
 	
+}
+
+void Aracing_gameGameModeBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bIsCountingDown)
+		CountdownWidget->CountdownUpdate();
+	else if (CountdownWidget->IsInViewport())
+		CountdownWidget->RemoveFromViewport();
 }
 
 int Aracing_gameGameModeBase::GetScore()
@@ -48,6 +57,13 @@ void Aracing_gameGameModeBase::EnemyDied()
 {
 	KillCounter++;
 	ScoreCounter->ScoreUpdate();
+}
+
+float Aracing_gameGameModeBase::CountdownTime()
+{
+	if (3.f - GetWorld()->GetTimeSeconds() < 0.f)
+		bIsCountingDown = false;
+	return 3.f - GetWorld()->GetTimeSeconds();
 }
 
 void Aracing_gameGameModeBase::CoinAcquired()
