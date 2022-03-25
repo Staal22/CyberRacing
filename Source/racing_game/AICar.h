@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PlayerCar.h"
 #include "AICar.generated.h"
 
 UCLASS()
@@ -34,4 +35,12 @@ public:
 		class USphereComponent* Collision{};
 
 	void LineTrace();
+	float HoverHeight = 250;
+	FHitResult* Hit = new FHitResult();
+	FVector Start = GetActorLocation();
+	FVector End = Start + FVector(0, 0, -HoverHeight);
+	FVector Ruler;
+
+	float Speed = 200;
+
 };
