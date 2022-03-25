@@ -13,6 +13,9 @@ class RACING_GAME_API Aracing_gameGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+	// Sets default values for this pawn's properties
+	Aracing_gameGameModeBase();
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
