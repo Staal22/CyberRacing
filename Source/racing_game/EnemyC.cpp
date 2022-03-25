@@ -22,8 +22,8 @@ AEnemyC::AEnemyC()
 
 	PlayerSensingSphere=CreateDefaultSubobject<USphereComponent>(TEXT("PlayerSensingSphere"));
 	PlayerSensingSphere->SetupAttachment(GetRootComponent());
-	PlayerSensingSphere->InitSphereRadius(650.f);
-	GetCharacterMovement()->MaxWalkSpeed = 350.f;
+	PlayerSensingSphere->InitSphereRadius(3000.f);
+	GetCharacterMovement()->MaxWalkSpeed = 450.f;
 }
 
 // Called when the game starts or when spawned
@@ -79,14 +79,14 @@ void AEnemyC::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 void AEnemyC::MoveToTarget(APlayerCar* RefPlayerCar)
 {
 	//have to include "AIModule" in ProjectNameBuild.cs file for this to work (V)
-	if (AIController)
+	if (AIController&&RefPlayerCar)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Overlaps"));
 
 		//https://docs.unrealengine.com/en-US/API/Runtime/AIModule/FAIMoveRequest/index.html
 		FAIMoveRequest AIMoverequest;
 		AIMoverequest.SetGoalActor(RefPlayerCar);	//What to move towards
-		AIMoverequest.SetAcceptanceRadius(0.1f);	//How close before stop
+		AIMoverequest.SetAcceptanceRadius(0.f);	//How close before stop
 	
 		//https://docs.unrealengine.com/en-US/API/Runtime/Engine/AI/Navigation/FNavPathSharedPtr/index.html
 		FNavPathSharedPtr NavPath;	//Will contain all location nodes for the path
@@ -95,12 +95,12 @@ void AEnemyC::MoveToTarget(APlayerCar* RefPlayerCar)
 	
 		// **************** this just shows us the path *********************
 		//auto guesses the type for us
-		auto PathPoints = NavPath->GetPathPoints();
+		// auto PathPoints = NavPath->GetPathPoints();
 	
-		for (auto Point : PathPoints)
-		{
-			FVector Location = Point.Location;
-			UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 3, 0.5f);
-		}
+		// for (auto Point : PathPoints)
+		// {
+		// 	FVector Location = Point.Location;
+		// 	UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 3, 0.5f);
+		// }
 	}
 }
