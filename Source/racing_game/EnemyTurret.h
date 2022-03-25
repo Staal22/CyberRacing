@@ -25,7 +25,7 @@ public:
 
 	//called when hit, destroys actor
 	void IsHit();
-
+	UFUNCTION()
 	void Shoot();
 
 	UPROPERTY()
