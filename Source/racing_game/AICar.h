@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SphereComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "AICar.generated.h"
 
 UCLASS()
@@ -23,4 +25,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	// setting up mesh component and collision component for coin
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AICarMesh")
+		UStaticMeshComponent* AICarMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AICarThings")
+		class USphereComponent* Collision{};
+
+	void LineTrace();
 };
