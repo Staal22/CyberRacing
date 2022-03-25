@@ -14,7 +14,7 @@ AAICar::AAICar()
 
 	AICarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AICarMesh"));
 	AICarMesh->SetupAttachment(GetRootComponent());
-	LineTrace();
+
 }
 
 // Called when the game starts or when spawned
@@ -29,20 +29,38 @@ void AAICar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	LineTrace();
+	FHitResult RV_Hit(ForceInit);
+	if (RV_Hit.bBlockingHit == true)
+	{
+		{
+			if (Ruler.Z < HoverHeight)
+			{
+				FVector NewLocation = GetActorLocation();
+				NewLocation += GetActorUpVector() * Speed * DeltaTime;
+				SetActorLocation(NewLocation);
+			}
+			else if (Ruler.Z > HoverHeight)
+			{
+				FVector NewLocation = GetActorLocation();
+				NewLocation += GetActorForwardVector() * Speed * -1 * DeltaTime;
+				SetActorLocation(NewLocation);
+			}
+			
+		}
+	}
 }
 
 void AAICar::LineTrace()
 {
 	//Re-initialize hit info
-	FHitResult* Hit = new FHitResult();
-	FVector Start = GetActorLocation();
-	FVector End = Start + FVector(0, -2500, 0);
 	//call GetWorld() from within an actor extending class
 	GetWorld()->LineTraceSingleByChannel(*Hit, Start, End, ECC_Visibility); //ECC_Pawn
 	if (Hit)
 	{
 		UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End, FColor(100, 0, 0));
 		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Hit->Location, 5, 5, FLinearColor::Red);
+		Ruler = Hit->Location;
 	}
 	else
 	{
@@ -50,3 +68,9 @@ void AAICar::LineTrace()
 		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), End, 5, 5, FLinearColor::White);
 	}
 }
+/*
+RV_Hit.bBlockingHit //did hit something? (bool)
+RV_Hit.GetActor(); //the hit actor if there is one
+RV_Hit.ImpactPoint;  //FVector
+RV_Hit.ImpactNormal;  //FVector
+*/
