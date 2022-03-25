@@ -21,6 +21,8 @@ public:
 
 	UFUNCTION()
 	void CoinAcquired();
+
+	void SetGamePaused(bool bIsPaused);
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void GameOver();	
@@ -30,8 +32,14 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> CountdownWidgetClass;
+	
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> ScoreWidgetClass;
-
+	
+	UPROPERTY(VisibleAnywhere)
+	class UCountdownWidget* CountdownWidget;
+	
 	UPROPERTY(VisibleAnywhere)
 	class UScoreCounter* ScoreCounter;
 	
@@ -39,7 +47,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "GameRules")
 	int KillCounter = 0;
 
+	UPROPERTY()
+	bool bIsCountingDown = false;
+	
 	UPROPERTY(EditAnywhere, Category = "GameRules")
 	int CoinCounter = 0;
 
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+	
 };
