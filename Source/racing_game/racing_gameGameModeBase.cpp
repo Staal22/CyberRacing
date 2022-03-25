@@ -2,14 +2,26 @@
 
 
 #include "racing_gameGameModeBase.h"
+
+#include "CountdownWidget.h"
 #include "ScoreCounter.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 void Aracing_gameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
 	const auto World = GetWorld();
+
+	TimerDelegate.BindLambda([&]
+	{
+		bIsCountingDown = false;
+		SetGamePaused(false);
+	});
+	bIsCountingDown = true;
+	SetGamePaused(true);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
 	
 	if (IsValid(ScoreWidgetClass))
 		ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
@@ -17,9 +29,15 @@ void Aracing_gameGameModeBase::BeginPlay()
 	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 0.f));
 	ScoreCounter->AddToViewport();
 	ScoreCounter->ScoreUpdate();
+
+	if (IsValid(CountdownWidgetClass))
+		CountdownWidget = Cast<UCountdownWidget>(CreateWidget(World, ScoreWidgetClass));
+	CountdownWidget->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
+	CountdownWidget->SetPositionInViewport(FVector2D(120.f, 120.f));
+	CountdownWidget->AddToViewport();
+	CountdownWidget->CountdownUpdate();
 	
 }
-
 
 int Aracing_gameGameModeBase::GetScore()
 {
@@ -36,6 +54,20 @@ void Aracing_gameGameModeBase::CoinAcquired()
 {
 	CoinCounter++;
 	ScoreCounter->ScoreUpdate();
+}
+
+void Aracing_gameGameModeBase::SetGamePaused(bool bIsPaused)
+{
+	APlayerController* const MyPlayer = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+	APlayerCar* PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
+	
+	if (MyPlayer != nullptr)
+	{
+		if (bIsPaused == true)
+			PlayerCar->DisableInput(MyPlayer);
+		if (bIsPaused == false)
+			PlayerCar->EnableInput(MyPlayer);
+	}
 }
 
 
