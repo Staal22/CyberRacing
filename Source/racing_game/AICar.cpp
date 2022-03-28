@@ -22,6 +22,11 @@ void AAICar::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	//CarDirection = ASplineClass::GetSpline()->GetActorLocation()-GetActorLocation();
+	//CarDirection.Normalize();
+	//SetActorRotation(CarDirection.Rotation());
 }
 
 // Called every frame
@@ -30,42 +35,46 @@ void AAICar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	LineTrace();
-	FHitResult RV_Hit(ForceInit);
-	if (RV_Hit.bBlockingHit == true)
-	{
-		{
-			if (Ruler.Z < HoverHeight)
-			{
-				FVector NewLocation = GetActorLocation();
-				NewLocation += GetActorUpVector() * Speed * DeltaTime;
-				SetActorLocation(NewLocation);
-			}
-			else if (Ruler.Z > HoverHeight)
-			{
-				FVector NewLocation = GetActorLocation();
-				NewLocation += GetActorForwardVector() * Speed * -1 * DeltaTime;
-				SetActorLocation(NewLocation);
-			}
-			
-		}
-	}
+	Time += DeltaTime;
+
+	FVector NewLocation = GetActorLocation();
+	NewLocation += GetActorForwardVector() * Speed * Time;
+	SetActorLocation(NewLocation);
 }
 
 void AAICar::LineTrace()
 {
 	//Re-initialize hit info
 	//call GetWorld() from within an actor extending class
+	FHitResult* Hit = new FHitResult();
+	FVector Start = GetActorLocation();
+	FVector End = Start + FVector(0, 0, -HoverHeight);
 	GetWorld()->LineTraceSingleByChannel(*Hit, Start, End, ECC_Visibility); //ECC_Pawn
 	if (Hit)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("123linetrace"))
 		UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End, FColor(100, 0, 0));
 		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Hit->Location, 5, 5, FLinearColor::Red);
-		Ruler = Hit->Location;
+		Ruler = Hit->Location - Start;
 	}
 	else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("321linetrace"))
 		UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End, FColor(100, 0, 0));
 		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), End, 5, 5, FLinearColor::White);
+	}
+
+	if (Ruler.Size() < HoverHeight)
+	{
+		FVector NewLocation = GetActorLocation();
+		NewLocation += GetActorUpVector() * Speed * Time;
+		SetActorLocation(NewLocation);
+	}
+	else
+	{
+		FVector NewLocation = GetActorLocation();
+		NewLocation += GetActorUpVector() * Speed * -1 * Time;
+		SetActorLocation(NewLocation);
 	}
 }
 /*
