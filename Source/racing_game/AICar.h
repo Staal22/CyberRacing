@@ -39,7 +39,9 @@ public:
 
 	void LineTrace();
 	float HoverHeight = 250;
+	float WallCheck = 250;
 	FVector Ruler;
+	FVector RulerSide;
 
 	float Time;
 
