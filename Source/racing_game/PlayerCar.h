@@ -44,7 +44,13 @@ public:
 	class UCameraComponent* Camera = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UCameraComponent* Back_Camera = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class USpringArmComponent* SpringArm = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	USpringArmComponent* Back_SpringArm = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "PlayerCar")
 	USoundBase* ShootingSound = nullptr;
@@ -104,10 +110,10 @@ public:
 	float GetSpeed();
 
 	UFUNCTION()
-	void BoostOn();
+	void BackCamOn();
 
 	UFUNCTION()
-	void BoostOff();
+	void BackCamOff();
 
 protected:
 	UPROPERTY(EditAnywhere)
