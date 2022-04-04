@@ -39,11 +39,17 @@ public:
 
 	void LineTrace();
 	float HoverHeight = 250;
+	float WallCheck = 250;
+	float WallCheck2 = 500;
 	FVector Ruler;
+	FVector RulerRight;
+	FVector RulerLeft;
+
+	float AngleAxis;
 
 	float Time;
-
-	float Speed = 1;
+	float Turn = 0.f;
+	float Speed = 5;
 
 private:
 	UPROPERTY()

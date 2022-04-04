@@ -67,12 +67,12 @@ void Aracing_gameGameModeBase::EnemyDied()
 
 float Aracing_gameGameModeBase::CountdownTime()
 {
-	if (3.f - GetWorld()->GetTimeSeconds() < 0.f)
+	if (3.6f - GetWorld()->GetTimeSeconds() < 0.6f)
 	{
 		bIsCountingDown = false;
 		SetGamePaused(false);
 	}
-	return 3.f - GetWorld()->GetTimeSeconds();
+	return 3.6f - GetWorld()->GetTimeSeconds();
 }
 
 void Aracing_gameGameModeBase::CoinAcquired()
