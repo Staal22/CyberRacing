@@ -51,6 +51,15 @@ APlayerCar::APlayerCar()
 	Back_SpringArm->TargetArmLength = 800;
 	Back_SpringArm->bEnableCameraLag = false;
 
+	Top_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TopSpringArmComp"));
+	Top_SpringArm->bDoCollisionTest = false;
+	Top_SpringArm->SetUsingAbsoluteRotation(false);
+	Top_SpringArm->SetupAttachment(GetRootComponent());
+	Top_SpringArm->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
+	Top_SpringArm->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
+	Top_SpringArm->TargetArmLength = 5000;
+	Top_SpringArm->bEnableCameraLag = false;
+
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
@@ -59,8 +68,11 @@ APlayerCar::APlayerCar()
 	Back_Camera->bUsePawnControlRotation = false;
 	Back_Camera->SetupAttachment(Back_SpringArm, USpringArmComponent::SocketName);
 
-	// remember to remove after comp 3
-	HPComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	Top_Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopCamera"));
+	Top_Camera->bUsePawnControlRotation = false;
+	Top_Camera->SetupAttachment(Top_SpringArm, USpringArmComponent::SocketName);
+
+	HPComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("FollowHealthBar"));
 	HPComp->SetupAttachment(GetRootComponent());
 	
 	Ammo = MaxAmmo;
@@ -91,20 +103,17 @@ void APlayerCar::BeginPlay()
 	Speedometer->SetPositionInViewport(FVector2D(0.f, 80.f));
 	Speedometer->AddToViewport();
 	Speedometer->SpeedUpdate();
-
-	// IMO this looks way better, but I guess it will follow the player for the compulsory, since that was a requirement
-	// if (IsValid(HealthWidgetClass))
-	// 	HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
-	// HealthBar->SetOwner(this);
-	// HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
-	// HealthBar->SetPositionInViewport(FVector2D(0.f, 120.f));
-	// HealthBar->AddToViewport();
-	// HealthBar->HealthUpdate();
-
-	// Temporary version that follows the player for comp 3 version
-	HealthBar = Cast<UHealthBar>(HPComp->GetUserWidgetObject());
+	
+	if (IsValid(HealthWidgetClass))
+		HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
 	HealthBar->SetOwner(this);
+	HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
+	HealthBar->SetPositionInViewport(FVector2D(0.f, 120.f));
 	HealthBar->HealthUpdate();
+	
+	FollowHealthBar = Cast<UHealthBar>(HPComp->GetUserWidgetObject());
+	FollowHealthBar->SetOwner(this);
+	FollowHealthBar->HealthUpdate();
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
 	
@@ -195,6 +204,7 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction("AileronRoll", IE_Pressed, this, &APlayerCar::AileronRoll);
 	PlayerInputComponent->BindAction("BackCam", IE_Pressed, this, &APlayerCar::BackCamOn);
 	PlayerInputComponent->BindAction("BackCam", IE_Released, this, &APlayerCar::BackCamOff);
+	PlayerInputComponent->BindAction("ToggleTopDown", IE_Pressed, this, &APlayerCar::ToggleTopCam);
 }
 
 void APlayerCar::Drive(float Force)
@@ -403,8 +413,31 @@ void APlayerCar::BackCamOff()
 	Back_Camera->Deactivate();
 }
 
+void APlayerCar::ToggleTopCam()
+{
+	if (bTopCam == false)
+	{
+		Camera->Deactivate();
+		Back_Camera->Deactivate();
+		Top_Camera->Activate();
+		HealthBar->AddToViewport();
+		FollowHealthBar->SetVisibility(ESlateVisibility::Hidden);
+		bTopCam = true;
+	}
+	
+	else if (bTopCam == true)
+	{
+		Camera->Activate();
+		Back_Camera->Activate();
+		Top_Camera->Deactivate();
+		HealthBar->RemoveFromViewport();
+		FollowHealthBar->SetVisibility(ESlateVisibility::Visible);
+		bTopCam = false;
+	}
+}
+
 void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                           UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	const auto World = GetWorld();
 	Timer = World->GetTimeSeconds();
