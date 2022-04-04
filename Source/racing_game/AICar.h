@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PlayerCar.h"
+#include "SplineClass.h"
 #include "AICar.generated.h"
 
 UCLASS()
@@ -33,5 +35,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AICarThings")
 		class USphereComponent* Collision{};
 
+	FVector CarDirection = FVector(0.f, 0.f, 0.f);
+
 	void LineTrace();
+	float HoverHeight = 250;
+	float WallCheck = 250;
+	FVector Ruler;
+	FVector RulerSide;
+
+	float Time;
+
+	float Speed = 1;
+
+private:
+	UPROPERTY()
+		class Aracing_gameGameModeBase* RacingGameMode;
+
 };

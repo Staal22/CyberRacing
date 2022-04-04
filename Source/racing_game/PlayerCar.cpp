@@ -42,9 +42,22 @@ APlayerCar::APlayerCar()
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 20.f;
 
+	Back_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("BackSpringArmComp"));
+	Back_SpringArm->bDoCollisionTest = false;
+	Back_SpringArm->SetUsingAbsoluteRotation(false);
+	Back_SpringArm->SetupAttachment(GetRootComponent());
+	Back_SpringArm->SetRelativeLocation(FVector(-350.f, 0.f, 0.f));
+	Back_SpringArm->SetRelativeRotation(FRotator(-15.f, 180.f, 0.f));
+	Back_SpringArm->TargetArmLength = 800;
+	Back_SpringArm->bEnableCameraLag = false;
+
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+	Back_Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("BackCamera"));
+	Back_Camera->bUsePawnControlRotation = false;
+	Back_Camera->SetupAttachment(Back_SpringArm, USpringArmComponent::SocketName);
 
 	// remember to remove after comp 3
 	HPComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
@@ -97,6 +110,8 @@ void APlayerCar::BeginPlay()
 	
 	HoverForce = DefaultHoverForce;
 	TraceLength = DefaultTraceLength;
+
+	Back_Camera->Deactivate();
 }
 
 // Called every frame
@@ -178,8 +193,8 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerCar::Shoot);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerCar::Reload);
 	PlayerInputComponent->BindAction("AileronRoll", IE_Pressed, this, &APlayerCar::AileronRoll);
-	PlayerInputComponent->BindAction("Boost", IE_Pressed, this, &APlayerCar::BoostOn);
-	PlayerInputComponent->BindAction("Boost", IE_Released, this, &APlayerCar::BoostOff);
+	PlayerInputComponent->BindAction("BackCam", IE_Pressed, this, &APlayerCar::BackCamOn);
+	PlayerInputComponent->BindAction("BackCam", IE_Released, this, &APlayerCar::BackCamOff);
 }
 
 void APlayerCar::Drive(float Force)
@@ -376,14 +391,16 @@ float APlayerCar::GetSpeed()
 	return Speed;
 }
 
-void APlayerCar::BoostOn()
+void APlayerCar::BackCamOn()
 {
-
+	Camera->Deactivate();
+	Back_Camera->Activate();
 }
 
-void APlayerCar::BoostOff()
+void APlayerCar::BackCamOff()
 {
-
+	Camera->Activate();
+	Back_Camera->Deactivate();
 }
 
 void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

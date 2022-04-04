@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
+#include "Components/BoxComponent.h"
 #include "SplineClass.generated.h"
 
 UCLASS()
@@ -33,7 +34,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
 	UStaticMesh* SplineMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CoinThings")
+	class UBoxComponent* Collision{};
+
 	//making it easy changing axis in viewport
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
 		TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
+
 };
