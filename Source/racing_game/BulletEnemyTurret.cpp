@@ -16,7 +16,7 @@ ABulletEnemyTurret::ABulletEnemyTurret()
 	Root = CreateDefaultSubobject<USphereComponent>(TEXT("Root/Collision"));
 	SetRootComponent(Root);
 
-	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
+	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));							//set in BP
 	BulletMesh->SetupAttachment(GetRootComponent());
 
 }
@@ -45,25 +45,24 @@ void ABulletEnemyTurret::Tick(float DeltaTime)
 
 void ABulletEnemyTurret::Death()
 {
-	//explosions fx
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
-	//death sound
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
-	Destroy();
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);			//explosions fx	
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());						//death sound
+	Destroy();																								//removes actor from world instance
 	
 }
 
 void ABulletEnemyTurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->IsA<ABulletEnemyTurret>())
+	if (OtherActor->IsA<ABulletEnemyTurret>())																//dont do anything if collides with itself
 	{
 		return;
 	}
 
 	if (OtherActor->IsA<APlayerCar>())
 	{
-		OnBulletHitEnemy.Broadcast(OtherActor);
+		OnBulletHitEnemy.Broadcast(OtherActor);																//calls function in player class (make function ( ) )***
 	}
 }
 

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Bullet.h"
+#include "BulletEnemyTurret.h"
 #include "EnemyTurret.generated.h"
 
 
@@ -54,7 +54,7 @@ private:
 
 	//bullet
 	UPROPERTY()
-		class ABullet* Bullet;
+		class ABulletEnemyTurret* Bullet;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
