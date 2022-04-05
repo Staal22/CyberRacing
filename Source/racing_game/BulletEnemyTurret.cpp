@@ -33,7 +33,7 @@ void ABulletEnemyTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Collision->AddRelativeLocation(BulletMesh->GetForwardVector() * Speed * DeltaTime);
+	Root->AddRelativeLocation(BulletMesh->GetForwardVector() * Speed * DeltaTime);
 	
 	TimeLived += DeltaTime;
 
