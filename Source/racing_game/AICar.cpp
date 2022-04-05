@@ -2,6 +2,7 @@
 
 
 #include "AICar.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AAICar::AAICar()
@@ -39,9 +40,15 @@ void AAICar::Tick(float DeltaTime)
 	LineTrace();
 	Time += DeltaTime;
 
-	AICarMesh->SetRelativeRotation(FRotator(0.f, Turn, 0.f));
+	//AICarMesh->SetRelativeRotation(FRotator(0.f, Turn, 0.f));
+
+	//AICarMesh->GetUpVector()
 
 	FVector NewLocation = GetActorLocation();
+	NewLocation += Collision->GetForwardVector() * Speed;
+	SetActorLocation(NewLocation);
+
+	/*FVector NewLocation = GetActorLocation();
 	FVector Radius = GetActorLocation() + FVector(200, 0, 0);
 	FVector RotateValue = Radius.RotateAngleAxis(AngleAxis, FVector(0, 0, 1));
 
@@ -49,7 +56,7 @@ void AAICar::Tick(float DeltaTime)
 	NewLocation.Y += RotateValue.Y;
 	NewLocation.Z += RotateValue.Z;
 
-	SetActorLocation(NewLocation);
+	SetActorLocation(NewLocation);*/
 
 	//FVector NewLocation = GetActorLocation();
 	//NewLocation += GetActorForwardVector() * Speed;
@@ -93,9 +100,9 @@ void AAICar::LineTrace()
 		SetActorLocation(NewLocation);
 	}
 
-	//right
+	//turn
 	FHitResult* Hit2 = new FHitResult();
-	FVector End2 = Start + FVector(0, WallCheck, 0);
+	FVector End2 = Start + Collision->GetRightVector()*WallCheck;
 	GetWorld()->LineTraceSingleByChannel(*Hit2, Start, End2, ECC_Visibility); //ECC_Pawn
 	RulerRight = Hit2->Location - Start;
 	if (Hit2)
@@ -111,16 +118,24 @@ void AAICar::LineTrace()
 		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), End2, 5, 5, FLinearColor::White);
 	}
 
-	if (RulerRight.Size() < WallCheck)
+	//impact normal
+	/*Hit2->ImpactNormal
+		AICarMesh->GetUpVector()*/
+	//FRotator MyRotator = FRotationMatrix::MakeFromZY(AICarMesh->GetUpVector(), Hit2->ImpactNormal).Rotator();
+	//FRotator NewRot = UKismetMathLibrary::MakeRotFromYZ(-Hit2->ImpactNormal, Collision->GetUpVector());
+	FRotator MyRotator = FRotationMatrix::MakeFromYZ(-Hit2->ImpactNormal, AICarMesh->GetUpVector()).Rotator();
+	Collision->SetWorldRotation(MyRotator);
+
+	/*if (RulerRight.Size() < WallCheck)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Left"))
-		AngleAxis--;
+		Turn--;
 	}
 	if (RulerRight.Size() > WallCheck2)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Right"))
-		AngleAxis++;
-	}
+		Turn++;
+	}*/
 
 	/*//left
 	FHitResult* Hit3 = new FHitResult();
