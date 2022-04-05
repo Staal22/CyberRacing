@@ -45,12 +45,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	UCameraComponent* Back_Camera = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UCameraComponent* Top_Camera = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class USpringArmComponent* SpringArm = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	USpringArmComponent* Back_SpringArm = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	USpringArmComponent* Top_SpringArm = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "PlayerCar")
 	USoundBase* ShootingSound = nullptr;
@@ -114,6 +120,9 @@ public:
 
 	UFUNCTION()
 	void BackCamOff();
+	
+	UFUNCTION()
+	void ToggleTopCam();
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -122,8 +131,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> SpeedWidgetClass;
 
-	// UPROPERTY(EditAnywhere)
-	// TSubclassOf<UUserWidget> HealthWidgetClass;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> HealthWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HPComp;
@@ -136,6 +145,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class UHealthBar* HealthBar;
+
+	UPROPERTY(VisibleAnywhere)
+	UHealthBar* FollowHealthBar;
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
 	int Checkpoints = 0;
@@ -179,6 +191,9 @@ private:
 
 	UPROPERTY()
 	float Timer = 0.f;
+
+	UPROPERTY()
+	bool bTopCam = false;
 	
 	UPROPERTY()
 	float MaxMoveSpeed = 6000.f;

@@ -62,7 +62,7 @@ void AEnemyTurret::Shoot()
 	//{
 	UWorld* World = GetWorld();
 	FVector Location = GetActorLocation();
-	Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+	Bullet = World->SpawnActor<ABulletEnemyTurret>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 	/*}*/
 }
 
