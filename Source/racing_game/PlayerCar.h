@@ -184,6 +184,27 @@ private:
 	FVector Velocity;
 
 	UPROPERTY()
+	bool bShotgun = false;
+	
+	UPROPERTY()
+	bool bTopCam = false;
+
+	UPROPERTY()
+	bool bIsReloading = false;
+	
+	UPROPERTY()
+	int Ammo = 0;
+
+	UPROPERTY()
+	int MaxAmmo = 20;
+
+	UPROPERTY()
+	int Health = 0;
+
+	UPROPERTY()
+	int MaxHealth = 3;
+	
+	UPROPERTY()
 	float ToRoll;
 	
 	UPROPERTY()
@@ -192,9 +213,6 @@ private:
 	UPROPERTY()
 	float Timer = 0.f;
 
-	UPROPERTY()
-	bool bTopCam = false;
-	
 	UPROPERTY()
 	float MaxMoveSpeed = 6000.f;
 
@@ -224,24 +242,9 @@ private:
 
 	UPROPERTY()
 	float Target = 180.f;
-
-	UPROPERTY()
-	bool bShotgun = false;
 	
 	UPROPERTY()
 	class Aracing_gameGameModeBase* RacingGameMode;
-
-	UPROPERTY()
-	int Ammo = 0;
-
-	UPROPERTY()
-	int MaxAmmo = 20;
-
-	UPROPERTY()
-	int Health = 0;
-
-	UPROPERTY()
-	int MaxHealth = 3;
 
 	UPROPERTY()
 	class ABullet* Bullet;
