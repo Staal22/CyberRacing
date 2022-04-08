@@ -332,20 +332,24 @@ void APlayerCar::SpeedLimit()
 
 void APlayerCar::Reload()
 {
-	const auto World = GetWorld();
-	UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
-	// GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
+	if (bIsReloading == false)
+	{
+		bIsReloading = true;
+		const auto World = GetWorld();
+		UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
+		// GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
 	
-	TimerDelegate.BindLambda([&]
-		{
-			Ammo = 20;
-			AmmoCounter->SetColorAndOpacity(FLinearColor(255, 255, 255));
-			// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Reloaded")));
-			AmmoCounter->AmmoUpdate();
-		});
+		TimerDelegate.BindLambda([&]
+			{
+				Ammo = 20;
+				AmmoCounter->SetColorAndOpacity(FLinearColor(255, 255, 255));
+				// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Reloaded")));
+				AmmoCounter->AmmoUpdate();
+			bIsReloading = false;
+			});
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, false);
-
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, false);
+	}
 }
 
 void APlayerCar::AileronRoll()
