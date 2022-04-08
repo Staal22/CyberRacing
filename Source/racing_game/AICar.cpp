@@ -57,11 +57,6 @@ void AAICar::Tick(float DeltaTime)
 	NewLocation.Z += RotateValue.Z;
 
 	SetActorLocation(NewLocation);*/
-
-	//FVector NewLocation = GetActorLocation();
-	//NewLocation += GetActorForwardVector() * Speed;
-	//SetActorLocation(NewLocation);
-
 }
 
 void AAICar::LineTrace()
