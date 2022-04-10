@@ -38,7 +38,10 @@ public:
 	class UFloatingPawnMovement* PawnMovementComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
-	TSubclassOf<AActor> BulletToSpawn;
+	TSubclassOf<AActor> LaserToSpawn;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<AActor> MissileToSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class UCameraComponent* Camera = nullptr;
@@ -77,7 +80,10 @@ public:
 	void OnEnemyHit(AActor* Actor);
 
 	UFUNCTION()
-	void Shoot();
+	void ShootLaser();
+	
+	UFUNCTION()
+	void ShootMissile();
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void Checkpoint();
@@ -157,8 +163,11 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
 	float TraceLength;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
+	float GravityForce;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
 	bool bDoARoll = false;
 	
 	// UPROPERTY(VisibleAnywhere)
@@ -221,6 +230,9 @@ private:
 
 	UPROPERTY()
 	float DefaultHoverForce = 1400000.f;
+
+	UPROPERTY()
+	float DefaultGravityForce = -120000.f;
 	
 	UPROPERTY()
 	float MoveForce = 0.f;

@@ -37,8 +37,8 @@ APlayerCar::APlayerCar()
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
 	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
-	SpringArm->TargetArmLength = 800;
+	SpringArm->SetRelativeRotation(FRotator(-10.f, 0.f, 0.f));
+	SpringArm->TargetArmLength = 1200;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 20.f;
 
@@ -119,6 +119,7 @@ void APlayerCar::BeginPlay()
 	
 	HoverForce = DefaultHoverForce;
 	TraceLength = DefaultTraceLength;
+	GravityForce = DefaultGravityForce;
 
 	Back_Camera->Deactivate();
 }
@@ -147,13 +148,13 @@ void APlayerCar::Tick(float DeltaTime)
 	
 	if (MoveForce > 0.f)
 	{
-		CameraPos = Speed * 350.f;
+		CameraPos = Speed * 800.f;
 		PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
 		PawnMovementComponent->Acceleration = MaxMoveSpeed/15.f;
 	}
 	else if (MoveForce < 0.f)
 	{
-		CameraPos = 100.f;
+		CameraPos = 300.f;
 		PawnMovementComponent->MaxSpeed = MaxMoveSpeed/2;
 		PawnMovementComponent->Acceleration = MaxMoveSpeed/5.f;
 	}
@@ -199,7 +200,8 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("Forward", this, &APlayerCar::Drive);
 	PlayerInputComponent->BindAxis("TurnL", this, &APlayerCar::Turn);
 
-	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerCar::Shoot);
+	PlayerInputComponent->BindAction("ShootLaser", IE_Pressed, this, &APlayerCar::ShootLaser);
+	PlayerInputComponent->BindAction("ShootMissile", IE_Pressed, this, &APlayerCar::ShootMissile);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerCar::Reload);
 	PlayerInputComponent->BindAction("AileronRoll", IE_Pressed, this, &APlayerCar::AileronRoll);
 	PlayerInputComponent->BindAction("BackCam", IE_Pressed, this, &APlayerCar::BackCamOn);
@@ -220,7 +222,7 @@ void APlayerCar::Turn(float TurnDirection)
 	// 	AddMovementInput(Sphere->GetForwardVector(), 1);
 }
 
-void APlayerCar::Shoot()
+void APlayerCar::ShootLaser()
 {
 	if (Ammo <= 0)
 	{
@@ -232,7 +234,7 @@ void APlayerCar::Shoot()
 	{
 		UWorld* World = GetWorld();
 		const FVector Location = GetActorLocation();
-		const FVector Right = PlayerMesh->GetRightVector();
+		// const FVector Right = PlayerMesh->GetRightVector();
 		
 		if (bShotgun == true)
 		{
@@ -244,9 +246,9 @@ void APlayerCar::Shoot()
 			}
 			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 			//implement TArray of actors and so on
-			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
-			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
-			Bullets.Emplace(World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(LaserToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(LaserToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(LaserToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
 			for (int i = 0; i < 3; i++)
 			{
 				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
@@ -257,7 +259,7 @@ void APlayerCar::Shoot()
 			Ammo--;
 			if (World)
 			{
-				Bullet = World->SpawnActor<ABullet>(BulletToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+				Bullet = World->SpawnActor<ABullet>(LaserToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 				UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 				if (Bullet)
 				{
@@ -267,8 +269,58 @@ void APlayerCar::Shoot()
 		}
 	}
 	AmmoCounter->AmmoUpdate();
-	UE_LOG(LogTemp, Warning, TEXT("Shooting"));
+	UE_LOG(LogTemp, Warning, TEXT("Shooting Laser"));
 
+}
+
+void APlayerCar::ShootMissile()
+{
+	if (Ammo <= 0)
+	{
+		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
+		AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
+
+	}
+	if (Ammo > 0)
+	{
+		UWorld* World = GetWorld();
+		const FVector Location = GetActorLocation();
+		// const FVector Right = PlayerMesh->GetRightVector();
+		
+		if (bShotgun == true)
+		{
+			TArray<ABullet*> Bullets;
+			Ammo -= 3;
+			if (Ammo < 0)
+			{
+				Ammo = 0;
+			}
+			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
+			//implement TArray of actors and so on
+			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
+			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
+			for (int i = 0; i < 3; i++)
+			{
+				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+			}
+		}
+		else
+		{
+			Ammo--;
+			if (World)
+			{
+				Bullet = World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+				UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
+				if (Bullet)
+				{
+					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+				}
+			}
+		}
+	}
+	AmmoCounter->AmmoUpdate();
+	UE_LOG(LogTemp, Warning, TEXT("Shooting Missile"));
 }
 
 void APlayerCar::OnEnemyHit(AActor* Actor)
@@ -306,6 +358,7 @@ void APlayerCar::SpeedPU()
 	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
+	GravityForce = DefaultGravityForce * 0.15f;
 	TraceLength = DefaultTraceLength + 50.f;
 	SpeedLimit();
 }
@@ -321,13 +374,15 @@ void APlayerCar::SpeedLimit()
 			PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
 			HoverForce = DefaultHoverForce;
 			TraceLength = DefaultTraceLength;
+			GravityForce = DefaultGravityForce;
+			BackCamOff();
 			Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		}
 		// CommandString = "r.MotionBlur.Amount 0";
 		// World->Exec(World, *CommandString);
 	});
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.5f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
 }
 
 void APlayerCar::Reload()
@@ -413,8 +468,12 @@ void APlayerCar::BackCamOn()
 
 void APlayerCar::BackCamOff()
 {
-	Camera->Activate();
 	Back_Camera->Deactivate();
+	Top_Camera->Deactivate();
+	// if (!FollowHealthBar->IsVisible())
+	FollowHealthBar->SetVisibility(ESlateVisibility::Visible);
+	HealthBar->RemoveFromViewport();
+	Camera->Activate();
 }
 
 void APlayerCar::ToggleTopCam()
