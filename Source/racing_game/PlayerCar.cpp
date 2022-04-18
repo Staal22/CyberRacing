@@ -509,6 +509,7 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		if (Timer > TimeSinceEvent)
 		{
 			Health--;
+			FollowHealthBar->HealthUpdate();
 			HealthBar->HealthUpdate();
 			if (Health <= 0)
 			{
