@@ -134,6 +134,9 @@ void APlayerCar::Tick(float DeltaTime)
 	Forward = PlayerMesh->GetForwardVector();
 	Velocity = PawnMovementComponent->Velocity;
 	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
+
+	float InitTAtkTime = TAtkTime;
+	// TAtkTime = 
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
