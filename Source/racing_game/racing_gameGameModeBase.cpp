@@ -18,11 +18,13 @@ void Aracing_gameGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	const auto World = GetWorld();
-	
+
 	bIsCountingDown = true;
+
 	SetGamePaused(true);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
 	
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
+
 	if (IsValid(ScoreWidgetClass))
 		ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
 	ScoreCounter->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
@@ -48,9 +50,12 @@ void Aracing_gameGameModeBase::Tick(float DeltaTime)
 	{
 		CountdownWidget->CountdownUpdate();
 	}
-	else if (CountdownWidget->IsInViewport())
+	else if (CountdownWidget)
 	{
-		CountdownWidget->RemoveFromViewport();
+		if (CountdownWidget->IsInViewport())
+		{
+			CountdownWidget->RemoveFromViewport();
+		}
 	}
 }
 

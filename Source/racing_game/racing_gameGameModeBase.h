@@ -28,6 +28,7 @@ public:
 	UFUNCTION()
 	void CoinAcquired();
 
+	UFUNCTION()
 	void SetGamePaused(bool bIsPaused);
 	
 	UFUNCTION(BlueprintImplementableEvent)
