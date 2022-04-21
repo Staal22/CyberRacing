@@ -14,14 +14,25 @@ class RACING_GAME_API UCountdownWidget : public UUserWidget
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* CurrentCount;
+	class UTextBlock* StartCount;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* TAtkCount;
 
 private:
 	UPROPERTY()
 	class Aracing_gameGameModeBase* RacingGameMode;
+
+	UPROPERTY()
+	class APlayerCar* PlayerCar;
+
+	UPROPERTY()
+	float TAtkDifficulty = 15.f;
 	
 public:
 	UFUNCTION()
 	void CountdownUpdate();
-	
+
+	UFUNCTION()
+	float GetTAtkDifficulty();
 };

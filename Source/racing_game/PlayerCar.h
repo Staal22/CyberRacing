@@ -129,6 +129,9 @@ public:
 	
 	UFUNCTION()
 	void ToggleTopCam();
+	
+	UFUNCTION()
+	float GetTAtkTime();
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -156,7 +159,7 @@ protected:
 	UHealthBar* FollowHealthBar;
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
-	float TAtkTime = 15.f;
+	float InitTAtkTime = 0.f;
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
 	int Checkpoints = 0;
@@ -206,7 +209,10 @@ private:
 	
 	UPROPERTY()
 	int Ammo = 0;
-
+	
+	UPROPERTY()
+	float TAtkTime = 0.f;
+	
 	UPROPERTY()
 	int MaxAmmo = 20;
 

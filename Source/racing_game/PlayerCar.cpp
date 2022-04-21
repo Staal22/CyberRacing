@@ -122,6 +122,9 @@ void APlayerCar::BeginPlay()
 	GravityForce = DefaultGravityForce;
 
 	Back_Camera->Deactivate();
+
+	InitTAtkTime = RacingGameMode->GetDifficulty( "Timer");
+	TAtkTime = InitTAtkTime;
 }
 
 // Called every frame
@@ -135,8 +138,11 @@ void APlayerCar::Tick(float DeltaTime)
 	Velocity = PawnMovementComponent->Velocity;
 	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
 
-	float InitTAtkTime = TAtkTime;
-	// TAtkTime = 
+	TAtkTime = InitTAtkTime - World->GetTimeSeconds();
+	if (TAtkTime <= 0.f)
+	{
+		RacingGameMode->GameOver( "Ran out of time" );
+	}
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
@@ -502,6 +508,11 @@ void APlayerCar::ToggleTopCam()
 	}
 }
 
+float APlayerCar::GetTAtkTime()
+{
+	return TAtkTime;
+}
+
 void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                            UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -516,7 +527,7 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 			HealthBar->HealthUpdate();
 			if (Health <= 0)
 			{
-				RacingGameMode->GameOver();
+				RacingGameMode->GameOver( "Damage from enemies" );
 			}
 			TimeSinceEvent = Timer + 1.5f;
 		}

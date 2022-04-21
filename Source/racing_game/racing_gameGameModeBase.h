@@ -26,16 +26,24 @@ public:
 	void EnemyDied();
 
 	UFUNCTION()
+	float GetDifficulty(FString Parameter);
+
+	UFUNCTION()
 	void CoinAcquired();
 
 	UFUNCTION()
 	void SetGamePaused(bool bIsPaused);
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void GameOver();
+	void GameOver(const FString& Cause);
 
 	UFUNCTION()
 	float CountdownTime();
+
+	UFUNCTION()
+	bool IsStarting();
+	
+	bool bInitialCountDown = true;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -56,13 +64,10 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category = "GameRules")
 	int KillCounter = 0;
-
-	UPROPERTY()
-	bool bIsCountingDown = false;
 	
 	UPROPERTY(EditAnywhere, Category = "GameRules")
 	int CoinCounter = 0;
-
+	
 	FTimerHandle TimerHandle;
 	FTimerDelegate TimerDelegate;
 	

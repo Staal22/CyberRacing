@@ -18,9 +18,7 @@ void Aracing_gameGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	const auto World = GetWorld();
-
-	bIsCountingDown = true;
-
+	
 	SetGamePaused(true);
 	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
@@ -46,17 +44,7 @@ void Aracing_gameGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bIsCountingDown)
-	{
-		CountdownWidget->CountdownUpdate();
-	}
-	else if (CountdownWidget)
-	{
-		if (CountdownWidget->IsInViewport())
-		{
-			CountdownWidget->RemoveFromViewport();
-		}
-	}
+	CountdownWidget->CountdownUpdate();
 }
 
 int Aracing_gameGameModeBase::GetScore()
@@ -70,14 +58,33 @@ void Aracing_gameGameModeBase::EnemyDied()
 	ScoreCounter->ScoreUpdate();
 }
 
+float Aracing_gameGameModeBase::GetDifficulty(FString Parameter)
+{
+	float ReturnValue;
+	if (Parameter == "Timer")
+	{
+		ReturnValue = CountdownWidget->GetTAtkDifficulty();
+	}
+	else
+	{
+		ReturnValue = 0.f;
+	}
+	return ReturnValue;
+}
+
 float Aracing_gameGameModeBase::CountdownTime()
 {
 	if (3.6f - GetWorld()->GetTimeSeconds() < 0.6f)
 	{
-		bIsCountingDown = false;
+		bInitialCountDown = false;
 		SetGamePaused(false);
 	}
 	return 3.6f - GetWorld()->GetTimeSeconds();
+}
+
+bool Aracing_gameGameModeBase::IsStarting()
+{
+	return bInitialCountDown;
 }
 
 void Aracing_gameGameModeBase::CoinAcquired()
