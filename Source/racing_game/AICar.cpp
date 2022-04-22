@@ -3,6 +3,8 @@
 
 #include "AICar.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/StaticMeshComponent.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values
 AAICar::AAICar()
@@ -16,23 +18,18 @@ AAICar::AAICar()
 	AICarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AICarMesh"));
 	AICarMesh->SetupAttachment(GetRootComponent());
 
-	AngleAxis = 0;
-
+	ForceStrength = 20000.0f;
 }
 
 // Called when the game starts or when spawned
 void AAICar::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 
-	//CarDirection = ASplineClass::GetSpline()->GetActorLocation()-GetActorLocation();
-	//CarDirection.Normalize();
-	//SetActorRotation(CarDirection.Rotation());
+	SmoothRot = GetActorRotation();
 }
 
-// Called every frame
+// Called every frame 
 void AAICar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -40,23 +37,18 @@ void AAICar::Tick(float DeltaTime)
 	LineTrace();
 	Time += DeltaTime;
 
-	//AICarMesh->SetRelativeRotation(FRotator(0.f, Turn, 0.f));
-
-	//AICarMesh->GetUpVector()
-
+	/*
 	FVector NewLocation = GetActorLocation();
 	NewLocation += Collision->GetForwardVector() * Speed;
 	SetActorLocation(NewLocation);
+	*/
 
-	/*FVector NewLocation = GetActorLocation();
-	FVector Radius = GetActorLocation() + FVector(200, 0, 0);
-	FVector RotateValue = Radius.RotateAngleAxis(AngleAxis, FVector(0, 0, 1));
+	FVector Forward = Collision->GetForwardVector();
 
-	NewLocation.X += RotateValue.X;
-	NewLocation.Y += RotateValue.Y;
-	NewLocation.Z += RotateValue.Z;
+	AICarMesh->AddForce(Forward * FMath::FInterpTo(0.0f, ForceStrength, Time, InterpSpeed2) * AICarMesh->GetMass());
 
-	SetActorLocation(NewLocation);*/
+	Collision->SetWorldRotation(FMath::RInterpTo(ROTTOT, MyRotator, Time, InterpSpeed));
+
 }
 
 void AAICar::LineTrace()
@@ -81,24 +73,30 @@ void AAICar::LineTrace()
 		UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End, FColor(100, 0, 0));
 		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), End, 5, 5, FLinearColor::White);
 	}
-
+	/*
 	if (Ruler.Size() < HoverHeight-5)
 	{
-		FVector NewLocation = GetActorLocation();
-		NewLocation += GetActorUpVector() * Speed;
-		SetActorLocation(NewLocation);
+		FVector Up = AICarMesh->GetUpVector();
+
+		AICarMesh->AddForce(Up * ForceStrength * AICarMesh->GetMass());
 	}
 	else if (Ruler.Size() > HoverHeight+5)
 	{
+		
 		FVector NewLocation = GetActorLocation();
 		NewLocation += GetActorUpVector() * Speed * -1;
 		SetActorLocation(NewLocation);
+		
+	
 	}
-
+	*/
+	
 	//turn
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
 	FHitResult* Hit2 = new FHitResult();
 	FVector End2 = Start + Collision->GetRightVector()*WallCheck;
-	GetWorld()->LineTraceSingleByChannel(*Hit2, Start, End2, ECC_Visibility); //ECC_Pawn
+	GetWorld()->LineTraceSingleByChannel(*Hit2, Start, End2, ECC_Visibility, Params); //ECC_Pawn
 	RulerRight = Hit2->Location - Start;
 	if (Hit2)
 	{
@@ -118,48 +116,9 @@ void AAICar::LineTrace()
 		AICarMesh->GetUpVector()*/
 	//FRotator MyRotator = FRotationMatrix::MakeFromZY(AICarMesh->GetUpVector(), Hit2->ImpactNormal).Rotator();
 	//FRotator NewRot = UKismetMathLibrary::MakeRotFromYZ(-Hit2->ImpactNormal, Collision->GetUpVector());
-	FRotator MyRotator = FRotationMatrix::MakeFromYZ(-Hit2->ImpactNormal, AICarMesh->GetUpVector()).Rotator();
-	Collision->SetWorldRotation(MyRotator);
-
-	/*if (RulerRight.Size() < WallCheck)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Left"))
-		Turn--;
-	}
-	if (RulerRight.Size() > WallCheck2)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Right"))
-		Turn++;
-	}*/
-
-	/*//left
-	FHitResult* Hit3 = new FHitResult();
-	FVector Start2 = GetActorLocation();
-	FVector End3 = Start2 + FVector(0, WallCheck2, 0);
-	GetWorld()->LineTraceSingleByChannel(*Hit3, Start2, End3, ECC_Visibility); //ECC_Pawn
-	if (Hit3)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Wallcheck"))
-			UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start2, End3, FColor(100, 0, 0));
-		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Hit3->Location, 5, 5, FLinearColor::Red);
-		RulerLeft = Hit3->Location - Start2;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Checkwall"))
-			UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start2, End3, FColor(100, 0, 0));
-		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), End3, 5, 5, FLinearColor::White);
-	}
-
-	if (RulerLeft.Size() < WallCheck)
-	{
-		Turn = 90.f;
-	}
-	*/
+	MyRotator = FRotationMatrix::MakeFromYZ(-Hit2->ImpactNormal, AICarMesh->GetUpVector()).Rotator();
+	MyRotator.Pitch = 0;
+	MyRotator.Roll = 0;
+	MyRotator.Yaw -= 1;
+	ROTTOT = AICarMesh->GetRelativeRotation();
 }
-/*
-RV_Hit.bBlockingHit //did hit something? (bool)
-RV_Hit.GetActor(); //the hit actor if there is one
-RV_Hit.ImpactPoint;  //FVector
-RV_Hit.ImpactNormal;  //FVector
-*/
