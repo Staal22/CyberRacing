@@ -55,4 +55,7 @@ private:
 	UPROPERTY()
 		class Aracing_gameGameModeBase* RacingGameMode;
 
+	UPROPERTY(EditAnywhere)
+		float ForceStrength;
+
 };
