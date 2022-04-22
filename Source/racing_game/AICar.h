@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PlayerCar.h"
 #include "SplineClass.h"
 #include "AICar.generated.h"
@@ -39,23 +40,26 @@ public:
 
 	void LineTrace();
 	float HoverHeight = 250;
-	float WallCheck = 1000;
+	float WallCheck = 3000;
 	float WallCheck2 = 500;
+	float InterpSpeed = 0.5f;
+	float InterpSpeed2 = 0.1f;
 	FVector Ruler;
 	FVector RulerRight;
 	FVector RulerLeft;
+	FRotator SmoothRot;
+	FRotator ROTTOT;
+	FRotator MyRotator;
 
 	float AngleAxis;
 
 	float Time;
 	float Turn = 0.f;
-	float Speed = 20;
+	float Speed = 3;
 
 private:
-	UPROPERTY()
-		class Aracing_gameGameModeBase* RacingGameMode;
 
 	UPROPERTY(EditAnywhere)
 		float ForceStrength;
-
+	
 };
