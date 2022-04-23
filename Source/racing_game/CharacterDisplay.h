@@ -5,13 +5,27 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CharacterDisplay.generated.h"
+USTRUCT(BlueprintType)
+struct FCharacterVehicle
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UStaticMesh* Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString MoreInfo;
+};
 
 UCLASS()
 class RACING_GAME_API ACharacterDisplay : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
 	// Sets default values for this actor's properties
 	ACharacterDisplay();
 
@@ -22,14 +36,33 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
-	UPROPERTY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* DisplayMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMesh* Character1;
+	UFUNCTION(BlueprintCallable)
+	void ChangeCharacter();
 
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMesh* Character2;
+	UStaticMesh* Character1Mesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMesh* Character2Mesh;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FCharacterVehicle> Characters;
+
+	UPROPERTY(BlueprintReadOnly)
+	int CharacterIndex = 0;
+private:
+	bool bBounceUp = true;
+	
+	float BounceTime = 0.f;
+	
+	float Turn = 0.f;
+
+	float Speed = 50.f;
 	
 };
