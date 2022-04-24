@@ -14,14 +14,14 @@ ACharacterDisplay::ACharacterDisplay()
 	Characters.Emplace();
 	Characters.Emplace();
 
-	//square boi
+	//Hover Car
 	Characters[0].Mesh = Character1Mesh;
-	Characters[0].Name = "Square";
-	Characters[0].MoreInfo = "He has eight corners";
+	Characters[0].Name = "Hover Car";
+	Characters[0].MoreInfo = "It go fast";
 
-	//cone boi
+	//cone boi (waiting for jet)
 	Characters[1].Mesh = Character2Mesh;
-	Characters[1].Name = "Cone";
+	Characters[1].Name = "Cone (placeholder)";
 	Characters[1].MoreInfo = "Very nice to look at";
 }
 
