@@ -28,4 +28,18 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// bool thats true if there is currently an enemy spawned
+	bool EnemyActive = false;
+	//variable for which enemy was last spawned
+	int WhichEnemy = 0;
+	// float for cooldown to enemy to be spawned
+	float EnemyTime = 0.f;
+	
+	void SpawnEnemy();
+
+	UFUNCTION()
+	void EnemyDestroyed();
+
+
+
 };
