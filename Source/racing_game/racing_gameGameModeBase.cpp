@@ -3,6 +3,7 @@
 
 #include "racing_gameGameModeBase.h"
 #include "CountdownWidget.h"
+#include "RacingGameInstance.h"
 #include "ScoreCounter.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -20,7 +21,8 @@ void Aracing_gameGameModeBase::BeginPlay()
 	const auto World = GetWorld();
 	
 	SetGamePaused(true);
-	
+
+	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(World));
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
 
 	if (IsValid(ScoreWidgetClass))
@@ -63,7 +65,7 @@ float Aracing_gameGameModeBase::GetDifficulty(FString Parameter)
 	float ReturnValue;
 	if (Parameter == "Timer")
 	{
-		ReturnValue = CountdownWidget->GetTAtkDifficulty();
+		ReturnValue = RacingGameInstance->GetTAtkDifficulty();
 	}
 	else
 	{

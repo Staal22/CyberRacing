@@ -18,7 +18,8 @@ public:
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+public:
 	UFUNCTION(BlueprintCallable, Category = "GameRules")
 	int GetScore();
 
@@ -67,6 +68,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "GameRules")
 	int CoinCounter = 0;
+
+	UPROPERTY()
+	class URacingGameInstance* RacingGameInstance;
 	
 	FTimerHandle TimerHandle;
 	FTimerDelegate TimerDelegate;

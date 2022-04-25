@@ -268,6 +268,9 @@ private:
 	class Aracing_gameGameModeBase* RacingGameMode;
 
 	UPROPERTY()
+	class URacingGameInstance* RacingGameInstance;
+	
+	UPROPERTY()
 	class ABullet* Bullet;
 
 	// UPROPERTY()

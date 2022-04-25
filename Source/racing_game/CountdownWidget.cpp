@@ -32,8 +32,3 @@ void UCountdownWidget::CountdownUpdate()
 	}
 	TAtkCount->SetText(FText::AsNumber(PlayerCar->GetTAtkTime(), &Opts));
 }
-
-float UCountdownWidget::GetTAtkDifficulty()
-{
-	return TAtkDifficulty;
-}
