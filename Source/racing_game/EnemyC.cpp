@@ -51,9 +51,19 @@ void AEnemyC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AEnemyC::IsHit()
+{
+	//explosions fx
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
+	//death sound
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
+
+	Destroy();
+}
+
 
 void AEnemyC::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                        UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APlayerCar* RefPlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	if(RefPlayerCar)
@@ -103,4 +113,7 @@ void AEnemyC::MoveToTarget(APlayerCar* RefPlayerCar)
 		// 	UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 3, 0.5f);
 		// }
 	}
+
+
+
 }

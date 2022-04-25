@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
+//setting up delegate for casting to EnemySpawner when the power up is destroyed
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPUOnEnemyDestruction);
+
 UCLASS()
 class RACING_GAME_API AEnemy : public AActor
 {
@@ -14,6 +17,7 @@ class RACING_GAME_API AEnemy : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AEnemy();
+    FPUOnEnemyDestruction OnEnemyDestruction;
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,6 +29,7 @@ public:
 
     //called when hit, destroys actor
 	void IsHit();
+    
 
     FVector MoveDirection = FVector(1.f, 0.f, 0.f);
 
