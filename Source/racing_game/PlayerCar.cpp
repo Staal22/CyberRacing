@@ -11,7 +11,9 @@
 #include <Kismet/GameplayStatics.h>
 #include "Bullet.h"
 #include "Enemy.h"
+#include "EnemyC.h"
 #include "HealthBar.h"
+#include "RacingGameInstance.h"
 #include "racing_gameGameModeBase.h"
 #include "Speedometer.h"
 #include "Components/SphereComponent.h"
@@ -87,7 +89,8 @@ void APlayerCar::BeginPlay()
 	//Forward = GetActorForwardVector();
 	const auto World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
-
+	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(World));
+	
 	if (IsValid(AmmoWidgetClass))
 		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(World, AmmoWidgetClass));
 	AmmoCounter->SetOwner(this);
@@ -138,10 +141,13 @@ void APlayerCar::Tick(float DeltaTime)
 	Velocity = PawnMovementComponent->Velocity;
 	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
 
-	TAtkTime = InitTAtkTime - World->GetTimeSeconds();
-	if (TAtkTime <= 0.f)
+	if (RacingGameInstance->GetTimeAtkActive())
 	{
-		RacingGameMode->GameOver( "Ran out of time" );
+		TAtkTime = InitTAtkTime - World->GetTimeSeconds();
+		if (TAtkTime <= 0.f)
+		{
+			RacingGameMode->GameOver( "Ran out of time" );
+		}
 	}
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
@@ -346,6 +352,18 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 			}
 		}
 	}
+	if (Actor->IsA<AEnemyC>())
+	{
+		// Cast<AEnemyC>(Actor)->IsHit();
+		if (RacingGameMode)
+		{
+			RacingGameMode->EnemyDied();
+			if (Bullet)
+			{
+				Bullet->Death();
+			}
+		}
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
 }
@@ -364,7 +382,7 @@ void APlayerCar::SpeedPU()
 	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.2;
 	PawnMovementComponent->MaxSpeed = MaxMoveSpeed*3;
 	// SpringArm->CameraLagSpeed = 10.f;
-	Sphere->AddImpulse(GetActorForwardVector() * Sphere->GetMass()* 2000.f);
+	Sphere->AddImpulse(PlayerMesh->GetForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
 	GravityForce = DefaultGravityForce * 0.15f;

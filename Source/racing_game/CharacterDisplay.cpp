@@ -13,7 +13,14 @@ ACharacterDisplay::ACharacterDisplay()
 
 	Characters.Emplace();
 	Characters.Emplace();
+	
+}
 
+// Called when the game starts or when spawned
+void ACharacterDisplay::BeginPlay()
+{
+	Super::BeginPlay();
+	
 	//Hover Car
 	Characters[0].Mesh = Character1Mesh;
 	Characters[0].Name = "Hover Car";
@@ -23,15 +30,8 @@ ACharacterDisplay::ACharacterDisplay()
 	Characters[1].Mesh = Character2Mesh;
 	Characters[1].Name = "Cone (placeholder)";
 	Characters[1].MoreInfo = "Very nice to look at";
-}
-
-// Called when the game starts or when spawned
-void ACharacterDisplay::BeginPlay()
-{
-	Super::BeginPlay();
 	
-	// DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
-	DisplayMesh->SetStaticMesh(Character1Mesh);
+	DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
 }
 
 // Called every frame
@@ -81,15 +81,7 @@ void ACharacterDisplay::ChangeCharacter()
 	{
 		CharacterIndex = 0;
 	}
-	// DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
-	if (CharacterIndex == 0)
-	{
-		DisplayMesh->SetStaticMesh(Character1Mesh);
-	}
-	else if (CharacterIndex == 1)
-	{
-		DisplayMesh->SetStaticMesh(Character2Mesh);
-	}
+	DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
 
 }
 
