@@ -40,19 +40,25 @@ public:
 
 	void LineTrace();
 	float HoverHeight = 250;
-	float WallCheck = 3000;
+	float WallCheck = 3500;
 	float WallCheck2 = 500;
 	float InterpSpeed = 0.5f;
-	float InterpSpeed2 = 0.1f;
+	float InterpSpeed2 = 0.2f;
 	FVector Ruler;
 	FVector RulerRight;
 	FVector RulerLeft;
+	FVector WallImpact;
 	FRotator SmoothRot;
 	FRotator ROTTOT;
 	FRotator MyRotator;
+	FRotator MyRotator2;
+	FRotator MyRotator3;
+	FRotator MyRotator4;
+	FRotator LastRotation;
 
 	float AngleAxis;
 
+	float RotationCheck;
 	float Time;
 	float Turn = 0.f;
 	float Speed = 3;
@@ -61,5 +67,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		float ForceStrength;
+	UPROPERTY(EditAnywhere)
+		float ForceStrength2;
 	
 };
