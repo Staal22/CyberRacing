@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "PlayerCar.h"
 #include "racing_gameGameModeBase.h"
+#include "AICar.h"
 
 // Sets default values
 ACoin::ACoin()
@@ -73,6 +74,10 @@ void ACoin::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		}
 		Destroy();
 		UE_LOG(LogTemp, Warning, TEXT("Coin obtained"));
+	}
+	else if (OtherActor->IsA<AAICar>())
+	{
+		Destroy();
 	}
 
 }

@@ -5,6 +5,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/StaticMeshComponent.h"
 #include "Math/UnrealMathUtility.h"
+#include "Coin.h"
+
 
 // Sets default values
 AAICar::AAICar()
@@ -122,8 +124,6 @@ void AAICar::LineTrace()
 		AICarMesh->AddForce(Left * ForceStrength2 * AICarMesh->GetMass());
 	}
 
-	FCollisionQueryParams Params2;
-	Params2.AddIgnoredActor(this);
 	FHitResult* Hit3 = new FHitResult();
 	FVector End3 = Start + Collision->GetRightVector() * -1 * WallCheck;
 	GetWorld()->LineTraceSingleByChannel(*Hit3, Start, End3, ECC_Visibility, Params); //ECC_Pawn
