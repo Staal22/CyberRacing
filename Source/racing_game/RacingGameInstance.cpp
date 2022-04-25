@@ -12,3 +12,8 @@ UStaticMesh* URacingGameInstance::GetVehicleMesh()
 {
 	return VehicleMesh;
 }
+
+float URacingGameInstance::GetTAtkDifficulty()
+{
+	return TAtkDifficulty;
+}

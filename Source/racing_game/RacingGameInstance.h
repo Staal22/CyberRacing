@@ -21,10 +21,16 @@ public:
 	UFUNCTION()
 	UStaticMesh* GetVehicleMesh();
 
+	UFUNCTION()
+	float GetTAtkDifficulty();
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bTimeAttackActive;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* VehicleMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TAtkDifficulty = 15.f;
 };
