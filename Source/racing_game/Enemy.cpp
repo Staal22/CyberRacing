@@ -54,8 +54,9 @@ void AEnemy::Tick(float DeltaTime)
 	MoveDirection.Normalize();
 	SetActorRotation(MoveDirection.Rotation());
 	Root->AddRelativeLocation(GetActorForwardVector()*Speed);
+	Root->AddRelativeLocation(GetActorForwardVector()*Speed/10);
 	
-	AIController->AAIController::MoveToActor(PlayerCar, 1);
+	// AIController->AAIController::MoveToActor(PlayerCar, 1);
 	
 }
 
