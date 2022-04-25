@@ -37,6 +37,13 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float MaxWalkSpeed;
+
+	//DeathFX, init through blueprint
+	UPROPERTY(EditAnywhere, Category = "EnemyFX")
+	UParticleSystem* ExplosionUponDeath = nullptr;
+    
+	UPROPERTY(EditAnywhere, Category = "EnemyFX")
+	USoundBase* DeathSound = nullptr;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -48,4 +55,5 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void IsHit();
 };
