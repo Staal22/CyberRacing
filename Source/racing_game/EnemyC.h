@@ -20,8 +20,8 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=AI)
 	class USphereComponent* PlayerSensingSphere{nullptr};
 
-	// UPROPERTY(EditAnywhere)
-	// class UShapeComponent* Root {nullptr};
+	 UPROPERTY(EditAnywhere)
+	 class UCapsuleComponent* Root {nullptr};
 	//
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	// class USkeletalMeshComponent* SkeletalMesh {nullptr};
