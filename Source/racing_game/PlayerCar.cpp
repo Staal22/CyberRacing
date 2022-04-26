@@ -188,6 +188,10 @@ void APlayerCar::Tick(float DeltaTime)
 	{
 		PlayerMesh->SetRelativeRotation(FMath::RInterpTo(Rotation, FRotator(Rotation.Pitch, Rotation.Yaw, Rotation.Roll + 13.f), DeltaTime, 40.f));
 	}
+	else
+	{
+		
+	}
 	
 	// if (MoveForce > 0.f)
 	// {
@@ -392,7 +396,7 @@ void APlayerCar::SpeedPU()
 
 void APlayerCar::SpeedLimit()
 {
-	TimerDelegate.BindLambda([&]
+	TimerDelegateSpeed.BindLambda([&]
 	{
 		const auto World = GetWorld();
 		// SpringArm->CameraLagSpeed = 20.f;
@@ -409,7 +413,7 @@ void APlayerCar::SpeedLimit()
 		// World->Exec(World, *CommandString);
 	});
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandleSpeed, TimerDelegateSpeed, 3.f, false);
 }
 
 void APlayerCar::Reload()
@@ -421,7 +425,7 @@ void APlayerCar::Reload()
 		UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
 		// GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
 	
-		TimerDelegate.BindLambda([&]
+		TimerDelegateReload.BindLambda([&]
 			{
 				Ammo = 20;
 				AmmoCounter->SetColorAndOpacity(FLinearColor(255, 255, 255));
@@ -430,7 +434,7 @@ void APlayerCar::Reload()
 			bIsReloading = false;
 			});
 
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandleReload, TimerDelegateReload, 1.f, false);
 	}
 }
 
@@ -442,12 +446,12 @@ void APlayerCar::AileronRoll()
 	{
 		bDoARoll = true;
 		TimeSinceEvent = Timer + 3.f;
-		TimerDelegate.BindLambda([&]
+		TimerDelegateRoll.BindLambda([&]
 		{
 			// PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
 			bDoARoll = false;
 		});
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.7f, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandleRoll, TimerDelegateRoll, 0.7f, false);
 	}
 }
 

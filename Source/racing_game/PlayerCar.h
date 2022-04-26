@@ -276,8 +276,14 @@ private:
 	// UPROPERTY()
 	// TArray<class ABullet*> Bullets;
 
-	FTimerHandle TimerHandle;
-	FTimerDelegate TimerDelegate;
+	FTimerHandle TimerHandleSpeed;
+	FTimerDelegate TimerDelegateSpeed;
+	
+	FTimerHandle TimerHandleRoll;
+	FTimerDelegate TimerDelegateRoll;
+
+	FTimerHandle TimerHandleReload;
+	FTimerDelegate TimerDelegateReload;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
