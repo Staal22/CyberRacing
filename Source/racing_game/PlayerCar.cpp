@@ -352,9 +352,9 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 			}
 		}
 	}
-	if (Actor->IsA<AEnemyC>())
+	else if (Actor->IsA<AEnemyC>())
 	{
-		// Cast<AEnemyC>(Actor)->IsHit();
+		Cast<AEnemyC>(Actor)->IsHit();
 		if (RacingGameMode)
 		{
 			RacingGameMode->EnemyDied();
