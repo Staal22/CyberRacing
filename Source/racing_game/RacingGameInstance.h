@@ -16,7 +16,7 @@ class RACING_GAME_API URacingGameInstance : public UGameInstance
 
 public:
 	UFUNCTION()
-	bool GetTimeAtkActive();
+	FString GetActiveMode();
 
 	UFUNCTION()
 	UStaticMesh* GetVehicleMesh();
@@ -26,7 +26,7 @@ public:
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bTimeAttackActive;
+	FString ActiveMode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* VehicleMesh;

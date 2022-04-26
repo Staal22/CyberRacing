@@ -142,7 +142,7 @@ void APlayerCar::Tick(float DeltaTime)
 	Velocity = PawnMovementComponent->Velocity;
 	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
 
-	if (RacingGameInstance->GetTimeAtkActive())
+	if (RacingGameInstance->GetActiveMode() == "TimeAttack")
 	{
 		TAtkTime = InitTAtkTime - World->GetTimeSeconds();
 		if (TAtkTime <= 0.f)
