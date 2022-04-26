@@ -38,28 +38,28 @@ APlayerCar::APlayerCar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
-	SpringArm->SetupAttachment(GetRootComponent());
+	SpringArm->SetupAttachment(PlayerMesh);
 	SpringArm->SetRelativeRotation(FRotator(-10.f, 0.f, 0.f));
-	SpringArm->TargetArmLength = 1200;
+	SpringArm->TargetArmLength = 1400;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 20.f;
 
 	Back_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("BackSpringArmComp"));
 	Back_SpringArm->bDoCollisionTest = false;
 	Back_SpringArm->SetUsingAbsoluteRotation(false);
-	Back_SpringArm->SetupAttachment(GetRootComponent());
+	Back_SpringArm->SetupAttachment(PlayerMesh);
 	Back_SpringArm->SetRelativeLocation(FVector(-350.f, 0.f, 0.f));
 	Back_SpringArm->SetRelativeRotation(FRotator(-15.f, 180.f, 0.f));
-	Back_SpringArm->TargetArmLength = 800;
+	Back_SpringArm->TargetArmLength = 1000;
 	Back_SpringArm->bEnableCameraLag = false;
 
 	Top_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TopSpringArmComp"));
 	Top_SpringArm->bDoCollisionTest = false;
 	Top_SpringArm->SetUsingAbsoluteRotation(false);
-	Top_SpringArm->SetupAttachment(GetRootComponent());
+	Top_SpringArm->SetupAttachment(PlayerMesh);
 	Top_SpringArm->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
 	Top_SpringArm->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
-	Top_SpringArm->TargetArmLength = 5000;
+	Top_SpringArm->TargetArmLength = 7000;
 	Top_SpringArm->bEnableCameraLag = false;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -122,6 +122,7 @@ void APlayerCar::BeginPlay()
 	
 	HoverForce = DefaultHoverForce;
 	TraceLength = DefaultTraceLength;
+	TurnForce = DefaultTurnForce;
 	GravityForce = DefaultGravityForce;
 
 	Back_Camera->Deactivate();
@@ -182,7 +183,7 @@ void APlayerCar::Tick(float DeltaTime)
 		AddMovementInput(-1*Velocity, Speed-0.01f);
 	}
 	
-	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 450000);
+	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * TurnForce * Sphere->GetMass());
 	
 	if (bDoARoll == true)
 	{
@@ -314,7 +315,6 @@ void APlayerCar::ShootMissile()
 			{
 				Ammo = 0;
 			}
-			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 			//implement TArray of actors and so on
 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
@@ -330,7 +330,6 @@ void APlayerCar::ShootMissile()
 			if (World)
 			{
 				Bullet = World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
-				UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 				if (Bullet)
 				{
 					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
@@ -383,14 +382,15 @@ void APlayerCar::SpeedPU()
 	const auto World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
-	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.2;
-	PawnMovementComponent->MaxSpeed = MaxMoveSpeed*3;
+	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.1;
+	PawnMovementComponent->MaxSpeed = MaxMoveSpeed * 3.f;
 	// SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(PlayerMesh->GetForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
-	GravityForce = DefaultGravityForce * 0.15f;
+	GravityForce = DefaultGravityForce * 0.3f;
 	TraceLength = DefaultTraceLength + 50.f;
+	TurnForce = DefaultTurnForce * 1.5f;
 	SpeedLimit();
 }
 
@@ -400,15 +400,16 @@ void APlayerCar::SpeedLimit()
 	{
 		const auto World = GetWorld();
 		// SpringArm->CameraLagSpeed = 20.f;
-		if (World->GetCurrentLevel()->GetName() == RoadTest)
-		{
-			PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
-			HoverForce = DefaultHoverForce;
-			TraceLength = DefaultTraceLength;
-			GravityForce = DefaultGravityForce;
-			BackCamOff();
-			// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
-		}
+		// if (World->GetCurrentLevel()->GetName() == RoadTest)
+		// {
+		PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
+		HoverForce = DefaultHoverForce;
+		TraceLength = DefaultTraceLength;
+		GravityForce = DefaultGravityForce;
+		TurnForce = DefaultTurnForce;
+		BackCamOff();
+		Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
+		// }
 		// CommandString = "r.MotionBlur.Amount 0";
 		// World->Exec(World, *CommandString);
 	});
@@ -445,11 +446,15 @@ void APlayerCar::AileronRoll()
 	if (Timer > TimeSinceEvent)
 	{
 		bDoARoll = true;
+		SpringArm->AttachTo(GetRootComponent());
+		TraceLength = DefaultTraceLength * 1.2f;
 		TimeSinceEvent = Timer + 3.f;
 		TimerDelegateRoll.BindLambda([&]
 		{
 			// PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
 			bDoARoll = false;
+			SpringArm->AttachTo(PlayerMesh);
+			TraceLength = DefaultTraceLength;
 		});
 		GetWorld()->GetTimerManager().SetTimer(TimerHandleRoll, TimerDelegateRoll, 0.7f, false);
 	}
