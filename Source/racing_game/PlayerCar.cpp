@@ -379,7 +379,7 @@ void APlayerCar::SpeedPU()
 	const auto World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
-	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.2;
+	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.2;
 	PawnMovementComponent->MaxSpeed = MaxMoveSpeed*3;
 	// SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(PlayerMesh->GetForwardVector() * Sphere->GetMass()* 2000.f);
@@ -403,7 +403,7 @@ void APlayerCar::SpeedLimit()
 			TraceLength = DefaultTraceLength;
 			GravityForce = DefaultGravityForce;
 			BackCamOff();
-			Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
+			// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		}
 		// CommandString = "r.MotionBlur.Amount 0";
 		// World->Exec(World, *CommandString);
@@ -536,7 +536,7 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	const auto World = GetWorld();
 	Timer = World->GetTimeSeconds();
-	if (OtherActor->IsA<AEnemy>())
+	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>())
 	{
 		if (Timer > TimeSinceEvent)
 		{
