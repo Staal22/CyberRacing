@@ -10,6 +10,8 @@
 #include"PlayerCar.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
+
 
 
 // Sets default values
@@ -18,7 +20,7 @@ AEnemyC::AEnemyC()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	///A standard box collider with Overlap Events:
-	
+	Root = Super::GetCapsuleComponent();
 
 	PlayerSensingSphere=CreateDefaultSubobject<USphereComponent>(TEXT("PlayerSensingSphere"));
 	PlayerSensingSphere->SetupAttachment(GetRootComponent());
@@ -32,7 +34,9 @@ void AEnemyC::BeginPlay()
 	AIController=Cast<AAIController>(GetController());
 
 	Super::BeginPlay();
-
+	
+	Root->OnComponentBeginOverlap.AddDynamic(this, &AEnemyC::OnOverlap);
+	Root->OnComponentEndOverlap.AddDynamic(this, &AEnemyC::OnEndOverlap);
 	PlayerSensingSphere->OnComponentBeginOverlap.AddDynamic(this,&AEnemyC::OnOverlap);
 	PlayerSensingSphere->OnComponentEndOverlap.AddDynamic(this,&AEnemyC::OnEndOverlap);
 }
