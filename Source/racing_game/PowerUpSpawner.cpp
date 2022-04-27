@@ -4,6 +4,8 @@
 #include "PowerUpSpawner.h"
 #include "HealthPack.h"
 #include "Shotgun.h"
+#include "PlayerCar.h"
+#include "AICar.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -12,13 +14,15 @@ APowerUpSpawner::APowerUpSpawner()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	SetRootComponent(Collision);
 }
 
 // Called when the game starts or when spawned
 void APowerUpSpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &APowerUpSpawner::OnOverlapBegin);
 
 }
 
@@ -75,4 +79,23 @@ void APowerUpSpawner::HealthPackDestroyed()
 	WhichPU = 0;
 	PUActive = false;
 	UE_LOG(LogTemp, Warning, TEXT("Power-Up-cooldown started"));
+}
+
+void APowerUpSpawner::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (OtherActor == this)
+		return;
+
+	if (OtherActor->IsA<APlayerCar>() || OtherActor->IsA<AAICar>())
+	{
+		RandomPU();
+	} 
+
+}
+
+void APowerUpSpawner::RandomPU()
+{
+	randint = FMath::RandRange(1, 5);
 }
