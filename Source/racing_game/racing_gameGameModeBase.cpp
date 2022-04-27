@@ -51,12 +51,13 @@ void Aracing_gameGameModeBase::Tick(float DeltaTime)
 
 int Aracing_gameGameModeBase::GetScore()
 {
-	return (KillCounter * 100 + CoinCounter * 1000);
+	return Score;
 }
 
 void Aracing_gameGameModeBase::EnemyDied()
 {
 	KillCounter++;
+	Score += 100;
 	ScoreCounter->ScoreUpdate();
 }
 
@@ -89,10 +90,21 @@ bool Aracing_gameGameModeBase::IsStarting()
 	return bInitialCountDown;
 }
 
+void Aracing_gameGameModeBase::ScoreUpdate()
+{
+	ScoreCounter->ScoreUpdate();
+}
+
 void Aracing_gameGameModeBase::CoinAcquired()
 {
 	CoinCounter++;
+	Score += 1000;
 	ScoreCounter->ScoreUpdate();
+}
+
+void Aracing_gameGameModeBase::AddScore(int ScoreToAdd)
+{
+	Score += ScoreToAdd;
 }
 
 void Aracing_gameGameModeBase::SetGamePaused(bool bIsPaused)
