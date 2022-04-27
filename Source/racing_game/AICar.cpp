@@ -6,6 +6,14 @@
 #include "Components/StaticMeshComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Coin.h"
+#include "Shotgun.h"
+#include "HealthPack.h"
+#include "Enemy.h"
+#include "EnemyC.h"
+#include "Containers/UnrealString.h"
+#include "RacingGameInstance.h"
+#include "racing_gameGameModeBase.h"
+#include <Kismet/GameplayStatics.h>
 
 
 // Sets default values
@@ -27,6 +35,9 @@ AAICar::AAICar()
 // Called when the game starts or when spawned
 void AAICar::BeginPlay()
 {
+	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
+	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
 	Super::BeginPlay();
 
 	SmoothRot = GetActorRotation();
@@ -39,6 +50,7 @@ void AAICar::Tick(float DeltaTime)
 
 	LineTrace();
 	Time += DeltaTime;
+	BoostTime += DeltaTime;
 	RotationCheck += DeltaTime;
 
 	/*
@@ -47,7 +59,7 @@ void AAICar::Tick(float DeltaTime)
 	SetActorLocation(NewLocation);
 	*/
 
-	FVector Forward = Collision->GetForwardVector();
+	Forward = Collision->GetForwardVector();
 
 	AICarMesh->AddForce(Forward * FMath::FInterpTo(0.0f, ForceStrength, Time, InterpSpeed2) * AICarMesh->GetMass());
 
@@ -60,6 +72,10 @@ void AAICar::Tick(float DeltaTime)
 		LastRotation = Collision->GetRelativeRotation();
 	} 
 
+	if (BoostTime > 3.f)
+	{
+		ForceStrength = 20000.0f;
+	}
 }
 
 void AAICar::LineTrace()
@@ -104,11 +120,21 @@ void AAICar::LineTrace()
 	
 	//turn
 	FCollisionQueryParams Params;
+
 	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(Coin);
+	Params.AddIgnoredActor(Shotgun);
+	Params.AddIgnoredActor(Enemy);
+	Params.AddIgnoredActor(EnemyC);
+	Params.AddIgnoredActor(HP);
+
 	FHitResult* Hit2 = new FHitResult();
+	//FHitResult OutHitA;
 	FVector End2 = Start + Collision->GetRightVector()*WallCheck;
 	GetWorld()->LineTraceSingleByChannel(*Hit2, Start, End2, ECC_Visibility, Params); //ECC_Pawn
 	RulerRight = Hit2->Location - Start;
+	//OutHit1 = OutHitA;
+
 	//UE_LOG(LogTemp, Error, TEXT("PhysicsHandle working %s"), *RulerRight.ToString());
 	if (Hit2)
 	{
@@ -128,6 +154,7 @@ void AAICar::LineTrace()
 	FVector End3 = Start + Collision->GetRightVector() * -1 * WallCheck;
 	GetWorld()->LineTraceSingleByChannel(*Hit3, Start, End3, ECC_Visibility, Params); //ECC_Pawn
 	RulerLeft = Hit3->Location - Start;
+	//OutHit2 = OutHitA;
 
 	if (RulerLeft.Size() < 600.0f)
 	{
@@ -150,31 +177,42 @@ void AAICar::LineTrace()
 		//GetWorld()->LineTraceSingleByChannel(*Hit3, Start, End3, ECC_Visibility, Params2); //ECC_Pawn
 		//Collision->SetWorldRotation(LastRotation);
 	}
-
+	//UE_LOG(LogTemp, Error, TEXT("Component %s"), *OutHitA.GetComponent()->GetName());
 	//impact normal
 	/*Hit2->ImpactNormal
 		AICarMesh->GetUpVector()*/
 	//FRotator MyRotator = FRotationMatrix::MakeFromZY(AICarMesh->GetUpVector(), Hit2->ImpactNormal).Rotator();
 	//FRotator NewRot = UKismetMathLibrary::MakeRotFromYZ(-Hit2->ImpactNormal, Collision->GetUpVector());
-	if (FMath::IsNearlyEqual(0.f, WallImpact.Z, 0.5f))
-	{
-		MyRotator = FRotationMatrix::MakeFromYZ(WallImpact, AICarMesh->GetUpVector()).Rotator();
-		MyRotator.Pitch = 0;
-		MyRotator.Roll = 0;
-		MyRotator.Yaw -= 1;
-	}
 
-	MyRotator2 = FRotationMatrix::MakeFromZX(Hit->ImpactNormal, AICarMesh->GetForwardVector()).Rotator();
-	MyRotator2.Pitch = 0;
-	MyRotator2.Roll -= 1;
-	MyRotator2.Yaw = 0;
+	//if (OutHitA.GetComponent()->GetName() == Name)
+	//{
+		//UE_LOG(LogTemp, Error, TEXT("YEEEEEEEEEBOOOOOOOOOOOIIIIIIIIIIIII"));
+		if (FMath::IsNearlyEqual(0.f, WallImpact.Z, 0.5f))
+		{
+			MyRotator = FRotationMatrix::MakeFromYZ(WallImpact, AICarMesh->GetUpVector()).Rotator();
+			MyRotator.Pitch = 0;
+			MyRotator.Roll = 0;
+			MyRotator.Yaw -= 1;
+		}
 
-	MyRotator3 = FRotationMatrix::MakeFromZY(Hit->ImpactNormal, AICarMesh->GetRightVector()).Rotator();
-	MyRotator3.Pitch -= 1;
-	MyRotator3.Roll = 0;
-	MyRotator3.Yaw = 0;
+		MyRotator2 = FRotationMatrix::MakeFromZX(Hit->ImpactNormal, AICarMesh->GetForwardVector()).Rotator();
+		MyRotator2.Pitch = 0;
+		MyRotator2.Roll -= 1;
+		MyRotator2.Yaw = 0;
 
+		MyRotator3 = FRotationMatrix::MakeFromZY(Hit->ImpactNormal, AICarMesh->GetRightVector()).Rotator();
+		MyRotator3.Pitch -= 1;
+		MyRotator3.Roll = 0;
+		MyRotator3.Yaw = 0;
+	//}
 
 	ROTTOT = AICarMesh->GetRelativeRotation();
 	
+}
+
+void AAICar::SpeedBoost()
+{
+	BoostTime = 0.f;
+	ForceStrength = 60000.0f;
+	AICarMesh->AddImpulse(Forward * 2000.f * AICarMesh->GetMass());
 }
