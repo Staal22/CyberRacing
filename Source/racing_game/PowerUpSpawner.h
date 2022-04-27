@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PowerUpSpawner.generated.h"
 
+
 UCLASS()
 class RACING_GAME_API APowerUpSpawner : public AActor
 {
@@ -28,16 +29,13 @@ public:
 	//setting up two actors that the PowerUpSpawner can spawn
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
 	TSubclassOf<AActor> ActorToSpawn;
-	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
-	TSubclassOf<AActor> HealthToSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PUSThings")
+		class USphereComponent* Collision{};
 
 	//setting up to functions to call when the shotgun or healthpack is destroyed
 	UFUNCTION()
 		void PowerUpDestroyed();
-
-	UFUNCTION()
-		void HealthPackDestroyed();
 
 	// bool thats true if there is currently a powerup spawned
 	bool PUActive = false;
@@ -45,10 +43,11 @@ public:
 	int WhichPU = 0;
 	// float for cooldown to next power up to be spawned
 	float PUSTime = 0.f;
+
+	int randint;
 	
 
 	void SpawnPowerUp();
-
 
 };
 
