@@ -54,11 +54,16 @@ int Aracing_gameGameModeBase::GetScore()
 	return Score;
 }
 
+int Aracing_gameGameModeBase::GetKillCount()
+{
+	return KillCounter;
+}
+
 void Aracing_gameGameModeBase::EnemyDied()
 {
 	KillCounter++;
 	Score += 100;
-	ScoreCounter->ScoreUpdate();
+	ScoreUpdate();
 }
 
 float Aracing_gameGameModeBase::GetDifficulty(FString Parameter)
@@ -99,7 +104,7 @@ void Aracing_gameGameModeBase::CoinAcquired()
 {
 	CoinCounter++;
 	Score += 1000;
-	ScoreCounter->ScoreUpdate();
+	ScoreUpdate();
 }
 
 void Aracing_gameGameModeBase::AddScore(int ScoreToAdd)

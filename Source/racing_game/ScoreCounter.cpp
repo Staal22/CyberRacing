@@ -13,4 +13,5 @@ void UScoreCounter::ScoreUpdate()
 		return;
 
 	CurrentScore->SetText(FText::FromString(FString::Printf(TEXT("Score : %i"), RacingGameMode->GetScore())));
+	KillCount->SetText(FText::FromString(FString::Printf(TEXT("Kills : %i"), RacingGameMode->GetKillCount())));
 }

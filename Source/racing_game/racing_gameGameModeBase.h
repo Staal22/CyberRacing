@@ -24,6 +24,9 @@ public:
 	int GetScore();
 
 	UFUNCTION()
+	int GetKillCount();
+	
+	UFUNCTION()
 	void EnemyDied();
 
 	UFUNCTION()
