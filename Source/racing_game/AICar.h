@@ -39,15 +39,19 @@ public:
 	FVector CarDirection = FVector(0.f, 0.f, 0.f);
 
 	void LineTrace();
+	void SpeedBoost();
+
+	bool ColCheck = true;
 	float HoverHeight = 250;
 	float WallCheck = 3500;
 	float WallCheck2 = 500;
-	float InterpSpeed = 0.5f;
+	float InterpSpeed = 0.15f;
 	float InterpSpeed2 = 0.2f;
 	FVector Ruler;
 	FVector RulerRight;
 	FVector RulerLeft;
 	FVector WallImpact;
+	FVector Forward;
 	FRotator SmoothRot;
 	FRotator ROTTOT;
 	FRotator MyRotator;
@@ -55,11 +59,16 @@ public:
 	FRotator MyRotator3;
 	FRotator MyRotator4;
 	FRotator LastRotation;
+	FHitResult OutHit1;
+	FHitResult OutHit2;
+	FString Name = TEXT("racetrack_rework");
+	FString NameCheck;
 
 	float AngleAxis;
 
 	float RotationCheck;
 	float Time;
+	float BoostTime = 5.f;
 	float Turn = 0.f;
 	float Speed = 3;
 
@@ -67,7 +76,28 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		float ForceStrength;
+
 	UPROPERTY(EditAnywhere)
 		float ForceStrength2;
 	
+	UPROPERTY()
+		class Aracing_gameGameModeBase* RacingGameMode;
+
+	UPROPERTY()
+		class ACoin* Coin;
+
+	UPROPERTY()
+		class AShotgun* Shotgun;
+
+	UPROPERTY()
+		class AEnemy* Enemy;
+
+	UPROPERTY()
+		class AEnemyC* EnemyC;
+
+	UPROPERTY()
+		class AHealthPack* HP;
+
+	UPROPERTY()
+		class URacingGameInstance* RacingGameInstance;
 };

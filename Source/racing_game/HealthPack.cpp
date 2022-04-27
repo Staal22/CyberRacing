@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "PlayerCar.h"
 #include "PowerUpSpawner.h"
+#include "AICar.h"
 
 // Sets default values
 AHealthPack::AHealthPack()
@@ -100,6 +101,10 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 		}
 		Destruction();
 		UE_LOG(LogTemp, Warning, TEXT("HealthPack power-up obtained"));
+	}
+	else if (OtherActor->IsA<AAICar>())
+	{
+		Destroy();
 	}
 
 }
