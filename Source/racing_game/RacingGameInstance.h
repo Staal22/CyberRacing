@@ -25,12 +25,16 @@ public:
 	float GetTAtkDifficulty();
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString ActiveMode;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bTrueLap = false;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* VehicleMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TAtkDifficulty = 15.f;
+	
 };
