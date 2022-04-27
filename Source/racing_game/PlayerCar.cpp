@@ -95,15 +95,18 @@ void APlayerCar::BeginPlay()
 		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(World, AmmoWidgetClass));
 	AmmoCounter->SetOwner(this);
 	AmmoCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
-	AmmoCounter->SetPositionInViewport(FVector2D(0.f, 40.f));
-	AmmoCounter->AddToViewport();
-	AmmoCounter->AmmoUpdate();
+	AmmoCounter->SetPositionInViewport(FVector2D(0.f, 60.f));
+	if (RacingGameInstance->GetActiveMode() == "Horde")
+	{
+		AmmoCounter->AddToViewport();
+		AmmoCounter->AmmoUpdate();
+	}
 
 	if (IsValid(SpeedWidgetClass))
 		Speedometer = Cast<USpeedometer>(CreateWidget(World, SpeedWidgetClass));
 	Speedometer->SetOwner(this);
 	Speedometer->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
-	Speedometer->SetPositionInViewport(FVector2D(0.f, 80.f));
+	Speedometer->SetPositionInViewport(FVector2D(0.f, 20.f));
 	Speedometer->AddToViewport();
 	Speedometer->SpeedUpdate();
 	
@@ -111,12 +114,17 @@ void APlayerCar::BeginPlay()
 		HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
 	HealthBar->SetOwner(this);
 	HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
-	HealthBar->SetPositionInViewport(FVector2D(0.f, 120.f));
+	HealthBar->SetPositionInViewport(FVector2D(0.f, 140.f));
 	HealthBar->HealthUpdate();
 	
 	FollowHealthBar = Cast<UHealthBar>(HPComp->GetUserWidgetObject());
 	FollowHealthBar->SetOwner(this);
 	FollowHealthBar->HealthUpdate();
+
+	if (RacingGameInstance->GetActiveMode() != "Horde")
+	{
+		FollowHealthBar->SetVisibility(ESlateVisibility::Hidden);
+	}
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
 	
@@ -512,9 +520,6 @@ void APlayerCar::BackCamOff()
 {
 	Back_Camera->Deactivate();
 	Top_Camera->Deactivate();
-	// if (!FollowHealthBar->IsVisible())
-	FollowHealthBar->SetVisibility(ESlateVisibility::Visible);
-	HealthBar->RemoveFromViewport();
 	Camera->Activate();
 }
 
@@ -525,8 +530,11 @@ void APlayerCar::ToggleTopCam()
 		Camera->Deactivate();
 		Back_Camera->Deactivate();
 		Top_Camera->Activate();
-		HealthBar->AddToViewport();
-		FollowHealthBar->SetVisibility(ESlateVisibility::Hidden);
+		if (RacingGameInstance->GetActiveMode() == "Horde")
+		{
+			HealthBar->AddToViewport();
+			FollowHealthBar->SetVisibility(ESlateVisibility::Hidden);
+		}
 		bTopCam = true;
 	}
 	
@@ -535,8 +543,11 @@ void APlayerCar::ToggleTopCam()
 		Camera->Activate();
 		Back_Camera->Activate();
 		Top_Camera->Deactivate();
-		HealthBar->RemoveFromViewport();
-		FollowHealthBar->SetVisibility(ESlateVisibility::Visible);
+		if (RacingGameInstance->GetActiveMode() == "Horde")
+		{
+			HealthBar->RemoveFromViewport();
+			FollowHealthBar->SetVisibility(ESlateVisibility::Visible);
+		}
 		bTopCam = false;
 	}
 }

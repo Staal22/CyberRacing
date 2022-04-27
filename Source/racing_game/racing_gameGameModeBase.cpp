@@ -28,9 +28,12 @@ void Aracing_gameGameModeBase::BeginPlay()
 	if (IsValid(ScoreWidgetClass))
 		ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
 	ScoreCounter->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
-	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 0.f));
-	ScoreCounter->AddToViewport();
-	ScoreCounter->ScoreUpdate();
+	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 100.f));
+	if (RacingGameInstance->GetActiveMode() == "Horde")
+	{
+		ScoreCounter->AddToViewport();
+		ScoreCounter->ScoreUpdate();
+	}
 
 	if (IsValid(CountdownWidgetClass))
 		CountdownWidget = Cast<UCountdownWidget>(CreateWidget(World, CountdownWidgetClass));
