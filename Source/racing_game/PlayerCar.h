@@ -165,13 +165,13 @@ protected:
 	int Checkpoints = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
-	float HoverForce = 50000.f;
+	float HoverForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
-	float TurnForce = 50000.f;
+	float TurnForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
-	float TraceLength = 200.f;
+	float TraceLength;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
 	float GravityForce;
@@ -241,7 +241,7 @@ private:
 	float DefaultTraceLength = 200.f;
 
 	UPROPERTY()
-	float DefaultTurnForce = 40000.f;
+	float DefaultTurnForce = 60000.f;
 
 	UPROPERTY()
 	float DefaultHoverForce = 1400000.f;

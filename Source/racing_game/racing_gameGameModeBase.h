@@ -24,6 +24,9 @@ public:
 	int GetScore();
 
 	UFUNCTION()
+	int GetKillCount();
+	
+	UFUNCTION()
 	void EnemyDied();
 
 	UFUNCTION()
@@ -33,9 +36,12 @@ public:
 	void CoinAcquired();
 
 	UFUNCTION()
+	void AddScore(int ScoreToAdd);
+
+	UFUNCTION()
 	void SetGamePaused(bool bIsPaused);
 	
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void GameOver(const FString& Cause);
 
 	UFUNCTION()
@@ -43,6 +49,9 @@ public:
 
 	UFUNCTION()
 	bool IsStarting();
+
+	UFUNCTION()
+	void ScoreUpdate();
 	
 	bool bInitialCountDown = true;
 	
@@ -61,14 +70,17 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	class UScoreCounter* ScoreCounter;
-	
-private:
-	UPROPERTY(EditAnywhere, Category = "GameRules")
+
+	UPROPERTY(BlueprintReadOnly)
+	int Score = 0;
+
+	UPROPERTY(BlueprintReadOnly)
 	int KillCounter = 0;
 	
-	UPROPERTY(EditAnywhere, Category = "GameRules")
+private:
+	UPROPERTY()
 	int CoinCounter = 0;
-
+	
 	UPROPERTY()
 	class URacingGameInstance* RacingGameInstance;
 	

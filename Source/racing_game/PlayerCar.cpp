@@ -56,7 +56,7 @@ APlayerCar::APlayerCar()
 	Top_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TopSpringArmComp"));
 	Top_SpringArm->bDoCollisionTest = false;
 	Top_SpringArm->SetUsingAbsoluteRotation(false);
-	Top_SpringArm->SetupAttachment(PlayerMesh);
+	Top_SpringArm->SetupAttachment(GetRootComponent());
 	Top_SpringArm->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
 	Top_SpringArm->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
 	Top_SpringArm->TargetArmLength = 7000;
@@ -142,7 +142,7 @@ void APlayerCar::Tick(float DeltaTime)
 	Velocity = PawnMovementComponent->Velocity;
 	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
 
-	if (RacingGameInstance->GetTimeAtkActive())
+	if (RacingGameInstance->GetActiveMode() == "TimeAttack")
 	{
 		TAtkTime = InitTAtkTime - World->GetTimeSeconds();
 		if (TAtkTime <= 0.f)
@@ -295,17 +295,23 @@ void APlayerCar::ShootLaser()
 
 void APlayerCar::ShootMissile()
 {
-	if (Ammo <= 0)
+	if (Ammo <= 0 || RacingGameMode->GetScore() < 500)
 	{
 		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
-		AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
-
+		if (Ammo <= 0)
+			AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
+		if (RacingGameMode->GetScore() < 500)
+		{
+			// maybe do something here
+		}
 	}
-	if (Ammo > 0)
+	if (Ammo > 0 && RacingGameMode->GetScore() >= 500)
 	{
 		UWorld* World = GetWorld();
 		const FVector Location = GetActorLocation();
 		// const FVector Right = PlayerMesh->GetRightVector();
+		RacingGameMode->AddScore(-500);
+		RacingGameMode->ScoreUpdate();
 		
 		if (bShotgun == true)
 		{
@@ -382,7 +388,7 @@ void APlayerCar::SpeedPU()
 	const auto World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
-	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.1;
+	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.1;
 	PawnMovementComponent->MaxSpeed = MaxMoveSpeed * 3.f;
 	// SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(PlayerMesh->GetForwardVector() * Sphere->GetMass()* 2000.f);
@@ -407,8 +413,8 @@ void APlayerCar::SpeedLimit()
 		TraceLength = DefaultTraceLength;
 		GravityForce = DefaultGravityForce;
 		TurnForce = DefaultTurnForce;
-		BackCamOff();
-		Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
+		// BackCamOff();
+		// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		// }
 		// CommandString = "r.MotionBlur.Amount 0";
 		// World->Exec(World, *CommandString);

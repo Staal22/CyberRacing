@@ -17,13 +17,15 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* CurrentScore;
 
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* KillCount;
+
 private:
 	UPROPERTY()
-	class Aracing_gameGameModeBase* RacingGameMode;
+	Aracing_gameGameModeBase* RacingGameMode;
 
 public:
 	UFUNCTION()
 	void ScoreUpdate();
-
-
+	
 };

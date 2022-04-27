@@ -51,13 +51,19 @@ void Aracing_gameGameModeBase::Tick(float DeltaTime)
 
 int Aracing_gameGameModeBase::GetScore()
 {
-	return (KillCounter * 100 + CoinCounter * 1000);
+	return Score;
+}
+
+int Aracing_gameGameModeBase::GetKillCount()
+{
+	return KillCounter;
 }
 
 void Aracing_gameGameModeBase::EnemyDied()
 {
 	KillCounter++;
-	ScoreCounter->ScoreUpdate();
+	Score += 100;
+	ScoreUpdate();
 }
 
 float Aracing_gameGameModeBase::GetDifficulty(FString Parameter)
@@ -89,10 +95,21 @@ bool Aracing_gameGameModeBase::IsStarting()
 	return bInitialCountDown;
 }
 
+void Aracing_gameGameModeBase::ScoreUpdate()
+{
+	ScoreCounter->ScoreUpdate();
+}
+
 void Aracing_gameGameModeBase::CoinAcquired()
 {
 	CoinCounter++;
-	ScoreCounter->ScoreUpdate();
+	Score += 1000;
+	ScoreUpdate();
+}
+
+void Aracing_gameGameModeBase::AddScore(int ScoreToAdd)
+{
+	Score += ScoreToAdd;
 }
 
 void Aracing_gameGameModeBase::SetGamePaused(bool bIsPaused)
