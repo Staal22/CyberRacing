@@ -30,6 +30,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bTrueLap = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bAITrueLap = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* VehicleMesh;
