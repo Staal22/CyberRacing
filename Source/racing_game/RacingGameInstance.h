@@ -25,7 +25,7 @@ public:
 	float GetTAtkDifficulty();
 	
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ActiveMode;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

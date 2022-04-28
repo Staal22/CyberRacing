@@ -3,6 +3,7 @@
 
 #include "EnemySpawner.h"
 #include"Enemy.h"
+#include "EnemyC.h"
 // Sets default values
 AEnemySpawner::AEnemySpawner()
 {
@@ -24,13 +25,21 @@ void AEnemySpawner::SpawnEnemy()							//spawns enemy at spawners world location
 
 	FVector const Location = GetActorLocation();
 	if (WhichEnemy == 0) // spawn regular enemy
+	{
+		AEnemy* EnemyChaser = World->SpawnActor<AEnemy>(Enemy1, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
+		if (EnemyChaser)
 		{
-			AEnemy* EnemyChaser = World->SpawnActor<AEnemy>(ActorToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
-			if (EnemyChaser)
-			{
-				EnemyChaser->OnEnemyDestruction.AddDynamic(this, &AEnemySpawner::EnemyDestroyed); //for broadcasting back to EnemySpawner when Enemy is destroyed
-			}
+			EnemyChaser->OnEnemyDestruction.AddDynamic(this, &AEnemySpawner::EnemyDestroyed); //for broadcasting back to EnemySpawner when Enemy is destroyed
 		}
+	}
+	else if (WhichEnemy == 1)
+	{
+		AEnemyC* EnemyCChaser = World->SpawnActor<AEnemyC>(Enemy2, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
+		if (EnemyCChaser)
+		{
+			EnemyCChaser->OnEnemyCDestruction.AddDynamic(this, &AEnemySpawner::EnemyDestroyed); //for broadcasting back to EnemySpawner when Enemy is destroyed
+		}
+	}
 	
 }
 // Called every frame

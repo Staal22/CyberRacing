@@ -67,6 +67,7 @@ void AEnemy::IsHit()
 	//death sound
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 
+	OnEnemyDestruction.Broadcast();
 	Destroy();
 	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
 }

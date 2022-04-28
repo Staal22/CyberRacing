@@ -159,7 +159,7 @@ protected:
 	UHealthBar* FollowHealthBar;
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
-	float InitTAtkTime = 0.f;
+	float InitTAtkTime = 15.f;
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
 	int Checkpoints = 0;

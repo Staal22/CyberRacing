@@ -19,16 +19,22 @@ void UCountdownWidget::CountdownUpdate()
 
 	FNumberFormattingOptions Opts;
 	Opts.SetMaximumFractionalDigits(0);
-	if (RacingGameMode->IsStarting() == true)
+
+	if (RacingGameMode)
 	{
-		StartCount->SetText(FText::AsNumber(RacingGameMode->CountdownTime(), &Opts));
-	}
-	else
-	{
-		if (StartCount->GetVisibility() != ESlateVisibility::Hidden)
+		if (RacingGameMode->IsStarting() == true)
 		{
-			StartCount->SetVisibility(ESlateVisibility::Hidden);
+			StartCount->SetText(FText::AsNumber(RacingGameMode->CountdownTime(), &Opts));
+		}
+		else
+		{
+			if (StartCount->GetVisibility() != ESlateVisibility::Hidden)
+			{
+				StartCount->SetVisibility(ESlateVisibility::Hidden);
+			}
 		}
 	}
-	TAtkCount->SetText(FText::AsNumber(PlayerCar->GetTAtkTime(), &Opts));
+	
+	if (PlayerCar)
+		TAtkCount->SetText(FText::AsNumber(PlayerCar->GetTAtkTime(), &Opts));
 }

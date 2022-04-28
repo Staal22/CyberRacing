@@ -6,14 +6,20 @@
 #include "GameFramework/Character.h"
 #include "EnemyC.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPUOnEnemyCDestruction);
+
 UCLASS()
 class RACING_GAME_API AEnemyC : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
+	
+	
 	// Sets default values for this character's properties
 	AEnemyC();
+	FPUOnEnemyCDestruction OnEnemyCDestruction;
+	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=AI)
 	class AAIController* AIController{nullptr};
 
