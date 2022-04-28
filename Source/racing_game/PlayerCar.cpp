@@ -9,6 +9,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "AmmoCounter.h"
 #include <Kismet/GameplayStatics.h>
+#include <Components/CapsuleComponent.h>
 #include "Bullet.h"
 #include "Enemy.h"
 #include "EnemyC.h"
@@ -562,7 +563,7 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	const auto World = GetWorld();
 	Timer = World->GetTimeSeconds();
-	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>())
+	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>() && OtherComponent->IsA<UCapsuleComponent>())
 	{
 		if (Timer > TimeSinceEvent)
 		{

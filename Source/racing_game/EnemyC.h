@@ -20,7 +20,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=AI)
 	class USphereComponent* PlayerSensingSphere{nullptr};
 
-	 UPROPERTY(EditAnywhere)
+	 UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	 class UCapsuleComponent* Root {nullptr};
 	//
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -55,5 +55,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
 	void IsHit();
 };

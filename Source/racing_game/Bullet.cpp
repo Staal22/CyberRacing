@@ -3,6 +3,7 @@
 
 #include "Bullet.h"
 #include <Components/SphereComponent.h>
+#include <Components/CapsuleComponent.h>
 #include "Enemy.h"
 #include "EnemyC.h"
 
@@ -52,7 +53,7 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 		return;
 	}
 
-	if (OtherActor->IsA<AEnemy>() || OtherActor-IsA<AEnemyC>())
+	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>() && OtherComponent->IsA<UCapsuleComponent>())
 	{
 		OnBulletHitEnemy.Broadcast(OtherActor);
 	}
