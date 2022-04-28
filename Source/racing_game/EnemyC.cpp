@@ -21,6 +21,7 @@ AEnemyC::AEnemyC()
 	PrimaryActorTick.bCanEverTick = true;
 	///A standard box collider with Overlap Events:
 	Root = Super::GetCapsuleComponent();
+	Root->SetGenerateOverlapEvents(true);
 
 	PlayerSensingSphere=CreateDefaultSubobject<USphereComponent>(TEXT("PlayerSensingSphere"));
 	PlayerSensingSphere->SetupAttachment(GetRootComponent());
@@ -38,6 +39,7 @@ void AEnemyC::BeginPlay()
 
 	PlayerSensingSphere->OnComponentBeginOverlap.AddDynamic(this,&AEnemyC::OnOverlap);
 	PlayerSensingSphere->OnComponentEndOverlap.AddDynamic(this,&AEnemyC::OnEndOverlap);
+	
 }
 
 // Called every frame
@@ -62,6 +64,7 @@ void AEnemyC::IsHit()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 
 	Destroy();
+	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
 }
 
 

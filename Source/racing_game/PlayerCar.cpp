@@ -382,7 +382,7 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
+	
 }
 
 void APlayerCar::ShotgunPU()

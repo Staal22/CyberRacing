@@ -56,7 +56,7 @@ void AEnemy::Tick(float DeltaTime)
 	Root->AddRelativeLocation(GetActorForwardVector()*Speed);
 	Root->AddRelativeLocation(GetActorForwardVector()*Speed/10);
 	
-	// AIController->AAIController::MoveToActor(PlayerCar, 1);
+
 	
 }
 
@@ -68,5 +68,6 @@ void AEnemy::IsHit()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 
 	Destroy();
+	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
 }
 
