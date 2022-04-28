@@ -35,8 +35,8 @@ void AEnemyC::BeginPlay()
 
 	Super::BeginPlay();
 	
-	Root->OnComponentBeginOverlap.AddDynamic(this, &AEnemyC::OnOverlap);
-	Root->OnComponentEndOverlap.AddDynamic(this, &AEnemyC::OnEndOverlap);
+	Root->OnComponentBeginOverlap.AddDynamic(this, &AEnemyC::IsHit);
+	Root->OnComponentEndOverlap.AddDynamic(this, &AEnemyC::IsHit);
 	PlayerSensingSphere->OnComponentBeginOverlap.AddDynamic(this,&AEnemyC::OnOverlap);
 	PlayerSensingSphere->OnComponentEndOverlap.AddDynamic(this,&AEnemyC::OnEndOverlap);
 }
