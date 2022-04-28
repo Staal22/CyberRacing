@@ -16,7 +16,7 @@ class RACING_GAME_API URacingGameInstance : public UGameInstance
 
 public:
 	UFUNCTION()
-	bool GetTimeAtkActive();
+	FString GetActiveMode();
 
 	UFUNCTION()
 	UStaticMesh* GetVehicleMesh();
@@ -25,12 +25,19 @@ public:
 	float GetTAtkDifficulty();
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bTimeAttackActive;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FString ActiveMode;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bTrueLap = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bAITrueLap = false;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* VehicleMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TAtkDifficulty = 15.f;
+	
 };

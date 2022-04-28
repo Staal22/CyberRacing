@@ -168,6 +168,9 @@ protected:
 	float HoverForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
+	float TurnForce;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
 	float TraceLength;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
@@ -238,6 +241,9 @@ private:
 	float DefaultTraceLength = 200.f;
 
 	UPROPERTY()
+	float DefaultTurnForce = 60000.f;
+
+	UPROPERTY()
 	float DefaultHoverForce = 1400000.f;
 
 	UPROPERTY()
@@ -276,8 +282,14 @@ private:
 	// UPROPERTY()
 	// TArray<class ABullet*> Bullets;
 
-	FTimerHandle TimerHandle;
-	FTimerDelegate TimerDelegate;
+	FTimerHandle TimerHandleSpeed;
+	FTimerDelegate TimerDelegateSpeed;
+	
+	FTimerHandle TimerHandleRoll;
+	FTimerDelegate TimerDelegateRoll;
+
+	FTimerHandle TimerHandleReload;
+	FTimerDelegate TimerDelegateReload;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,

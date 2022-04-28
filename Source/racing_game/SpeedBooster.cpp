@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/World.h"
 #include "PlayerCar.h"
+#include "AICar.h"
 
 // Sets default values
 ASpeedBooster::ASpeedBooster()
@@ -58,6 +59,10 @@ void ASpeedBooster::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		Cast<APlayerCar>(OtherActor)->SpeedPU();
 		UE_LOG(LogTemp, Warning, TEXT("Speed boosted"));
+	}
+	else if (OtherActor->IsA<AAICar>())
+	{
+		Cast<AAICar>(OtherActor)->SpeedBoost();
 	}
 
 }

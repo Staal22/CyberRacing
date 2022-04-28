@@ -28,9 +28,12 @@ void Aracing_gameGameModeBase::BeginPlay()
 	if (IsValid(ScoreWidgetClass))
 		ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
 	ScoreCounter->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
-	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 0.f));
-	ScoreCounter->AddToViewport();
-	ScoreCounter->ScoreUpdate();
+	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 100.f));
+	if (RacingGameInstance->GetActiveMode() == "Horde")
+	{
+		ScoreCounter->AddToViewport();
+		ScoreCounter->ScoreUpdate();
+	}
 
 	if (IsValid(CountdownWidgetClass))
 		CountdownWidget = Cast<UCountdownWidget>(CreateWidget(World, CountdownWidgetClass));
@@ -51,13 +54,19 @@ void Aracing_gameGameModeBase::Tick(float DeltaTime)
 
 int Aracing_gameGameModeBase::GetScore()
 {
-	return (KillCounter * 100 + CoinCounter * 1000);
+	return Score;
+}
+
+int Aracing_gameGameModeBase::GetKillCount()
+{
+	return KillCounter;
 }
 
 void Aracing_gameGameModeBase::EnemyDied()
 {
 	KillCounter++;
-	ScoreCounter->ScoreUpdate();
+	Score += 100;
+	ScoreUpdate();
 }
 
 float Aracing_gameGameModeBase::GetDifficulty(FString Parameter)
@@ -89,10 +98,21 @@ bool Aracing_gameGameModeBase::IsStarting()
 	return bInitialCountDown;
 }
 
+void Aracing_gameGameModeBase::ScoreUpdate()
+{
+	ScoreCounter->ScoreUpdate();
+}
+
 void Aracing_gameGameModeBase::CoinAcquired()
 {
 	CoinCounter++;
-	ScoreCounter->ScoreUpdate();
+	Score += 1000;
+	ScoreUpdate();
+}
+
+void Aracing_gameGameModeBase::AddScore(int ScoreToAdd)
+{
+	Score += ScoreToAdd;
 }
 
 void Aracing_gameGameModeBase::SetGamePaused(bool bIsPaused)

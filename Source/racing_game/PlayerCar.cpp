@@ -38,19 +38,19 @@ APlayerCar::APlayerCar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
-	SpringArm->SetupAttachment(GetRootComponent());
+	SpringArm->SetupAttachment(PlayerMesh);
 	SpringArm->SetRelativeRotation(FRotator(-10.f, 0.f, 0.f));
-	SpringArm->TargetArmLength = 1200;
+	SpringArm->TargetArmLength = 1400;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 20.f;
 
 	Back_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("BackSpringArmComp"));
 	Back_SpringArm->bDoCollisionTest = false;
 	Back_SpringArm->SetUsingAbsoluteRotation(false);
-	Back_SpringArm->SetupAttachment(GetRootComponent());
+	Back_SpringArm->SetupAttachment(PlayerMesh);
 	Back_SpringArm->SetRelativeLocation(FVector(-350.f, 0.f, 0.f));
 	Back_SpringArm->SetRelativeRotation(FRotator(-15.f, 180.f, 0.f));
-	Back_SpringArm->TargetArmLength = 800;
+	Back_SpringArm->TargetArmLength = 1000;
 	Back_SpringArm->bEnableCameraLag = false;
 
 	Top_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TopSpringArmComp"));
@@ -59,7 +59,7 @@ APlayerCar::APlayerCar()
 	Top_SpringArm->SetupAttachment(GetRootComponent());
 	Top_SpringArm->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
 	Top_SpringArm->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
-	Top_SpringArm->TargetArmLength = 5000;
+	Top_SpringArm->TargetArmLength = 7000;
 	Top_SpringArm->bEnableCameraLag = false;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -95,15 +95,18 @@ void APlayerCar::BeginPlay()
 		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(World, AmmoWidgetClass));
 	AmmoCounter->SetOwner(this);
 	AmmoCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
-	AmmoCounter->SetPositionInViewport(FVector2D(0.f, 40.f));
-	AmmoCounter->AddToViewport();
-	AmmoCounter->AmmoUpdate();
+	AmmoCounter->SetPositionInViewport(FVector2D(0.f, 60.f));
+	if (RacingGameInstance->GetActiveMode() == "Horde")
+	{
+		AmmoCounter->AddToViewport();
+		AmmoCounter->AmmoUpdate();
+	}
 
 	if (IsValid(SpeedWidgetClass))
 		Speedometer = Cast<USpeedometer>(CreateWidget(World, SpeedWidgetClass));
 	Speedometer->SetOwner(this);
 	Speedometer->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
-	Speedometer->SetPositionInViewport(FVector2D(0.f, 80.f));
+	Speedometer->SetPositionInViewport(FVector2D(0.f, 20.f));
 	Speedometer->AddToViewport();
 	Speedometer->SpeedUpdate();
 	
@@ -111,17 +114,23 @@ void APlayerCar::BeginPlay()
 		HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
 	HealthBar->SetOwner(this);
 	HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
-	HealthBar->SetPositionInViewport(FVector2D(0.f, 120.f));
+	HealthBar->SetPositionInViewport(FVector2D(0.f, 140.f));
 	HealthBar->HealthUpdate();
 	
 	FollowHealthBar = Cast<UHealthBar>(HPComp->GetUserWidgetObject());
 	FollowHealthBar->SetOwner(this);
 	FollowHealthBar->HealthUpdate();
+
+	if (RacingGameInstance->GetActiveMode() != "Horde")
+	{
+		FollowHealthBar->SetVisibility(ESlateVisibility::Hidden);
+	}
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
 	
 	HoverForce = DefaultHoverForce;
 	TraceLength = DefaultTraceLength;
+	TurnForce = DefaultTurnForce;
 	GravityForce = DefaultGravityForce;
 
 	Back_Camera->Deactivate();
@@ -141,7 +150,7 @@ void APlayerCar::Tick(float DeltaTime)
 	Velocity = PawnMovementComponent->Velocity;
 	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
 
-	if (RacingGameInstance->GetTimeAtkActive())
+	if (RacingGameInstance->GetActiveMode() == "TimeAttack")
 	{
 		TAtkTime = InitTAtkTime - World->GetTimeSeconds();
 		if (TAtkTime <= 0.f)
@@ -182,11 +191,15 @@ void APlayerCar::Tick(float DeltaTime)
 		AddMovementInput(-1*Velocity, Speed-0.01f);
 	}
 	
-	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * 450000);
+	Sphere->AddTorqueInRadians(GetActorUpVector() * TurnSpeed * TurnForce * Sphere->GetMass());
 	
 	if (bDoARoll == true)
 	{
 		PlayerMesh->SetRelativeRotation(FMath::RInterpTo(Rotation, FRotator(Rotation.Pitch, Rotation.Yaw, Rotation.Roll + 13.f), DeltaTime, 40.f));
+	}
+	else
+	{
+		
 	}
 	
 	// if (MoveForce > 0.f)
@@ -290,17 +303,23 @@ void APlayerCar::ShootLaser()
 
 void APlayerCar::ShootMissile()
 {
-	if (Ammo <= 0)
+	if (Ammo <= 0 || RacingGameMode->GetScore() < 500)
 	{
 		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
-		AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
-
+		if (Ammo <= 0)
+			AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
+		if (RacingGameMode->GetScore() < 500)
+		{
+			// maybe do something here
+		}
 	}
-	if (Ammo > 0)
+	if (Ammo > 0 && RacingGameMode->GetScore() >= 500)
 	{
 		UWorld* World = GetWorld();
 		const FVector Location = GetActorLocation();
 		// const FVector Right = PlayerMesh->GetRightVector();
+		RacingGameMode->AddScore(-500);
+		RacingGameMode->ScoreUpdate();
 		
 		if (bShotgun == true)
 		{
@@ -310,7 +329,6 @@ void APlayerCar::ShootMissile()
 			{
 				Ammo = 0;
 			}
-			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 			//implement TArray of actors and so on
 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
@@ -326,7 +344,6 @@ void APlayerCar::ShootMissile()
 			if (World)
 			{
 				Bullet = World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
-				UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 				if (Bullet)
 				{
 					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
@@ -379,37 +396,39 @@ void APlayerCar::SpeedPU()
 	const auto World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
-	Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.2;
-	PawnMovementComponent->MaxSpeed = MaxMoveSpeed*3;
+	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.1;
+	PawnMovementComponent->MaxSpeed = MaxMoveSpeed * 3.f;
 	// SpringArm->CameraLagSpeed = 10.f;
 	Sphere->AddImpulse(PlayerMesh->GetForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
-	GravityForce = DefaultGravityForce * 0.15f;
+	GravityForce = DefaultGravityForce * 0.3f;
 	TraceLength = DefaultTraceLength + 50.f;
+	TurnForce = DefaultTurnForce * 1.5f;
 	SpeedLimit();
 }
 
 void APlayerCar::SpeedLimit()
 {
-	TimerDelegate.BindLambda([&]
+	TimerDelegateSpeed.BindLambda([&]
 	{
 		const auto World = GetWorld();
 		// SpringArm->CameraLagSpeed = 20.f;
-		if (World->GetCurrentLevel()->GetName() == RoadTest)
-		{
-			PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
-			HoverForce = DefaultHoverForce;
-			TraceLength = DefaultTraceLength;
-			GravityForce = DefaultGravityForce;
-			BackCamOff();
-			Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
-		}
+		// if (World->GetCurrentLevel()->GetName() == RoadTest)
+		// {
+		PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
+		HoverForce = DefaultHoverForce;
+		TraceLength = DefaultTraceLength;
+		GravityForce = DefaultGravityForce;
+		TurnForce = DefaultTurnForce;
+		// BackCamOff();
+		// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
+		// }
 		// CommandString = "r.MotionBlur.Amount 0";
 		// World->Exec(World, *CommandString);
 	});
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandleSpeed, TimerDelegateSpeed, 3.f, false);
 }
 
 void APlayerCar::Reload()
@@ -421,7 +440,7 @@ void APlayerCar::Reload()
 		UGameplayStatics::PlaySound2D(World, ReloadingSound, 1.f, 1.f, 0.f, 0);
 		// GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Yellow, FString::Printf(TEXT("Reloading... (takes 1 second)")));
 	
-		TimerDelegate.BindLambda([&]
+		TimerDelegateReload.BindLambda([&]
 			{
 				Ammo = 20;
 				AmmoCounter->SetColorAndOpacity(FLinearColor(255, 255, 255));
@@ -430,7 +449,7 @@ void APlayerCar::Reload()
 			bIsReloading = false;
 			});
 
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandleReload, TimerDelegateReload, 1.f, false);
 	}
 }
 
@@ -441,13 +460,17 @@ void APlayerCar::AileronRoll()
 	if (Timer > TimeSinceEvent)
 	{
 		bDoARoll = true;
+		SpringArm->AttachTo(GetRootComponent());
+		TraceLength = DefaultTraceLength * 1.2f;
 		TimeSinceEvent = Timer + 3.f;
-		TimerDelegate.BindLambda([&]
+		TimerDelegateRoll.BindLambda([&]
 		{
 			// PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
 			bDoARoll = false;
+			SpringArm->AttachTo(PlayerMesh);
+			TraceLength = DefaultTraceLength;
 		});
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.7f, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandleRoll, TimerDelegateRoll, 0.7f, false);
 	}
 }
 
@@ -497,9 +520,6 @@ void APlayerCar::BackCamOff()
 {
 	Back_Camera->Deactivate();
 	Top_Camera->Deactivate();
-	// if (!FollowHealthBar->IsVisible())
-	FollowHealthBar->SetVisibility(ESlateVisibility::Visible);
-	HealthBar->RemoveFromViewport();
 	Camera->Activate();
 }
 
@@ -510,8 +530,11 @@ void APlayerCar::ToggleTopCam()
 		Camera->Deactivate();
 		Back_Camera->Deactivate();
 		Top_Camera->Activate();
-		HealthBar->AddToViewport();
-		FollowHealthBar->SetVisibility(ESlateVisibility::Hidden);
+		if (RacingGameInstance->GetActiveMode() == "Horde")
+		{
+			HealthBar->AddToViewport();
+			FollowHealthBar->SetVisibility(ESlateVisibility::Hidden);
+		}
 		bTopCam = true;
 	}
 	
@@ -520,8 +543,11 @@ void APlayerCar::ToggleTopCam()
 		Camera->Activate();
 		Back_Camera->Activate();
 		Top_Camera->Deactivate();
-		HealthBar->RemoveFromViewport();
-		FollowHealthBar->SetVisibility(ESlateVisibility::Visible);
+		if (RacingGameInstance->GetActiveMode() == "Horde")
+		{
+			HealthBar->RemoveFromViewport();
+			FollowHealthBar->SetVisibility(ESlateVisibility::Visible);
+		}
 		bTopCam = false;
 	}
 }
@@ -536,7 +562,7 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	const auto World = GetWorld();
 	Timer = World->GetTimeSeconds();
-	if (OtherActor->IsA<AEnemy>())
+	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>())
 	{
 		if (Timer > TimeSinceEvent)
 		{
