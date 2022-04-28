@@ -26,7 +26,7 @@ AEnemyC::AEnemyC()
 	PlayerSensingSphere=CreateDefaultSubobject<USphereComponent>(TEXT("PlayerSensingSphere"));
 	PlayerSensingSphere->SetupAttachment(GetRootComponent());
 	PlayerSensingSphere->InitSphereRadius(3000.f);
-	GetCharacterMovement()->MaxWalkSpeed = 450.f;
+	GetCharacterMovement()->MaxWalkSpeed = 800.f;
 }
 
 // Called when the game starts or when spawned
