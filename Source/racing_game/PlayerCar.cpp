@@ -37,6 +37,13 @@ APlayerCar::APlayerCar()
 	PlayerMesh->SetupAttachment(GetRootComponent());
 	// SetRootComponent(PlayerMesh);
 
+	VfxArrow1 = CreateDefaultSubobject<UArrowComponent>(TEXT("VFXArrow1"));
+	VfxArrow2 = CreateDefaultSubobject<UArrowComponent>(TEXT("VFXArrow2"));
+	VfxArrow3 = CreateDefaultSubobject<UArrowComponent>(TEXT("VFXArrow3"));
+	VfxArrow1->SetupAttachment(PlayerMesh);
+	VfxArrow2->SetupAttachment(PlayerMesh);
+	VfxArrow3->SetupAttachment(PlayerMesh);
+	
 	PawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMoveComp"));
 	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));

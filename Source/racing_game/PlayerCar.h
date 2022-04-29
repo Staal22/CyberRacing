@@ -38,6 +38,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	UArrowComponent* WallArrow = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UArrowComponent* VfxArrow1 = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UArrowComponent* VfxArrow2 = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UArrowComponent* VfxArrow3 = nullptr;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UFloatingPawnMovement* PawnMovementComponent = nullptr;
 
