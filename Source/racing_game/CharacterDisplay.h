@@ -56,27 +56,33 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial* White;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial* Black;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial* Yellow;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial* Blue;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial* Orange;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial* Red;
-
+	
 	UPROPERTY(EditAnywhere)
 	UMaterial* V1BaseMat;
-
+	
 	UPROPERTY(EditAnywhere)
 	UMaterial* V2BaseMat;
+	
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* DynamicBase;
+	
+	UPROPERTY(BlueprintReadOnly)
+	UMaterialInstanceDynamic* DynamicMaterial;
 	
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FCharacterVehicle> Characters;
@@ -88,7 +94,13 @@ protected:
 	TArray<UMaterial*> BaseMaterials;
 
 	UPROPERTY(BlueprintReadOnly)
+	TArray<FLinearColor> Colors;
+
+	UPROPERTY(BlueprintReadOnly)
 	int CharacterIndex = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	int ColorIndex = 0;
 
 	UPROPERTY(BlueprintReadOnly)
 	int MaterialIndex = 0;

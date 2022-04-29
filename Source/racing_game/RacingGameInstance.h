@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ActiveMode;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor MaterialColor;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bTrueLap = false;
 
