@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ArrowComponent.h"
 #include "GameFramework/Pawn.h"
 #include "PlayerCar.generated.h"
 
@@ -33,6 +34,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	UStaticMeshComponent* PlayerMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UArrowComponent* WallArrow = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UFloatingPawnMovement* PawnMovementComponent = nullptr;
@@ -72,6 +76,9 @@ public:
 	
 	UFUNCTION()
 	void Drive(float Force);
+
+	UFUNCTION()
+	void WallCheck();
 
 	UFUNCTION()
 	void Turn(float TurnDirection);
@@ -238,7 +245,7 @@ private:
 	float MaxMoveSpeed = 6000.f;
 
 	UPROPERTY()
-	float DefaultTraceLength = 200.f;
+	float DefaultTraceLength = 250.f;
 
 	UPROPERTY()
 	float DefaultTurnForce = 60000.f;

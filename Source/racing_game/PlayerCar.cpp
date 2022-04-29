@@ -30,6 +30,9 @@ APlayerCar::APlayerCar()
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	SetRootComponent(Sphere);
 
+	WallArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("WallArrow"));
+	WallArrow->SetupAttachment(GetRootComponent());
+	
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
 	PlayerMesh->SetupAttachment(GetRootComponent());
 	// SetRootComponent(PlayerMesh);
@@ -159,6 +162,8 @@ void APlayerCar::Tick(float DeltaTime)
 			RacingGameMode->GameOver( "Ran out of time" );
 		}
 	}
+
+	WallCheck();
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
@@ -244,6 +249,32 @@ void APlayerCar::Drive(float Force)
 	PitchRadian = Force;
 }
 
+void APlayerCar::WallCheck()
+{
+	const auto World = GetWorld();
+	const FVector Location = WallArrow->GetComponentLocation();
+	
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	FHitResult* HitLeft = new FHitResult();
+	FHitResult* HitRight = new FHitResult();
+	World->LineTraceSingleByChannel(*HitLeft, Location, Location * WallArrow->GetRightVector() * -300.f, ECC_Visibility, Params);
+	World->LineTraceSingleByChannel(*HitRight, Location, Location * WallArrow->GetRightVector() * 300.f, ECC_Visibility, Params);
+
+	if((HitLeft->Location - Location).Size() < 200.f)
+	{
+		Sphere->AddImpulse(HitLeft->ImpactNormal * 2000 * Sphere->GetMass());
+		Velocity.Normalize();
+		AddMovementInput(-1 * Velocity, Speed * 10);
+	}
+	else if ((HitRight->Location - Location).Size() < 200.f)
+	{
+		Sphere->AddImpulse(HitRight->ImpactNormal * 2000 * Sphere->GetMass());
+		AddMovementInput(-1 * Velocity, Speed * 10);
+	}
+}
+
 void APlayerCar::Turn(float TurnDirection)
 {
 	TurnSpeed = TurnDirection;
@@ -280,6 +311,7 @@ void APlayerCar::ShootLaser()
 			Bullets.Emplace(World->SpawnActor<ABullet>(LaserToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
 			for (int i = 0; i < 3; i++)
 			{
+				Cast<ABullet>(Bullets[i])->SetOwner(this);
 				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
 			}
 		}
@@ -292,6 +324,7 @@ void APlayerCar::ShootLaser()
 				UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 				if (Bullet)
 				{
+					Bullet->SetOwner(this);
 					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
 				}
 			}
@@ -336,6 +369,7 @@ void APlayerCar::ShootMissile()
 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
 			for (int i = 0; i < 3; i++)
 			{
+				Cast<ABullet>(Bullets[i])->SetOwner(this);
 				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
 			}
 		}
@@ -347,6 +381,7 @@ void APlayerCar::ShootMissile()
 				Bullet = World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 				if (Bullet)
 				{
+					Bullet->SetOwner(this);
 					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
 				}
 			}

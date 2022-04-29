@@ -14,10 +14,15 @@ class RACING_GAME_API ABullet : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
 	// Sets default values for this actor's properties
 	ABullet();
 
+	void SetOwner(AActor* InOwner)
+	{
+		OwnerCar = InOwner;
+	}
+	
 	FBulletHitEnemySignature OnBulletHitEnemy;
 
 protected:
@@ -39,7 +44,8 @@ public:
 	void Death();
 	
 protected:
-
+	UPROPERTY(BlueprintReadOnly)
+	AActor* OwnerCar;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Bullet")
