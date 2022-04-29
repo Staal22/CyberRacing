@@ -50,6 +50,7 @@ void AAICar::Tick(float DeltaTime)
 
 	LineTrace();
 	Time += DeltaTime;
+	Turn += DeltaTime;
 	BoostTime += DeltaTime;
 	RotationCheck += DeltaTime;
 
@@ -58,23 +59,34 @@ void AAICar::Tick(float DeltaTime)
 	NewLocation += Collision->GetForwardVector() * Speed;
 	SetActorLocation(NewLocation);
 	*/
-
-	Forward = Collision->GetForwardVector();
-
-	AICarMesh->AddForce(Forward * FMath::FInterpTo(0.0f, ForceStrength, Time, InterpSpeed2) * AICarMesh->GetMass());
-
-	MyRotator4 = MyRotator + MyRotator2 + MyRotator3;
-
-	Collision->SetWorldRotation(FMath::RInterpTo(ROTTOT, MyRotator4, Time, InterpSpeed));
-
-	if (RotationCheck > 0.5f)
+	if (MHit == true)
 	{
-		LastRotation = Collision->GetRelativeRotation();
-	} 
 
-	if (BoostTime > 3.f)
+		AICarMesh->SetRelativeRotation(FRotator(Turn * 180.f, 0.f, 0.f));
+		if (Turn > 2.f)
+		{
+			MHit = false;
+		}
+	}
+	if (MHit == false)
 	{
-		ForceStrength = 20000.0f;
+		Forward = Collision->GetForwardVector();
+
+		AICarMesh->AddForce(Forward * FMath::FInterpTo(0.0f, ForceStrength, Time, InterpSpeed2) * AICarMesh->GetMass());
+
+		MyRotator4 = MyRotator + MyRotator2 + MyRotator3;
+
+		Collision->SetWorldRotation(FMath::RInterpTo(ROTTOT, MyRotator4, Time, InterpSpeed));
+
+		if (RotationCheck > 0.5f)
+		{
+			LastRotation = Collision->GetRelativeRotation();
+		}
+
+		if (BoostTime > 3.f)
+		{
+			ForceStrength = 20000.0f;
+		}
 	}
 }
 
@@ -213,6 +225,18 @@ void AAICar::LineTrace()
 void AAICar::SpeedBoost()
 {
 	BoostTime = 0.f;
-	ForceStrength = 60000.0f;
+	ForceStrength = 25000.0f;
 	AICarMesh->AddImpulse(Forward * 2000.f * AICarMesh->GetMass());
+}
+
+void AAICar::Missile()
+{
+	ForceStrength = 0.0f;
+	Up = Collision->GetUpVector();
+
+	AICarMesh->AddImpulse(Up * 10000.f * AICarMesh->GetMass());
+	AICarMesh->AddImpulse(Forward * -1 * 1000.f * AICarMesh->GetMass());
+
+	MHit = true;
+	Turn = 0.f;
 }

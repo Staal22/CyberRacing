@@ -40,8 +40,10 @@ public:
 
 	void LineTrace();
 	void SpeedBoost();
+	void Missile();
 
 	bool ColCheck = true;
+	bool MHit = false;
 	float HoverHeight = 250;
 	float WallCheck = 3500;
 	float WallCheck2 = 500;
@@ -52,6 +54,7 @@ public:
 	FVector RulerLeft;
 	FVector WallImpact;
 	FVector Forward;
+	FVector Up;
 	FRotator SmoothRot;
 	FRotator ROTTOT;
 	FRotator MyRotator;

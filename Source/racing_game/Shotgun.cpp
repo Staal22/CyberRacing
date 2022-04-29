@@ -95,6 +95,7 @@ void AShotgun::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 	else if (OtherActor->IsA<AAICar>())
 	{
+		Cast<AAICar>(OtherActor)->Missile();
 		Destroy();
 	}
 
