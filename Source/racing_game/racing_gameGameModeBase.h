@@ -38,8 +38,8 @@ public:
 	UFUNCTION()
 	void AddScore(int ScoreToAdd);
 
-	UFUNCTION()
-	void SetGamePaused(bool bIsPaused);
+	UFUNCTION(BlueprintCallable)
+	void SetGamePaused(bool bIsPaused, bool bTruePause);
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void GameOver(const FString& Cause);

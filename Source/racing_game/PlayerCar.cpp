@@ -49,7 +49,7 @@ APlayerCar::APlayerCar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
-	SpringArm->SetupAttachment(PlayerMesh);
+	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->SetRelativeRotation(FRotator(-10.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 1400;
 	SpringArm->bEnableCameraLag = true;
@@ -58,7 +58,7 @@ APlayerCar::APlayerCar()
 	Back_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("BackSpringArmComp"));
 	Back_SpringArm->bDoCollisionTest = false;
 	Back_SpringArm->SetUsingAbsoluteRotation(false);
-	Back_SpringArm->SetupAttachment(PlayerMesh);
+	Back_SpringArm->SetupAttachment(GetRootComponent());
 	Back_SpringArm->SetRelativeLocation(FVector(-350.f, 0.f, 0.f));
 	Back_SpringArm->SetRelativeRotation(FRotator(-15.f, 180.f, 0.f));
 	Back_SpringArm->TargetArmLength = 1000;
@@ -248,6 +248,7 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction("BackCam", IE_Pressed, this, &APlayerCar::BackCamOn);
 	PlayerInputComponent->BindAction("BackCam", IE_Released, this, &APlayerCar::BackCamOff);
 	PlayerInputComponent->BindAction("ToggleTopDown", IE_Pressed, this, &APlayerCar::ToggleTopCam);
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCar::Pause);
 }
 
 void APlayerCar::Drive(float Force)
@@ -503,14 +504,14 @@ void APlayerCar::AileronRoll()
 	if (Timer > TimeSinceEvent)
 	{
 		bDoARoll = true;
-		SpringArm->AttachTo(GetRootComponent());
+		// SpringArm->AttachTo(GetRootComponent());
 		TraceLength = DefaultTraceLength * 1.2f;
 		TimeSinceEvent = Timer + 3.f;
 		TimerDelegateRoll.BindLambda([&]
 		{
 			// PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
 			bDoARoll = false;
-			SpringArm->AttachTo(PlayerMesh);
+			// SpringArm->AttachTo(PlayerMesh);
 			TraceLength = DefaultTraceLength;
 		});
 		GetWorld()->GetTimerManager().SetTimer(TimerHandleRoll, TimerDelegateRoll, 0.7f, false);

@@ -98,6 +98,9 @@ public:
 	UFUNCTION()
 	void ShootLaser();
 	
+	UFUNCTION(BlueprintImplementableEvent)
+	void Pause();
+	
 	UFUNCTION()
 	void ShootMissile();
 	

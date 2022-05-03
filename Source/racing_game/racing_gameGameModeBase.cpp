@@ -20,7 +20,7 @@ void Aracing_gameGameModeBase::BeginPlay()
 
 	const auto World = GetWorld();
 	
-	SetGamePaused(true);
+	SetGamePaused(true, false);
 
 	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(World));
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
@@ -88,7 +88,7 @@ float Aracing_gameGameModeBase::CountdownTime()
 	if (3.6f - GetWorld()->GetTimeSeconds() < 0.6f)
 	{
 		bInitialCountDown = false;
-		SetGamePaused(false);
+		SetGamePaused(false, false);
 	}
 	return 3.6f - GetWorld()->GetTimeSeconds();
 }
@@ -115,17 +115,30 @@ void Aracing_gameGameModeBase::AddScore(int ScoreToAdd)
 	Score += ScoreToAdd;
 }
 
-void Aracing_gameGameModeBase::SetGamePaused(bool bIsPaused)
+void Aracing_gameGameModeBase::SetGamePaused(bool bIsPaused, bool bTruePause)
 {
 	APlayerController* const MyPlayer = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	APlayerCar* PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
+	const auto World = GetWorld();
 	
 	if (MyPlayer != nullptr)
 	{
 		if (bIsPaused == true)
-			PlayerCar->DisableInput(MyPlayer);
-		if (bIsPaused == false)
+		{
+			if (bTruePause == true)
+			{
+				UGameplayStatics::SetGamePaused(World, true);
+			}
+			else
+			{
+				PlayerCar->DisableInput(MyPlayer);
+			}
+		}
+		else if (bIsPaused == false)
+		{
+			UGameplayStatics::SetGamePaused(World, false);
 			PlayerCar->EnableInput(MyPlayer);
+		}
 	}
 }
 
