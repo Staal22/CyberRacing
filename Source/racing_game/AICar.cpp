@@ -76,7 +76,7 @@ void AAICar::Tick(float DeltaTime)
 
 		MyRotator4 = MyRotator + MyRotator2 + MyRotator3;
 
-		Collision->SetWorldRotation(FMath::RInterpTo(ROTTOT, MyRotator4, Time, InterpSpeed));
+		Collision->SetWorldRotation(FMath::RInterpTo(Collision->GetComponentRotation(), MyRotator4, Time, InterpSpeed));
 
 		if (RotationCheck > 0.5f)
 		{
@@ -100,18 +100,18 @@ void AAICar::LineTrace()
 	FVector End = Start + FVector(0, 0, -HoverHeight);
 	GetWorld()->LineTraceSingleByChannel(*Hit, Start, End, ECC_Visibility); //ECC_Pawn
 	Ruler = Hit->Location - Start;
-	if (Hit)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("123linetrace"))
-		UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End, FColor(100, 0, 0));
-		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Hit->Location, 5, 5, FLinearColor::Red);
-	}
-	else
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("321linetrace"))
-		UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End, FColor(100, 0, 0));
-		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), End, 5, 5, FLinearColor::White);
-	}
+	//if (Hit)
+	//{
+	//	//UE_LOG(LogTemp, Warning, TEXT("123linetrace"))
+	//	UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End, FColor(100, 0, 0));
+	//	UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Hit->Location, 5, 5, FLinearColor::Red);
+	//}
+	//else
+	//{
+	//	//UE_LOG(LogTemp, Warning, TEXT("321linetrace"))
+	//	UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End, FColor(100, 0, 0));
+	//	UKismetSystemLibrary::DrawDebugSphere(GetWorld(), End, 5, 5, FLinearColor::White);
+	//}
 	/*
 	if (Ruler.Size() < HoverHeight-5)
 	{
@@ -152,8 +152,8 @@ void AAICar::LineTrace()
 	{
 		WallImpact = -Hit2->ImpactNormal;
 		//UE_LOG(LogTemp, Warning, TEXT("Wallcheck"))
-			UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End2, FColor(100, 0, 0));
-		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Hit2->Location, 5, 5, FLinearColor::Red);
+		/*	UKismetSystemLibrary::DrawDebugLine(GetWorld(), Start, End2, FColor(100, 0, 0));
+		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Hit2->Location, 5, 5, FLinearColor::Red);*/
 	}
 	if (RulerRight.Size() < 600.0f)
 	{

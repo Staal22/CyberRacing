@@ -47,7 +47,7 @@ public:
 	float HoverHeight = 250;
 	float WallCheck = 3500;
 	float WallCheck2 = 500;
-	float InterpSpeed = 0.15f;
+	float InterpSpeed = 200.f;
 	float InterpSpeed2 = 0.2f;
 	FVector Ruler;
 	FVector RulerRight;
