@@ -23,4 +23,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AudienceMesh")
+		UStaticMeshComponent* AudienceMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AudienceThings")
+		class USphereComponent* Collision{};
+
+	float Dance = 0.f;
+	float Speed = 250.f;
+	bool bounceUp = true;
+	float bounceTime = 0.f;
+
+private:
+	UPROPERTY()
+		class Aracing_gameGameModeBase* RacingGameMode;
 };
