@@ -87,9 +87,6 @@ APlayerCar::APlayerCar()
 
 	HPComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("FollowHealthBar"));
 	HPComp->SetupAttachment(GetRootComponent());
-	
-	Ammo = MaxAmmo;
-	Health = MaxHealth;
 }
 
 // Called when the game starts or when spawned
@@ -98,23 +95,21 @@ void APlayerCar::BeginPlay()
 	Super::BeginPlay();
 	
 	//Forward = GetActorForwardVector();
-	const auto World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
-	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(World));
+	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	
 	if (IsValid(AmmoWidgetClass))
-		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(World, AmmoWidgetClass));
+		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(GetWorld(), AmmoWidgetClass));
 	AmmoCounter->SetOwner(this);
 	AmmoCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
 	AmmoCounter->SetPositionInViewport(FVector2D(0.f, 60.f));
 	if (RacingGameInstance->GetActiveMode() == "Horde")
 	{
 		AmmoCounter->AddToViewport();
-		AmmoCounter->AmmoUpdate();
 	}
 
 	if (IsValid(SpeedWidgetClass))
-		Speedometer = Cast<USpeedometer>(CreateWidget(World, SpeedWidgetClass));
+		Speedometer = Cast<USpeedometer>(CreateWidget(GetWorld(), SpeedWidgetClass));
 	Speedometer->SetOwner(this);
 	Speedometer->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
 	Speedometer->SetPositionInViewport(FVector2D(0.f, 20.f));
@@ -122,15 +117,13 @@ void APlayerCar::BeginPlay()
 	Speedometer->SpeedUpdate();
 	
 	if (IsValid(HealthWidgetClass))
-		HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
+		HealthBar = Cast<UHealthBar>(CreateWidget(GetWorld(), HealthWidgetClass));
 	HealthBar->SetOwner(this);
 	HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
 	HealthBar->SetPositionInViewport(FVector2D(0.f, 140.f));
-	HealthBar->HealthUpdate();
 	
 	FollowHealthBar = Cast<UHealthBar>(HPComp->GetUserWidgetObject());
 	FollowHealthBar->SetOwner(this);
-	FollowHealthBar->HealthUpdate();
 
 	if (RacingGameInstance->GetActiveMode() != "Horde")
 	{
@@ -144,10 +137,28 @@ void APlayerCar::BeginPlay()
 	TurnForce = DefaultTurnForce;
 	GravityForce = DefaultGravityForce;
 
-	Back_Camera->Deactivate();
+	// Back_Camera->Deactivate();
 
-	InitTAtkTime = RacingGameMode->GetDifficulty( "Timer");
+	if (RacingGameMode != nullptr)
+	{
+		if (RacingGameInstance->GetActiveMode() == "TimeAttack")
+			InitTAtkTime = RacingGameMode->GetDifficulty( "Timer");
+	}
 	TAtkTime = InitTAtkTime;
+
+	// Disable input for 3 seconds at the start while countdown goes
+	RacingGameMode->SetGamePaused(true, false);
+	TimerDelegate.BindLambda([&]
+	{
+	RacingGameMode->SetGamePaused(false, false);
+	});
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
+
+	Ammo = MaxAmmo;
+	AmmoCounter->AmmoUpdate();
+	Health = MaxHealth;
+	FollowHealthBar->HealthUpdate();
+	HealthBar->HealthUpdate();
 }
 
 // Called every frame
@@ -155,26 +166,37 @@ void APlayerCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	auto World = GetWorld();
-	Rotation = PlayerMesh->GetRelativeRotation();
-	Forward = PlayerMesh->GetForwardVector();
-	Velocity = PawnMovementComponent->Velocity;
-	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
-	
-	if (RacingGameInstance->GetActiveMode() == "TimeAttack")
+	// const UWorld* World = GetWorld();
+
+	if (PlayerMesh)
 	{
-		TAtkTime = InitTAtkTime - World->GetTimeSeconds();
-		if (TAtkTime <= 0.f)
-		{
-			RacingGameMode->GameOver( "Ran out of time" );
-		}
+		Rotation = PlayerMesh->GetRelativeRotation();
+		Forward = PlayerMesh->GetForwardVector();
 	}
 
+	if (PawnMovementComponent)
+	{
+		Velocity = PawnMovementComponent->Velocity;
+		Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
+	}
+	
+	if (RacingGameInstance)
+	{
+		if (RacingGameInstance->GetActiveMode() == "TimeAttack")
+		{
+			TAtkTime = InitTAtkTime - GetWorld()->GetTimeSeconds();
+			if (TAtkTime <= 0.f)
+			{
+				RacingGameMode->GameOver( "Ran out of time" );
+			}
+		}
+	}
 	WallCheck();
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
-	Speedometer->SpeedUpdate();
+	if (Speedometer)
+		Speedometer->SpeedUpdate();
 	
 	// if (FMath::IsNearlyEqual(Rotation.Roll, -10.f, 9.f) && bDoARoll == true)
 	// {
@@ -209,10 +231,6 @@ void APlayerCar::Tick(float DeltaTime)
 	if (bDoARoll == true)
 	{
 		PlayerMesh->SetRelativeRotation(FMath::RInterpTo(Rotation, FRotator(Rotation.Pitch, Rotation.Yaw, Rotation.Roll + 13.f), DeltaTime, 40.f));
-	}
-	else
-	{
-		
 	}
 	
 	// if (MoveForce > 0.f)
@@ -437,7 +455,7 @@ void APlayerCar::ShotgunPU()
 
 void APlayerCar::SpeedPU()
 {
-	const auto World = GetWorld();
+	const UWorld* World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
 	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.1;
@@ -446,7 +464,7 @@ void APlayerCar::SpeedPU()
 	Sphere->AddImpulse(PlayerMesh->GetForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
-	GravityForce = DefaultGravityForce * 0.3f;
+	GravityForce = DefaultGravityForce * 0.8f;
 	TraceLength = DefaultTraceLength + 50.f;
 	TurnForce = DefaultTurnForce * 1.5f;
 	SpeedLimit();
@@ -456,7 +474,7 @@ void APlayerCar::SpeedLimit()
 {
 	TimerDelegateSpeed.BindLambda([&]
 	{
-		const auto World = GetWorld();
+		// const UWorld* World = GetWorld();
 		// SpringArm->CameraLagSpeed = 20.f;
 		// if (World->GetCurrentLevel()->GetName() == RoadTest)
 		// {
@@ -499,7 +517,7 @@ void APlayerCar::Reload()
 
 void APlayerCar::AileronRoll()
 {
-	const auto World = GetWorld();
+	const UWorld* World = GetWorld();
 	Timer = World->GetTimeSeconds();
 	if (Timer > TimeSinceEvent)
 	{
@@ -604,7 +622,7 @@ float APlayerCar::GetTAtkTime()
 void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                            UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	const auto World = GetWorld();
+	const UWorld* World = GetWorld();
 	Timer = World->GetTimeSeconds();
 	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>() && OtherComponent->IsA<UCapsuleComponent>())
 	{

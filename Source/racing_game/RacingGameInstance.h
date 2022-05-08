@@ -26,7 +26,7 @@ public:
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString ActiveMode;
+	FString ActiveMode = "Race";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor MaterialColor;
@@ -41,6 +41,6 @@ protected:
 	UStaticMesh* VehicleMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float TAtkDifficulty = 15.f;
+	float TAtkDifficulty = 120.f;
 	
 };

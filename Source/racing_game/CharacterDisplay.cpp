@@ -122,7 +122,7 @@ void ACharacterDisplay::ChangeCharacter()
 	{
 		CharacterIndex = 0;
 	}
-	DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
+	// DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
 	// ColorIndex = 0;
 	// Materials[0] = BaseMaterials[CharacterIndex];
 	// MaterialIndex = 0;

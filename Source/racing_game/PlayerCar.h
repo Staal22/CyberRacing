@@ -301,6 +301,9 @@ private:
 	// UPROPERTY()
 	// TArray<class ABullet*> Bullets;
 
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+	
 	FTimerHandle TimerHandleSpeed;
 	FTimerDelegate TimerDelegateSpeed;
 	

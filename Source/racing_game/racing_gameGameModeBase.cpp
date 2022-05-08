@@ -18,15 +18,12 @@ void Aracing_gameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const auto World = GetWorld();
+	// const UWorld* World = GetWorld();
 	
-	SetGamePaused(true, false);
-
-	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(World));
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
+	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 	if (IsValid(ScoreWidgetClass))
-		ScoreCounter = Cast<UScoreCounter>(CreateWidget(World, ScoreWidgetClass));
+		ScoreCounter = Cast<UScoreCounter>(CreateWidget(GetWorld(), ScoreWidgetClass));
 	ScoreCounter->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
 	ScoreCounter->SetPositionInViewport(FVector2D(0.f, 100.f));
 	if (RacingGameInstance->GetActiveMode() == "Horde")
@@ -36,7 +33,7 @@ void Aracing_gameGameModeBase::BeginPlay()
 	}
 
 	if (IsValid(CountdownWidgetClass))
-		CountdownWidget = Cast<UCountdownWidget>(CreateWidget(World, CountdownWidgetClass));
+		CountdownWidget = Cast<UCountdownWidget>(CreateWidget(GetWorld(), CountdownWidgetClass));
 	// CountdownWidget->SetDesiredSizeInViewport(FVector2D(100.f, 40.f));
 	// CountdownWidget->SetPositionInViewport(FVector2D(550.f, 120.f));
 	// CountdownWidget->SetPositionInViewport(FVector2D());
@@ -74,7 +71,8 @@ float Aracing_gameGameModeBase::GetDifficulty(FString Parameter)
 	float ReturnValue;
 	if (Parameter == "Timer")
 	{
-		ReturnValue = RacingGameInstance->GetTAtkDifficulty();
+		// ReturnValue = RacingGameInstance->GetTAtkDifficulty();
+		ReturnValue = 50.f;
 	}
 	else
 	{
@@ -88,7 +86,6 @@ float Aracing_gameGameModeBase::CountdownTime()
 	if (3.6f - GetWorld()->GetTimeSeconds() < 0.6f)
 	{
 		bInitialCountDown = false;
-		SetGamePaused(false, false);
 	}
 	return 3.6f - GetWorld()->GetTimeSeconds();
 }
