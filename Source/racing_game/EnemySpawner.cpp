@@ -25,7 +25,7 @@ void AEnemySpawner::SpawnEnemy()							//spawns enemy at spawners world location
 	
 	if (WhichEnemy == 0) // spawn regular enemy
 		{
-			AEnemy* EnemyChaser = World->SpawnActor<AEnemy>(ActorToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
+			AEnemy* EnemyChaser = World->SpawnActor<AEnemy>(Enemy1, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
 			if (EnemyChaser)
 			{
 				//for broadcasting back to EnemySpawner when Enemy is destroyed

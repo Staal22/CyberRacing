@@ -14,8 +14,10 @@
 #include "Enemy.h"
 #include "EnemyC.h"
 #include "HealthBar.h"
+#include "LapCounter.h"
 #include "RacingGameInstance.h"
 #include "racing_gameGameModeBase.h"
+#include "SNodePanel.h"
 #include "Speedometer.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -107,6 +109,16 @@ void APlayerCar::BeginPlay()
 	{
 		AmmoCounter->AddToViewport();
 	}
+	
+	if (IsValid(LapCounterWidgetClass))
+		LapCounter = Cast<ULapCounter>(CreateWidget(GetWorld(), LapCounterWidgetClass));
+	// LapCounter->SetOwner(this);
+	LapCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
+	LapCounter->SetPositionInViewport(FVector2D(0.f, 40.f));
+	if (RacingGameInstance->GetActiveMode() != "Horde")
+	{
+		LapCounter->AddToViewport();
+	}
 
 	if (IsValid(SpeedWidgetClass))
 		Speedometer = Cast<USpeedometer>(CreateWidget(GetWorld(), SpeedWidgetClass));
@@ -159,6 +171,7 @@ void APlayerCar::BeginPlay()
 	Health = MaxHealth;
 	FollowHealthBar->HealthUpdate();
 	HealthBar->HealthUpdate();
+	LapCounter->LapUpdate();
 }
 
 // Called every frame
@@ -310,16 +323,15 @@ void APlayerCar::Turn(float TurnDirection)
 
 void APlayerCar::ShootLaser()
 {
-	if (Ammo <= 0)
+	UWorld* World = GetWorld();
+	const FVector Location = GetActorLocation();
+	if (Ammo <= 0 && RacingGameInstance->GetActiveMode() == "Horde")
 	{
 		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
 		AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
-
 	}
-	if (Ammo > 0)
+	else if (Ammo > 0 && RacingGameInstance->GetActiveMode() == "Horde")
 	{
-		UWorld* World = GetWorld();
-		const FVector Location = GetActorLocation();
 		// const FVector Right = PlayerMesh->GetRightVector();
 		
 		if (bShotgun == true)
@@ -355,10 +367,28 @@ void APlayerCar::ShootLaser()
 				}
 			}
 		}
+		AmmoCounter->AmmoUpdate();
+		UE_LOG(LogTemp, Warning, TEXT("Shooting Laser"));
 	}
-	AmmoCounter->AmmoUpdate();
-	UE_LOG(LogTemp, Warning, TEXT("Shooting Laser"));
+	else if (RacingGameInstance->GetActiveMode() == "Race" && bShotgun == true)
+	{
+		if (World)
+		{
+			Bullet = World->SpawnActor<ABullet>(PVPMissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
+			// if (Bullet)
+			// {
+			// 	Bullet->SetOwner(this);
+			// 	Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+			// }
+			bShotgun = false;
+		}
+	}
+}
 
+void APlayerCar::Lap()
+{
+	LapCounter->LapUpdate();
 }
 
 void APlayerCar::ShootMissile()

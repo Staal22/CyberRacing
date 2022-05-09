@@ -17,3 +17,13 @@ float URacingGameInstance::GetTAtkDifficulty()
 {
 	return TAtkDifficulty;
 }
+
+int URacingGameInstance::GetLap()
+{
+	return LapCounter;
+}
+
+int URacingGameInstance::GetMaxLap()
+{
+	return LapMax;
+}
