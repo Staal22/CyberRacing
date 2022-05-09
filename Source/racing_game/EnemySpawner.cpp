@@ -3,7 +3,6 @@
 
 #include "EnemySpawner.h"
 #include"Enemy.h"
-#include "EnemyC.h"
 // Sets default values
 AEnemySpawner::AEnemySpawner()
 {
@@ -22,30 +21,22 @@ void AEnemySpawner::SpawnEnemy()							//spawns enemy at spawners world location
 {
 	//get location of spawner
 	UWorld* World = GetWorld();
-
 	FVector const Location = GetActorLocation();
+	
 	if (WhichEnemy == 0) // spawn regular enemy
-	{
-		AEnemy* EnemyChaser = World->SpawnActor<AEnemy>(Enemy1, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
-		if (EnemyChaser)
 		{
-			EnemyChaser->OnEnemyDestruction.AddDynamic(this, &AEnemySpawner::EnemyDestroyed); //for broadcasting back to EnemySpawner when Enemy is destroyed
+			AEnemy* EnemyChaser = World->SpawnActor<AEnemy>(Enemy1, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
+			if (EnemyChaser)
+			{
+				//for broadcasting back to EnemySpawner when Enemy is destroyed
+				EnemyChaser->OnEnemyDestruction.AddDynamic(this, &AEnemySpawner::EnemyDestroyed);
+			}
 		}
-	}
-	else if (WhichEnemy == 1)
-	{
-		AEnemyC* EnemyCChaser = World->SpawnActor<AEnemyC>(Enemy2, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
-		if (EnemyCChaser)
-		{
-			EnemyCChaser->OnEnemyCDestruction.AddDynamic(this, &AEnemySpawner::EnemyDestroyed); //for broadcasting back to EnemySpawner when Enemy is destroyed
-		}
-	}
 	
 }
 // Called every frame
 void AEnemySpawner::Tick(float DeltaTime)					// spawn an enemy if there is currently no enemy spawned and the cooldown (5 secs) is over
 {
-	
 	Super::Tick(DeltaTime);
 	EnemyTime += DeltaTime;
 	if (EnemyTime > 5.f && EnemyActive == false)
@@ -53,7 +44,6 @@ void AEnemySpawner::Tick(float DeltaTime)					// spawn an enemy if there is curr
 		EnemyTime = true;
 		SpawnEnemy();
 	}
-	
 }
 
 void AEnemySpawner::EnemyDestroyed()						//starts cooldown timer and enables spawning of further enemies

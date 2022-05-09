@@ -6,31 +6,19 @@
 #include "GameFramework/Character.h"
 #include "EnemyC.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPUOnEnemyCDestruction);
-
 UCLASS()
 class RACING_GAME_API AEnemyC : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	
-	
 	// Sets default values for this character's properties
 	AEnemyC();
-	FPUOnEnemyCDestruction OnEnemyCDestruction;
-	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=AI)
 	class AAIController* AIController{nullptr};
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=AI)
 	class USphereComponent* PlayerSensingSphere{nullptr};
-
-	 UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	 class UCapsuleComponent* Root {nullptr};
-	//
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// class USkeletalMeshComponent* SkeletalMesh {nullptr};
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
@@ -61,6 +49,5 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable)
 	void IsHit();
 };

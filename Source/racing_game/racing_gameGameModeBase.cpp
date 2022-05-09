@@ -72,7 +72,7 @@ float Aracing_gameGameModeBase::GetDifficulty(FString Parameter)
 	if (Parameter == "Timer")
 	{
 		// ReturnValue = RacingGameInstance->GetTAtkDifficulty();
-		ReturnValue = 50.f;
+		ReturnValue = 120.f;
 	}
 	else
 	{

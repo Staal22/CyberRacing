@@ -6,7 +6,6 @@
 #include "Components/BoxComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
-#include"Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -28,9 +27,6 @@ AEnemy::AEnemy()
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));	//apply in BP
 	SkeletalMesh->SetupAttachment(Root);
 	AIController = CreateDefaultSubobject<AAIController>(TEXT("EnemyAIController"));
-
-	
-
 }
 
 // Called when the game starts or when spawned
@@ -40,35 +36,30 @@ void AEnemy::BeginPlay()
 	MoveDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
 	MoveDirection.Normalize();
 	SetActorRotation(MoveDirection.Rotation());
-
-	
 }
 
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
-	
 	APlayerCar* PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	Super::Tick(DeltaTime);
+	//Updating movement
 	MoveDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
 	MoveDirection.Normalize();
 	SetActorRotation(MoveDirection.Rotation());
 	Root->AddRelativeLocation(GetActorForwardVector()*Speed);
-	Root->AddRelativeLocation(GetActorForwardVector()*Speed/10);
-	
 
-	
+	//Alternatively done by AI controller:
+	// AIController->AAIController::MoveToActor(PlayerCar, 1);
 }
 
-void AEnemy::IsHit()
-{						//destroys actor
+void AEnemy::IsHit()										//Called when enemy is shot
+{						
 	//explosions fx
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
 	//death sound
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
-
-	OnEnemyDestruction.Broadcast();
+	//Remove actor from worldff
 	Destroy();
-	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
 }
 
