@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
-//setting up delegate for casting to EnemySpawner when the power up is destroyed
+//setting up delegate for casting to EnemySpawner when the enemy is destroyed
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPUOnEnemyDestruction);
 
 UCLASS()

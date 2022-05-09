@@ -93,6 +93,11 @@ void AShotgun::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* 
 		Destruction();
 		UE_LOG(LogTemp, Warning, TEXT("Shotgun power-up obtained"));
 	}
+	else if (OtherActor->IsA<AAICar>())
+	{
+		Cast<AAICar>(OtherActor)->Missile();
+		Destroy();
+	}
 
 }
 //broadcast to PowerUpSpawner, then destroy the shotgun object

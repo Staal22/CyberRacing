@@ -3,12 +3,17 @@
 
 #include "RacingGameInstance.h"
 
-bool URacingGameInstance::GetTimeAtkActive()
+FString URacingGameInstance::GetActiveMode()
 {
-	return bTimeAttackActive;
+	return ActiveMode;
 }
 
 UStaticMesh* URacingGameInstance::GetVehicleMesh()
 {
 	return VehicleMesh;
+}
+
+float URacingGameInstance::GetTAtkDifficulty()
+{
+	return TAtkDifficulty;
 }

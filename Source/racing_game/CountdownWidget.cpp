@@ -10,15 +10,19 @@
 
 void UCountdownWidget::CountdownUpdate()
 {
-	auto World = GetWorld();
-	RacingGameMode = Cast <Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
-	PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(World, 0));
+	const UWorld* World = GetWorld();
+	if (World)
+	{
+		RacingGameMode = Cast <Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
+		PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(World, 0));
+	}
 	
 	if (!RacingGameMode)
 		return;
 
 	FNumberFormattingOptions Opts;
 	Opts.SetMaximumFractionalDigits(0);
+	
 	if (RacingGameMode->IsStarting() == true)
 	{
 		StartCount->SetText(FText::AsNumber(RacingGameMode->CountdownTime(), &Opts));
@@ -30,10 +34,7 @@ void UCountdownWidget::CountdownUpdate()
 			StartCount->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
-	TAtkCount->SetText(FText::AsNumber(PlayerCar->GetTAtkTime(), &Opts));
-}
-
-float UCountdownWidget::GetTAtkDifficulty()
-{
-	return TAtkDifficulty;
+	
+	if (PlayerCar)
+		TAtkCount->SetText(FText::AsNumber(PlayerCar->GetTAtkTime(), &Opts));
 }

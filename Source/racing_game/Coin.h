@@ -39,6 +39,9 @@ public:
 	float Turn = 0.f;
 
 public:
+	UPROPERTY(EditAnywhere)
+	USoundBase* PickUpSound = nullptr;
+	
 	// the function to be called when collision (overlap) is detected
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

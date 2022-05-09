@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ArrowComponent.h"
 #include "GameFramework/Pawn.h"
 #include "PlayerCar.generated.h"
 
@@ -33,6 +34,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	UStaticMeshComponent* PlayerMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UArrowComponent* WallArrow = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UArrowComponent* VfxArrow1 = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UArrowComponent* VfxArrow2 = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
+	UArrowComponent* VfxArrow3 = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UFloatingPawnMovement* PawnMovementComponent = nullptr;
@@ -74,6 +87,9 @@ public:
 	void Drive(float Force);
 
 	UFUNCTION()
+	void WallCheck();
+
+	UFUNCTION()
 	void Turn(float TurnDirection);
 
 	UFUNCTION()
@@ -81,6 +97,9 @@ public:
 
 	UFUNCTION()
 	void ShootLaser();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void Pause();
 	
 	UFUNCTION()
 	void ShootMissile();
@@ -159,13 +178,16 @@ protected:
 	UHealthBar* FollowHealthBar;
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
-	float InitTAtkTime = 0.f;
+	float InitTAtkTime = 15.f;
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
 	int Checkpoints = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
 	float HoverForce;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
+	float TurnForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
 	float TraceLength;
@@ -235,7 +257,10 @@ private:
 	float MaxMoveSpeed = 6000.f;
 
 	UPROPERTY()
-	float DefaultTraceLength = 200.f;
+	float DefaultTraceLength = 250.f;
+
+	UPROPERTY()
+	float DefaultTurnForce = 60000.f;
 
 	UPROPERTY()
 	float DefaultHoverForce = 1400000.f;
@@ -278,6 +303,15 @@ private:
 
 	FTimerHandle TimerHandle;
 	FTimerDelegate TimerDelegate;
+	
+	FTimerHandle TimerHandleSpeed;
+	FTimerDelegate TimerDelegateSpeed;
+	
+	FTimerHandle TimerHandleRoll;
+	FTimerDelegate TimerDelegateRoll;
+
+	FTimerHandle TimerHandleReload;
+	FTimerDelegate TimerDelegateReload;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,

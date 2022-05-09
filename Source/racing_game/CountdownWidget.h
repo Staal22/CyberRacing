@@ -25,14 +25,9 @@ private:
 
 	UPROPERTY()
 	class APlayerCar* PlayerCar;
-
-	UPROPERTY()
-	float TAtkDifficulty = 15.f;
 	
 public:
 	UFUNCTION()
 	void CountdownUpdate();
-
-	UFUNCTION()
-	float GetTAtkDifficulty();
+	
 };

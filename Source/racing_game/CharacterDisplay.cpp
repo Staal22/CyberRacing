@@ -13,7 +13,23 @@ ACharacterDisplay::ACharacterDisplay()
 
 	Characters.Emplace();
 	Characters.Emplace();
+
+	// BaseMaterials.Emplace();
+	// BaseMaterials.Emplace();
+	//
+	// Materials.Emplace();
+	// Materials.Emplace();
+	// Materials.Emplace();
+	// Materials.Emplace();
+	// Materials.Emplace();
+	// Materials.Emplace();
 	
+	Colors.Emplace();
+	Colors.Emplace();
+	Colors.Emplace();
+	Colors.Emplace();
+	Colors.Emplace();
+	Colors.Emplace();
 }
 
 // Called when the game starts or when spawned
@@ -21,17 +37,42 @@ void ACharacterDisplay::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//Hover Car
+	// Colors
+	Colors[0] = FLinearColor::White;
+	Colors[1] = FLinearColor::Black;
+	Colors[2] = FLinearColor::Yellow;
+	Colors[3] = FLinearColor::Green;
+	Colors[4] = FLinearColor::Red;
+	Colors[5] = FLinearColor::Blue;
+	
+	// Hover Car
 	Characters[0].Mesh = Character1Mesh;
+	// Characters[0].Mesh->SetMaterial(0, DynamicMaterial);
 	Characters[0].Name = "Hover Car";
 	Characters[0].MoreInfo = "It go fast";
-
-	//cone boi (waiting for jet)
+	
+	// cone boi (waiting for jet)
 	Characters[1].Mesh = Character2Mesh;
+	// Characters[1].Mesh->SetMaterial(0, DynamicMaterial);
 	Characters[1].Name = "Cone (placeholder)";
 	Characters[1].MoreInfo = "Very nice to look at";
+
+	// Materials
+	
+	// Materials[0] = BaseMaterials[CharacterIndex];
+	// BaseMaterials[0] = V1BaseMat;
+	// BaseMaterials[1] = V2BaseMat;
+
+	// Materials[0] = nullptr;
+	// Materials[1] = Black;
+	// Materials[2] = Yellow;
+	// Materials[3] = Orange;
+	// Materials[4] = Red;
+	// Materials[5] = Blue;
 	
 	DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
+	
+	// DynamicMaterial = UMaterialInstanceDynamic::Create(DynamicBase, Characters[CharacterIndex].Mesh);
 }
 
 // Called every frame
@@ -81,7 +122,26 @@ void ACharacterDisplay::ChangeCharacter()
 	{
 		CharacterIndex = 0;
 	}
-	DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
+	// DisplayMesh->SetStaticMesh(Characters[CharacterIndex].Mesh);
+	// ColorIndex = 0;
+	// Materials[0] = BaseMaterials[CharacterIndex];
+	// MaterialIndex = 0;
+	// Characters[CharacterIndex].Mesh->SetMaterial(0, Materials[MaterialIndex]);
+}
 
+void ACharacterDisplay::ChangeMaterial()
+{
+	ColorIndex++;
+	if (ColorIndex >= Colors.Num())
+	{
+	ColorIndex = 0;
+	}
+	// DynamicMaterial->SetVectorParameterValue("BaseColor", Colors[ColorIndex]);
+	// MaterialIndex++;
+	// if (MaterialIndex >= Materials.Num())
+	// {
+	// 	MaterialIndex = 0;
+	// }
+	// Characters[CharacterIndex].Mesh->SetMaterial(0, Materials[MaterialIndex]);
 }
 

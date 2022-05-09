@@ -18,7 +18,7 @@ public:
 	{
 		OwnerCar = InCar;
 	}
-
+ 
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;

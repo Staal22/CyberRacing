@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PowerUpSpawner.h"
+#include "AICar.h"
 #include "Shotgun.generated.h"
+
 
 //setting up delegate for casting to PlayerCar when collision with the shotgun is detected
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPowerUpHitPlayerSignature, AActor*, PlayerHit);

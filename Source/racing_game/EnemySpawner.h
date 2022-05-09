@@ -16,7 +16,10 @@ public:
 	AEnemySpawner();
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
-	TSubclassOf<AActor> ActorToSpawn;
+	TSubclassOf<AActor> Enemy1;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<AActor> Enemy2;
 
 
 	

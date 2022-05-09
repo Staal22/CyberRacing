@@ -27,6 +27,10 @@
 		{
 			"Name": "RiderLink",
 			"Enabled": false
+		},
+		{
+			"Name": "Water",
+			"Enabled": true
 		}
 	]
 }
