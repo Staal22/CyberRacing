@@ -5,6 +5,7 @@
 #include "racing_gameGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Math/UnrealMathUtility.h"
 #include "Engine/World.h"
 
 // Sets default values
@@ -24,6 +25,9 @@ AAudience::AAudience()
 void AAudience::BeginPlay()
 {
 	Super::BeginPlay();
+	randFloat = FMath::RandRange(0, 1);
+	Dance = randFloat;
+	bounceTime = randFloat;
 	
 	const auto World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -36,49 +40,57 @@ void AAudience::Tick(float DeltaTime)
 	Dance += DeltaTime;
 	bounceTime += DeltaTime;
 
-	if (bounceTime < 0.5f && bounceUp == true)
+	if (bounceTime < 0.5f)
 	{
 		FVector NewLocation = GetActorLocation();
 		NewLocation += GetActorUpVector() * Speed * DeltaTime;
 		SetActorLocation(NewLocation);
 	}
-	if (bounceTime > 0.5f && bounceUp == true)
+	if (Dance < 0.5f)
 	{
-		bounceTime = 0.f;
-		bounceUp = false;
+		Collision->SetRelativeRotation(FRotator(Dance * 60.f, 90.f, 0.f));
 	}
-	if (bounceTime < 0.5f && bounceUp == false)
+	if (bounceTime > 0.5f && bounceTime < 1.f)
 	{
 		FVector NewLocation = GetActorLocation();
 		NewLocation += GetActorUpVector() * Speed * -1 * DeltaTime;
 		SetActorLocation(NewLocation);
 		//UE_LOG(LogTemp, Warning, TEXT(" "));
 	}
-	if (bounceTime > 0.5f && bounceUp == false)
+	if (Dance > 0.5f && Dance < 1.f)
+	{
+		Collision->SetRelativeRotation(FRotator(60.f - Dance * 60.f, 90.f, 0.f));
+	}
+	if (bounceTime > 1.0f && bounceTime < 1.5f)
+	{
+		FVector NewLocation = GetActorLocation();
+		NewLocation += GetActorUpVector() * Speed * DeltaTime;
+		SetActorLocation(NewLocation);
+	}
+	if (Dance > 1.f && Dance < 1.5f)
+	{
+		Collision->SetRelativeRotation(FRotator(60.f - Dance * 60.f, 90.f, 0.f));
+	}
+	if (bounceTime > 1.5f && bounceTime < 2.f)
+	{
+		FVector NewLocation = GetActorLocation();
+		NewLocation += GetActorUpVector() * Speed * -1 * DeltaTime;
+		SetActorLocation(NewLocation);
+		//UE_LOG(LogTemp, Warning, TEXT(" "));
+	}
+	if (Dance > 1.5f && Dance < 2.0f)
+	{
+		Collision->SetRelativeRotation(FRotator(-120.f + Dance * 60.f, 90.f, 0.f));
+	}
+
+	if (bounceTime > 2.0f)
 	{
 		bounceTime = 0.f;
-		bounceUp = true;
 	}
 
 	if (Dance > 2.0f)
 	{
 		Dance = 0.f;
-	}
-	if (Dance < 0.5f)
-	{
-		AudienceMesh->SetRelativeRotation(FRotator(Dance * 60.f, 0.f, 0.f));
-	}
-	if (Dance > 0.5f && Dance < 1.f)
-	{
-		AudienceMesh->SetRelativeRotation(FRotator(60.f - Dance * 60.f, 0.f, 0.f));
-	}
-	if (Dance > 1.f && Dance < 1.5f)
-	{
-		AudienceMesh->SetRelativeRotation(FRotator(60.f - Dance * 60.f, 0.f, 0.f));
-	}
-	if (Dance > 1.5f && Dance < 2.0f)
-	{
-		AudienceMesh->SetRelativeRotation(FRotator(-120.f + Dance * 60.f, 0.f, 0.f));
 	}
 	
 }

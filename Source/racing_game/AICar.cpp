@@ -28,7 +28,7 @@ AAICar::AAICar()
 	AICarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AICarMesh"));
 	AICarMesh->SetupAttachment(GetRootComponent());
 
-	ForceStrength = 20000.0f;
+	ForceStrength = 30000.0f;
 	ForceStrength2 = 50000.0f;
 }
 
@@ -85,7 +85,7 @@ void AAICar::Tick(float DeltaTime)
 
 		if (BoostTime > 3.f)
 		{
-			ForceStrength = 20000.0f;
+			ForceStrength = 30000.0f;
 		}
 	}
 }
