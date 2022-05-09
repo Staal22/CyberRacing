@@ -10,28 +10,28 @@
 
 void UCountdownWidget::CountdownUpdate()
 {
-	auto World = GetWorld();
-	RacingGameMode = Cast <Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
-	PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(World, 0));
+	const UWorld* World = GetWorld();
+	if (World)
+	{
+		RacingGameMode = Cast <Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
+		PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(World, 0));
+	}
 	
 	if (!RacingGameMode)
 		return;
 
 	FNumberFormattingOptions Opts;
 	Opts.SetMaximumFractionalDigits(0);
-
-	if (RacingGameMode)
+	
+	if (RacingGameMode->IsStarting() == true)
 	{
-		if (RacingGameMode->IsStarting() == true)
+		StartCount->SetText(FText::AsNumber(RacingGameMode->CountdownTime(), &Opts));
+	}
+	else
+	{
+		if (StartCount->GetVisibility() != ESlateVisibility::Hidden)
 		{
-			StartCount->SetText(FText::AsNumber(RacingGameMode->CountdownTime(), &Opts));
-		}
-		else
-		{
-			if (StartCount->GetVisibility() != ESlateVisibility::Hidden)
-			{
-				StartCount->SetVisibility(ESlateVisibility::Hidden);
-			}
+			StartCount->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 	
