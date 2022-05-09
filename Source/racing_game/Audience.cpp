@@ -44,8 +44,8 @@ void AAudience::Tick(float DeltaTime)
 	}
 	if (bounceTime > 0.5f && bounceUp == true)
 	{
-		bounceUp = false;
 		bounceTime = 0.f;
+		bounceUp = false;
 	}
 	if (bounceTime < 0.5f && bounceUp == false)
 	{
@@ -56,8 +56,8 @@ void AAudience::Tick(float DeltaTime)
 	}
 	if (bounceTime > 0.5f && bounceUp == false)
 	{
-		bounceUp = true;
 		bounceTime = 0.f;
+		bounceUp = true;
 	}
 
 	if (Dance > 2.0f)
@@ -70,7 +70,7 @@ void AAudience::Tick(float DeltaTime)
 	}
 	if (Dance > 0.5f && Dance < 1.f)
 	{
-		AudienceMesh->SetRelativeRotation(FRotator(45.f - Dance * 45.f, 0.f, 0.f));
+		AudienceMesh->SetRelativeRotation(FRotator(60.f - Dance * 60.f, 0.f, 0.f));
 	}
 	if (Dance > 1.f && Dance < 1.5f)
 	{

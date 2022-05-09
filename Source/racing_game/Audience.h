@@ -32,7 +32,7 @@ public:
 		class USphereComponent* Collision{};
 
 	float Dance = 0.f;
-	float Speed = 250.f;
+	float Speed = 100.f;
 	bool bounceUp = true;
 	float bounceTime = 0.f;
 
