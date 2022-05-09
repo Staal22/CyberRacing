@@ -20,12 +20,6 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=AI)
 	class USphereComponent* PlayerSensingSphere{nullptr};
 
-	// UPROPERTY(EditAnywhere)
-	// class UShapeComponent* Root {nullptr};
-	//
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// class USkeletalMeshComponent* SkeletalMesh {nullptr};
-
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);

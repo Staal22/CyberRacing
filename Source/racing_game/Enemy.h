@@ -17,6 +17,7 @@ class RACING_GAME_API AEnemy : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AEnemy();
+    //Delegate for destruction event
     FPUOnEnemyDestruction OnEnemyDestruction;
 
 protected:
@@ -29,15 +30,18 @@ public:
 
     //called when hit, destroys actor
 	void IsHit();
-    
-
     FVector MoveDirection = FVector(1.f, 0.f, 0.f);
 
+    //collider component
+    UPROPERTY(EditAnywhere)
+        class UShapeComponent* Root {nullptr};
+
+    //skeletal mesh
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         class USkeletalMeshComponent* SkeletalMesh {nullptr};
 
 private:
-    //Speed of enemy
+    //MovementSpeed of enemy
     UPROPERTY(EditAnywhere, category="EnemyVariables")
         float Speed{ 5.f };
 
@@ -51,18 +55,17 @@ private:
 
     UPROPERTY(EditAnywhere, category = "EnemyVariables")
     float CurrentTurnDelay{ 0.f };
-
-    //collider component
-    UPROPERTY(EditAnywhere)
-        class UShapeComponent* Root {nullptr};
-
-
+    
     //DeathFX, init through blueprint
+    //Particle FX
     UPROPERTY(EditAnywhere, Category = "EnemyFX")
         UParticleSystem* ExplosionUponDeath = nullptr;
-    
+
+    //DeathSound
     UPROPERTY(EditAnywhere, Category = "EnemyFX")
         USoundBase* DeathSound = nullptr;
+
+    //AI controller
     UPROPERTY(EditAnywhere, Category = "EnemyAIController")
         class AAIController* AIController = nullptr;
    

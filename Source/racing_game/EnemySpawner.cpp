@@ -21,14 +21,15 @@ void AEnemySpawner::SpawnEnemy()							//spawns enemy at spawners world location
 {
 	//get location of spawner
 	UWorld* World = GetWorld();
-
 	FVector const Location = GetActorLocation();
+	
 	if (WhichEnemy == 0) // spawn regular enemy
 		{
 			AEnemy* EnemyChaser = World->SpawnActor<AEnemy>(ActorToSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
 			if (EnemyChaser)
 			{
-				EnemyChaser->OnEnemyDestruction.AddDynamic(this, &AEnemySpawner::EnemyDestroyed); //for broadcasting back to EnemySpawner when Enemy is destroyed
+				//for broadcasting back to EnemySpawner when Enemy is destroyed
+				EnemyChaser->OnEnemyDestruction.AddDynamic(this, &AEnemySpawner::EnemyDestroyed);
 			}
 		}
 	
@@ -36,7 +37,6 @@ void AEnemySpawner::SpawnEnemy()							//spawns enemy at spawners world location
 // Called every frame
 void AEnemySpawner::Tick(float DeltaTime)					// spawn an enemy if there is currently no enemy spawned and the cooldown (5 secs) is over
 {
-	
 	Super::Tick(DeltaTime);
 	EnemyTime += DeltaTime;
 	if (EnemyTime > 5.f && EnemyActive == false)
@@ -44,7 +44,6 @@ void AEnemySpawner::Tick(float DeltaTime)					// spawn an enemy if there is curr
 		EnemyTime = true;
 		SpawnEnemy();
 	}
-	
 }
 
 void AEnemySpawner::EnemyDestroyed()						//starts cooldown timer and enables spawning of further enemies
