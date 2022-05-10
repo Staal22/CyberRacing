@@ -15,7 +15,6 @@ ASplineClass::ASplineClass()
 		SetRootComponent(SplineComponent);
 	}
 
-	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 }
 
 void ASplineClass::OnConstruction(const FTransform& Transform)
