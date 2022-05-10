@@ -10,6 +10,8 @@
 #include "AmmoCounter.h"
 #include <Kismet/GameplayStatics.h>
 #include <Components/CapsuleComponent.h>
+
+#include "AICar.h"
 #include "Bullet.h"
 #include "Enemy.h"
 #include "EnemyC.h"
@@ -180,19 +182,17 @@ void APlayerCar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// const UWorld* World = GetWorld();
-
+	HitTimer += DeltaTime;
 	if (PlayerMesh)
 	{
 		Rotation = PlayerMesh->GetRelativeRotation();
 		Forward = PlayerMesh->GetForwardVector();
 	}
-
 	if (PawnMovementComponent)
 	{
 		Velocity = PawnMovementComponent->Velocity;
 		Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
 	}
-	
 	if (RacingGameInstance)
 	{
 		if (RacingGameInstance->GetActiveMode() == "TimeAttack")
@@ -205,6 +205,15 @@ void APlayerCar::Tick(float DeltaTime)
 		}
 	}
 	WallCheck();
+	if (bHitState == true)
+	{
+		PlayerMesh->SetRelativeRotation(FRotator(HitTimer * 120.f, 0.f, 0.f));
+		if (HitTimer > 3.f)
+		{
+			HitTimer = 0.f;
+			bHitState = false;
+		}
+	}
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
@@ -376,12 +385,12 @@ void APlayerCar::ShootLaser()
 		{
 			Bullet = World->SpawnActor<ABullet>(PVPMissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
+			bShotgun = false;
 			// if (Bullet)
 			// {
 			// 	Bullet->SetOwner(this);
 			// 	Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
 			// }
-			bShotgun = false;
 		}
 	}
 }
@@ -473,8 +482,18 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 			}
 		}
 	}
-
-	
+	// else if (Actor->IsA<AAICar>())
+	// {
+	// 	Cast<AAICar>(Actor)->Missile();
+	// 	if (RacingGameMode)
+	// 	{
+	// 		// RacingGameMode->EnemyDied();
+	// 		if (Bullet)
+	// 		{
+	// 			Bullet->Death();
+	// 		}
+	// 	}
+	// }
 }
 
 void APlayerCar::ShotgunPU()
@@ -491,7 +510,7 @@ void APlayerCar::SpeedPU()
 	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.1;
 	PawnMovementComponent->MaxSpeed = MaxMoveSpeed * 3.f;
 	// SpringArm->CameraLagSpeed = 10.f;
-	Sphere->AddImpulse(PlayerMesh->GetForwardVector() * Sphere->GetMass()* 2000.f);
+	Sphere->AddImpulse(Sphere->GetForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
 	GravityForce = DefaultGravityForce * 0.8f;
@@ -525,6 +544,7 @@ void APlayerCar::SpeedLimit()
 
 void APlayerCar::Reload()
 {
+	HitByMissile();
 	if (bIsReloading == false)
 	{
 		bIsReloading = true;
@@ -613,6 +633,20 @@ void APlayerCar::BackCamOff()
 	Back_Camera->Deactivate();
 	Top_Camera->Deactivate();
 	Camera->Activate();
+}
+
+void APlayerCar::HitByMissile()
+{
+	RacingGameMode->SetGamePaused(true, false);
+	TimerDelegate.BindLambda([&]
+	{
+	RacingGameMode->SetGamePaused(false, false);
+	});
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 2.f, false);
+	PawnMovementComponent->StopMovementImmediately();
+	Sphere->AddImpulse(GetActorUpVector() * 10000.f * Sphere->GetMass());
+	Sphere->AddImpulse(Forward * -1 * 1000.f * Sphere->GetMass());
+	bHitState = true;
 }
 
 void APlayerCar::ToggleTopCam()
