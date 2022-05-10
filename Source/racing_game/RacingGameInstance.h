@@ -23,6 +23,12 @@ public:
 
 	UFUNCTION()
 	float GetTAtkDifficulty();
+
+	UFUNCTION()
+	int GetLap();
+
+	UFUNCTION()
+	int GetMaxLap();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -42,5 +48,14 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TAtkDifficulty = 120.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int LapCounter = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AILapCounter = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int LapMax = 3;
 	
 };

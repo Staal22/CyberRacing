@@ -35,7 +35,7 @@ public:
 	bool EnemyActive = false;
 	//variable for which enemy was last spawned
 	int WhichEnemy = 0;
-	// float for cooldown to enemy to be spawned
+	// float for cooldown for enemy to be spawned
 	float EnemyTime = 0.f;
 	
 	void SpawnEnemy();
