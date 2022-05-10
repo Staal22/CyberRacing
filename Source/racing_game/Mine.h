@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Mine.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMineHitCarSignature, AActor*, CarHit);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMineHitCarSignature, AActor*, CarHit);
 
 UCLASS()
 class RACING_GAME_API AMine : public AActor
@@ -16,7 +16,7 @@ class RACING_GAME_API AMine : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AMine();
-	FMineHitCarSignature OnMineHitCar;
+	//FMineHitCarSignature OnMineHitCar;
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,14 +37,24 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MineFX")
 		UParticleSystem* MineExplosion = nullptr;
 
+	UPROPERTY()
+		class AAICar* AICar;
+
+	UPROPERTY()
+		class APlayerCar* PlayerCar;
+
+
 	UFUNCTION()
 		void Explosion();
 
-	UFUNCTION()
+	/*UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
-			bool bFromSweep, const FHitResult& SweepResult);
+			bool bFromSweep, const FHitResult& SweepResult);*/
 
+	UPROPERTY()
+		TArray<AActor*> Result;
+	
 	float BombTime = 0;
 	float ActTime = 0;
 	bool HitCar = false;

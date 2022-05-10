@@ -24,7 +24,7 @@ AMine::AMine()
 void AMine::BeginPlay()
 {
 	Super::BeginPlay();
-	Collision->OnComponentBeginOverlap.AddDynamic(this, &AMine::OnOverlapBegin);
+	//Collision->OnComponentBeginOverlap.AddDynamic(this, &AMine::OnOverlapBegin);
 }
 
 // Called every frame
@@ -34,10 +34,6 @@ void AMine::Tick(float DeltaTime)
 	BombTime += DeltaTime;
 	ActTime += DeltaTime;
 
-	if (BombTime > 5.0f)
-	{
-		HitCar = true;
-	}
 	if (BombTime > 6.0f)
 	{
 		Explosion();
@@ -47,31 +43,54 @@ void AMine::Tick(float DeltaTime)
 
 void AMine::Explosion()
 {
+
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MineExplosion, GetTransform(), true);
+
+	//GetOverlappingActors(Result, AAICar::StaticClass());
+	//GetOverlappingActors(Result, APlayerCar::StaticClass());
+
+	//
+
+	//for (int i = 1; i < 3; i++)
+	//{
+	//	if (Result[i]->IsA<AAICar>())
+	//	{
+	//		//Cast<AAICar>(AICar)->Missile();
+	//	}
+	//}
+
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	if (Result[i]->IsA<APlayerCar>())
+	//	{
+	//		/*OnOverlapBegin();*/
+	//	}
+	//}
+
 	Destroy();
 }
 
-void AMine::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep,
-	const FHitResult& SweepResult)
-{
-	// if statement to make sure the coin doesnt "collide with itself"
-	if (OtherActor == this)
-		return;
-
-	OnMineHitCar.Broadcast(OtherActor);
-
-	//if the object that overlaps the coin is PlayerCar run the CoinAcquired function in RacingGameMode and destroy the checkpoint
-	if (HitCar == true) 
-	{
-		if (OtherActor->IsA<APlayerCar>())
-		{
-			return;
-		}
-		else if (OtherActor->IsA<AAICar>())
-		{
-			Cast<AAICar>(OtherActor)->Missile();
-		}
-	}
-
-}
+//void AMine::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+//	UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep,
+//	const FHitResult& SweepResult)
+//{
+//	// if statement to make sure the coin doesnt "collide with itself"
+//	if (OtherActor == this)
+//		return;
+//
+//	OnMineHitCar.Broadcast(OtherActor);
+//
+//	//if the object that overlaps the coin is PlayerCar run the CoinAcquired function in RacingGameMode and destroy the checkpoint
+//	if (HitCar == true) 
+//	{
+//		if (OtherActor->IsA<APlayerCar>())
+//		{
+//			return;
+//		}
+//		else if (OtherActor->IsA<AAICar>())
+//		{
+//			Cast<AAICar>(OtherActor)->Missile();
+//		}
+//	}
+//
+//}
