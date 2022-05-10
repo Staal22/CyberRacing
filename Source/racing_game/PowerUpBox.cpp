@@ -77,8 +77,8 @@ void APowerUpBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 
 	if (OtherActor->IsA<APlayerCar>())
 	{
-		randint = FMath::RandRange(1, 5);
-		if (randint == 1 || randint == 2 || randint == 3 || randint == 4 || randint == 5)
+		randint = FMath::RandRange(1, 2);
+		if (randint == 1)
 		{
 			Cast<APlayerCar>(OtherActor)->ShotgunPU();
 		}
@@ -86,7 +86,12 @@ void APowerUpBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	}
 	else if (OtherActor->IsA<AAICar>())
 	{
-		randint = FMath::RandRange(1, 5);
+		randint = FMath::RandRange(1, 2);
+		if (randint == 1)
+		{
+			Cast<AAICar>(OtherActor)->MineFlip();
+			Cast<AAICar>(OtherActor)->PUActive();
+		}
 		Destruction();
 	}
 }

@@ -36,14 +36,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AICarThings")
 		class USphereComponent* Collision{};
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<AActor> MineSpawn;
+
 	FVector CarDirection = FVector(0.f, 0.f, 0.f);
 
 	void LineTrace();
 	void SpeedBoost();
 	void Missile();
+	void MissilePU();
+	void MinePU();
+	void PUActive();
+	void MissileFlip();
+	void MineFlip();
 
+	int randInt;
+	bool PUAct = false;
 	bool ColCheck = true;
 	bool MHit = false;
+	bool MisPU = false;
+	bool MiPU = false;
 	float HoverHeight = 250;
 	float WallCheck = 3500;
 	float WallCheck2 = 500;
@@ -74,6 +86,7 @@ public:
 	float BoostTime = 5.f;
 	float Turn = 0.f;
 	float Speed = 3;
+	float PUTime = 0.f;
 
 private:
 

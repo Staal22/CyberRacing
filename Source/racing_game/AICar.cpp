@@ -10,6 +10,7 @@
 #include "HealthPack.h"
 #include "Enemy.h"
 #include "EnemyC.h"
+#include "Mine.h"
 #include "Containers/UnrealString.h"
 #include "RacingGameInstance.h"
 #include "racing_gameGameModeBase.h"
@@ -53,6 +54,7 @@ void AAICar::Tick(float DeltaTime)
 	Turn += DeltaTime;
 	BoostTime += DeltaTime;
 	RotationCheck += DeltaTime;
+	PUTime += DeltaTime;
 
 	/*
 	FVector NewLocation = GetActorLocation();
@@ -70,6 +72,21 @@ void AAICar::Tick(float DeltaTime)
 	}
 	if (MHit == false)
 	{
+		if (PUAct == true)
+		{
+
+			if (PUTime > randInt)
+			{
+				if (MisPU == true)
+				{
+					MissilePU();
+				}
+				if (MiPU == true)
+				{
+					MinePU();
+				}
+			}
+		}
 		Forward = Collision->GetForwardVector();
 
 		AICarMesh->AddForce(Forward * FMath::FInterpTo(0.0f, ForceStrength, Time, InterpSpeed2) * AICarMesh->GetMass());
@@ -239,4 +256,39 @@ void AAICar::Missile()
 
 	MHit = true;
 	Turn = 0.f;
+}
+
+void AAICar::MissilePU()
+{
+	PUAct = false;
+	MisPU = false;
+}
+
+void AAICar::MinePU()
+{
+	UWorld* World = GetWorld();
+
+	FVector Location = GetActorLocation();
+
+	AMine* Mine = World->SpawnActor<AMine>(MineSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
+	PUAct = false;
+	MiPU = false;
+	UE_LOG(LogTemp, Warning, TEXT("MINE SPAWNED"));
+}
+
+void AAICar::PUActive()
+{
+	randInt = FMath::RandRange(3, 7);
+	PUTime = 0.f;
+	PUAct = true;
+}
+
+void AAICar::MissileFlip()
+{
+	MisPU = true;
+}
+
+void AAICar::MineFlip()
+{
+	MiPU = true;
 }

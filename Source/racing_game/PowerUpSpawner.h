@@ -42,7 +42,7 @@ public:
 	//variable for which power up was last spawned
 	int WhichPU = 0;
 	// float for cooldown to next power up to be spawned
-	float PUSTime = 0.f;
+	float PUSTime = 14.5f;
 
 	int randint;
 	

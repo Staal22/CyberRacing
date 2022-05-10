@@ -25,6 +25,8 @@ void AMine::BeginPlay()
 {
 	Super::BeginPlay();
 	//Collision->OnComponentBeginOverlap.AddDynamic(this, &AMine::OnOverlapBegin);
+
+
 }
 
 // Called every frame
@@ -34,7 +36,7 @@ void AMine::Tick(float DeltaTime)
 	BombTime += DeltaTime;
 	ActTime += DeltaTime;
 
-	if (BombTime > 6.0f)
+	if (BombTime > 3.0f)
 	{
 		Explosion();
 	}
@@ -46,18 +48,16 @@ void AMine::Explosion()
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MineExplosion, GetTransform(), true);
 
-	//GetOverlappingActors(Result, AAICar::StaticClass());
+	GetOverlappingActors(Result, AAICar::StaticClass());
 	//GetOverlappingActors(Result, APlayerCar::StaticClass());
 
-	//
-
-	//for (int i = 1; i < 3; i++)
-	//{
-	//	if (Result[i]->IsA<AAICar>())
-	//	{
-	//		//Cast<AAICar>(AICar)->Missile();
-	//	}
-	//}
+	for (int i = 0; i < Result.Num(); i++)
+	{
+		if (Result[i]->IsA<AAICar>())
+		{
+			Cast<AAICar>(Result[i])->Missile();
+		}
+	}
 
 	//for (int i = 0; i < 2; i++)
 	//{
