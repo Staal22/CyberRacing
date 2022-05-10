@@ -59,6 +59,9 @@ public:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
 	TSubclassOf<AActor> PVPMissileToSpawn;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<AActor> MineToSpawn;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class UCameraComponent* Camera = nullptr;
 
@@ -115,6 +118,9 @@ public:
 
 	UFUNCTION()
 	void ShotgunPU();
+
+	UFUNCTION()
+	void MinePU();
 
 	UFUNCTION()
 	void SpeedPU();
@@ -240,6 +246,9 @@ private:
 
 	UPROPERTY()
 	bool bShotgun = false;
+
+	UPROPERTY()
+	bool bMine = false;
 	
 	UPROPERTY()
 	bool bTopCam = false;

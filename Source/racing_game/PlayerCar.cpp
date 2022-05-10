@@ -17,6 +17,7 @@
 #include "EnemyC.h"
 #include "HealthBar.h"
 #include "LapCounter.h"
+#include "Mine.h"
 #include "RacingGameInstance.h"
 #include "racing_gameGameModeBase.h"
 #include "SNodePanel.h"
@@ -383,14 +384,18 @@ void APlayerCar::ShootLaser()
 	{
 		if (World)
 		{
-			Bullet = World->SpawnActor<ABullet>(PVPMissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+			World->SpawnActor<ABullet>(PVPMissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 			bShotgun = false;
-			// if (Bullet)
-			// {
-			// 	Bullet->SetOwner(this);
-			// 	Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
-			// }
+		}
+	}
+	else if (RacingGameInstance->GetActiveMode() == "Race" && bMine == true)
+	{
+		if (World)
+		{
+			World->SpawnActor<AMine>(MineToSpawn, Location + GetActorForwardVector() * -50.f, GetActorRotation());
+			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
+			bMine = false;
 		}
 	}
 }
@@ -498,8 +503,15 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 
 void APlayerCar::ShotgunPU()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("SHOTGUN")));
-	bShotgun = true;
+	// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("SHOTGUN")));
+	if (bMine == false)
+		bShotgun = true;
+}
+
+void APlayerCar::MinePU()
+{
+	if (bShotgun == false)
+		bMine = true;
 }
 
 void APlayerCar::SpeedPU()
