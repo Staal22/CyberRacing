@@ -272,7 +272,7 @@ void AAICar::MinePU()
 	AMine* Mine = World->SpawnActor<AMine>(MineSpawn, Location + FVector(0.f, 0.f, 0.f), GetActorRotation());
 	PUAct = false;
 	MiPU = false;
-	UE_LOG(LogTemp, Warning, TEXT("MINE SPAWNED"));
+	//UE_LOG(LogTemp, Warning, TEXT("MINE SPAWNED"));
 }
 
 void AAICar::PUActive()
