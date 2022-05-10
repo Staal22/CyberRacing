@@ -40,6 +40,8 @@ public:
 
 	void LineTrace();
 	void SpeedBoost();
+
+	UFUNCTION(BlueprintCallable)
 	void Missile();
 
 	bool ColCheck = true;
