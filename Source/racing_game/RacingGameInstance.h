@@ -50,10 +50,10 @@ protected:
 	float TAtkDifficulty = 120.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int LapCounter = 0;
+	int LapCounter = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int AILapCounter = 0;
+	int AILapCounter = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int LapMax = 3;

@@ -63,7 +63,6 @@ void AAICar::Tick(float DeltaTime)
 	*/
 	if (MHit == true)
 	{
-
 		AICarMesh->SetRelativeRotation(FRotator(Turn * 180.f, 0.f, 0.f));
 		if (Turn > 2.f)
 		{

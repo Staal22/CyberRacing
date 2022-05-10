@@ -43,6 +43,8 @@ public:
 
 	void LineTrace();
 	void SpeedBoost();
+
+	UFUNCTION(BlueprintCallable)
 	void Missile();
 	void MissilePU();
 	void MinePU();

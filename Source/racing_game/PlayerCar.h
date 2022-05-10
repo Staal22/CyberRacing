@@ -152,6 +152,9 @@ public:
 	UFUNCTION()
 	void BackCamOff();
 	
+	UFUNCTION(BlueprintCallable)
+	void HitByMissile();
+	
 	UFUNCTION()
 	void ToggleTopCam();
 	
@@ -209,6 +212,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "PlayerCar")
 	bool bDoARoll = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bHitState = false;
 	
 	// UPROPERTY(VisibleAnywhere)
 	// class UWidgetComponent* AmmoComp;
@@ -238,6 +244,9 @@ private:
 	UPROPERTY()
 	bool bTopCam = false;
 
+	UPROPERTY()
+	float HitTimer = 0.f;
+	
 	UPROPERTY()
 	bool bIsReloading = false;
 	
