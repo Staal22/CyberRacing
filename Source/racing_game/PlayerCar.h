@@ -56,6 +56,9 @@ public:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
 	TSubclassOf<AActor> MissileToSpawn;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<AActor> PVPMissileToSpawn;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	class UCameraComponent* Camera = nullptr;
 
@@ -97,6 +100,12 @@ public:
 
 	UFUNCTION()
 	void ShootLaser();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void Pause();
+
+	UFUNCTION(BlueprintCallable)
+	void Lap();
 	
 	UFUNCTION()
 	void ShootMissile();
@@ -154,6 +163,9 @@ protected:
 	TSubclassOf<UUserWidget> AmmoWidgetClass;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> LapCounterWidgetClass;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> SpeedWidgetClass;
 
 	UPROPERTY(EditAnywhere)
@@ -165,6 +177,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UAmmoCounter* AmmoCounter;
 
+	UPROPERTY(VisibleAnywhere)
+	class ULapCounter* LapCounter;
+	
 	UPROPERTY(VisibleAnywhere)
 	class USpeedometer* Speedometer;
 
@@ -298,6 +313,9 @@ private:
 	// UPROPERTY()
 	// TArray<class ABullet*> Bullets;
 
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+	
 	FTimerHandle TimerHandleSpeed;
 	FTimerDelegate TimerDelegateSpeed;
 	

@@ -14,8 +14,10 @@
 #include "Enemy.h"
 #include "EnemyC.h"
 #include "HealthBar.h"
+#include "LapCounter.h"
 #include "RacingGameInstance.h"
 #include "racing_gameGameModeBase.h"
+#include "SNodePanel.h"
 #include "Speedometer.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -49,7 +51,7 @@ APlayerCar::APlayerCar()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetUsingAbsoluteRotation(false);
-	SpringArm->SetupAttachment(PlayerMesh);
+	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->SetRelativeRotation(FRotator(-10.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 1400;
 	SpringArm->bEnableCameraLag = true;
@@ -58,7 +60,7 @@ APlayerCar::APlayerCar()
 	Back_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("BackSpringArmComp"));
 	Back_SpringArm->bDoCollisionTest = false;
 	Back_SpringArm->SetUsingAbsoluteRotation(false);
-	Back_SpringArm->SetupAttachment(PlayerMesh);
+	Back_SpringArm->SetupAttachment(GetRootComponent());
 	Back_SpringArm->SetRelativeLocation(FVector(-350.f, 0.f, 0.f));
 	Back_SpringArm->SetRelativeRotation(FRotator(-15.f, 180.f, 0.f));
 	Back_SpringArm->TargetArmLength = 1000;
@@ -87,9 +89,6 @@ APlayerCar::APlayerCar()
 
 	HPComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("FollowHealthBar"));
 	HPComp->SetupAttachment(GetRootComponent());
-	
-	Ammo = MaxAmmo;
-	Health = MaxHealth;
 }
 
 // Called when the game starts or when spawned
@@ -98,23 +97,31 @@ void APlayerCar::BeginPlay()
 	Super::BeginPlay();
 	
 	//Forward = GetActorForwardVector();
-	const auto World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
-	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(World));
+	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	
 	if (IsValid(AmmoWidgetClass))
-		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(World, AmmoWidgetClass));
+		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(GetWorld(), AmmoWidgetClass));
 	AmmoCounter->SetOwner(this);
 	AmmoCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
 	AmmoCounter->SetPositionInViewport(FVector2D(0.f, 60.f));
 	if (RacingGameInstance->GetActiveMode() == "Horde")
 	{
 		AmmoCounter->AddToViewport();
-		AmmoCounter->AmmoUpdate();
+	}
+	
+	if (IsValid(LapCounterWidgetClass))
+		LapCounter = Cast<ULapCounter>(CreateWidget(GetWorld(), LapCounterWidgetClass));
+	// LapCounter->SetOwner(this);
+	LapCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
+	LapCounter->SetPositionInViewport(FVector2D(0.f, 40.f));
+	if (RacingGameInstance->GetActiveMode() != "Horde")
+	{
+		LapCounter->AddToViewport();
 	}
 
 	if (IsValid(SpeedWidgetClass))
-		Speedometer = Cast<USpeedometer>(CreateWidget(World, SpeedWidgetClass));
+		Speedometer = Cast<USpeedometer>(CreateWidget(GetWorld(), SpeedWidgetClass));
 	Speedometer->SetOwner(this);
 	Speedometer->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
 	Speedometer->SetPositionInViewport(FVector2D(0.f, 20.f));
@@ -122,15 +129,13 @@ void APlayerCar::BeginPlay()
 	Speedometer->SpeedUpdate();
 	
 	if (IsValid(HealthWidgetClass))
-		HealthBar = Cast<UHealthBar>(CreateWidget(World, HealthWidgetClass));
+		HealthBar = Cast<UHealthBar>(CreateWidget(GetWorld(), HealthWidgetClass));
 	HealthBar->SetOwner(this);
 	HealthBar->SetDesiredSizeInViewport(FVector2D(270.f, 40.f));
 	HealthBar->SetPositionInViewport(FVector2D(0.f, 140.f));
-	HealthBar->HealthUpdate();
 	
 	FollowHealthBar = Cast<UHealthBar>(HPComp->GetUserWidgetObject());
 	FollowHealthBar->SetOwner(this);
-	FollowHealthBar->HealthUpdate();
 
 	if (RacingGameInstance->GetActiveMode() != "Horde")
 	{
@@ -144,10 +149,29 @@ void APlayerCar::BeginPlay()
 	TurnForce = DefaultTurnForce;
 	GravityForce = DefaultGravityForce;
 
-	Back_Camera->Deactivate();
+	// Back_Camera->Deactivate();
 
-	InitTAtkTime = RacingGameMode->GetDifficulty( "Timer");
+	if (RacingGameMode != nullptr)
+	{
+		if (RacingGameInstance->GetActiveMode() == "TimeAttack")
+			InitTAtkTime = RacingGameMode->GetDifficulty( "Timer");
+	}
 	TAtkTime = InitTAtkTime;
+
+	// Disable input for 3 seconds at the start while countdown goes
+	RacingGameMode->SetGamePaused(true, false);
+	TimerDelegate.BindLambda([&]
+	{
+	RacingGameMode->SetGamePaused(false, false);
+	});
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 3.f, false);
+
+	Ammo = MaxAmmo;
+	AmmoCounter->AmmoUpdate();
+	Health = MaxHealth;
+	FollowHealthBar->HealthUpdate();
+	HealthBar->HealthUpdate();
+	LapCounter->LapUpdate();
 }
 
 // Called every frame
@@ -155,26 +179,37 @@ void APlayerCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	auto World = GetWorld();
-	Rotation = PlayerMesh->GetRelativeRotation();
-	Forward = PlayerMesh->GetForwardVector();
-	Velocity = PawnMovementComponent->Velocity;
-	Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
-	
-	if (RacingGameInstance->GetActiveMode() == "TimeAttack")
+	// const UWorld* World = GetWorld();
+
+	if (PlayerMesh)
 	{
-		TAtkTime = InitTAtkTime - World->GetTimeSeconds();
-		if (TAtkTime <= 0.f)
-		{
-			RacingGameMode->GameOver( "Ran out of time" );
-		}
+		Rotation = PlayerMesh->GetRelativeRotation();
+		Forward = PlayerMesh->GetForwardVector();
 	}
 
+	if (PawnMovementComponent)
+	{
+		Velocity = PawnMovementComponent->Velocity;
+		Speed = FMath::Clamp(Velocity.Size(), 0.f, PawnMovementComponent->MaxSpeed) / PawnMovementComponent->MaxSpeed;
+	}
+	
+	if (RacingGameInstance)
+	{
+		if (RacingGameInstance->GetActiveMode() == "TimeAttack")
+		{
+			TAtkTime = InitTAtkTime - GetWorld()->GetTimeSeconds();
+			if (TAtkTime <= 0.f)
+			{
+				RacingGameMode->GameOver( "Ran out of time" );
+			}
+		}
+	}
 	WallCheck();
 	
 	SpringArm->SetRelativeLocation(FVector(CameraPos, 0.f, 0.f));
 
-	Speedometer->SpeedUpdate();
+	if (Speedometer)
+		Speedometer->SpeedUpdate();
 	
 	// if (FMath::IsNearlyEqual(Rotation.Roll, -10.f, 9.f) && bDoARoll == true)
 	// {
@@ -210,10 +245,6 @@ void APlayerCar::Tick(float DeltaTime)
 	{
 		PlayerMesh->SetRelativeRotation(FMath::RInterpTo(Rotation, FRotator(Rotation.Pitch, Rotation.Yaw, Rotation.Roll + 13.f), DeltaTime, 40.f));
 	}
-	else
-	{
-		
-	}
 	
 	// if (MoveForce > 0.f)
 	// {
@@ -248,6 +279,7 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction("BackCam", IE_Pressed, this, &APlayerCar::BackCamOn);
 	PlayerInputComponent->BindAction("BackCam", IE_Released, this, &APlayerCar::BackCamOff);
 	PlayerInputComponent->BindAction("ToggleTopDown", IE_Pressed, this, &APlayerCar::ToggleTopCam);
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCar::Pause);
 }
 
 void APlayerCar::Drive(float Force)
@@ -291,16 +323,15 @@ void APlayerCar::Turn(float TurnDirection)
 
 void APlayerCar::ShootLaser()
 {
-	if (Ammo <= 0)
+	UWorld* World = GetWorld();
+	const FVector Location = GetActorLocation();
+	if (Ammo <= 0 && RacingGameInstance->GetActiveMode() == "Horde")
 	{
 		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
 		AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
-
 	}
-	if (Ammo > 0)
+	else if (Ammo > 0 && RacingGameInstance->GetActiveMode() == "Horde")
 	{
-		UWorld* World = GetWorld();
-		const FVector Location = GetActorLocation();
 		// const FVector Right = PlayerMesh->GetRightVector();
 		
 		if (bShotgun == true)
@@ -336,10 +367,28 @@ void APlayerCar::ShootLaser()
 				}
 			}
 		}
+		AmmoCounter->AmmoUpdate();
+		UE_LOG(LogTemp, Warning, TEXT("Shooting Laser"));
 	}
-	AmmoCounter->AmmoUpdate();
-	UE_LOG(LogTemp, Warning, TEXT("Shooting Laser"));
+	else if (RacingGameInstance->GetActiveMode() == "Race" && bShotgun == true)
+	{
+		if (World)
+		{
+			Bullet = World->SpawnActor<ABullet>(PVPMissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
+			// if (Bullet)
+			// {
+			// 	Bullet->SetOwner(this);
+			// 	Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+			// }
+			bShotgun = false;
+		}
+	}
+}
 
+void APlayerCar::Lap()
+{
+	LapCounter->LapUpdate();
 }
 
 void APlayerCar::ShootMissile()
@@ -436,7 +485,7 @@ void APlayerCar::ShotgunPU()
 
 void APlayerCar::SpeedPU()
 {
-	const auto World = GetWorld();
+	const UWorld* World = GetWorld();
 	// CommandString = "r.MotionBlur.Amount 0.5";
 	// World->Exec(World, *CommandString);
 	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.1;
@@ -445,7 +494,7 @@ void APlayerCar::SpeedPU()
 	Sphere->AddImpulse(PlayerMesh->GetForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
-	GravityForce = DefaultGravityForce * 0.3f;
+	GravityForce = DefaultGravityForce * 0.8f;
 	TraceLength = DefaultTraceLength + 50.f;
 	TurnForce = DefaultTurnForce * 1.5f;
 	SpeedLimit();
@@ -455,7 +504,7 @@ void APlayerCar::SpeedLimit()
 {
 	TimerDelegateSpeed.BindLambda([&]
 	{
-		const auto World = GetWorld();
+		// const UWorld* World = GetWorld();
 		// SpringArm->CameraLagSpeed = 20.f;
 		// if (World->GetCurrentLevel()->GetName() == RoadTest)
 		// {
@@ -498,19 +547,19 @@ void APlayerCar::Reload()
 
 void APlayerCar::AileronRoll()
 {
-	const auto World = GetWorld();
+	const UWorld* World = GetWorld();
 	Timer = World->GetTimeSeconds();
 	if (Timer > TimeSinceEvent)
 	{
 		bDoARoll = true;
-		SpringArm->AttachTo(GetRootComponent());
+		// SpringArm->AttachTo(GetRootComponent());
 		TraceLength = DefaultTraceLength * 1.2f;
 		TimeSinceEvent = Timer + 3.f;
 		TimerDelegateRoll.BindLambda([&]
 		{
 			// PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
 			bDoARoll = false;
-			SpringArm->AttachTo(PlayerMesh);
+			// SpringArm->AttachTo(PlayerMesh);
 			TraceLength = DefaultTraceLength;
 		});
 		GetWorld()->GetTimerManager().SetTimer(TimerHandleRoll, TimerDelegateRoll, 0.7f, false);
@@ -603,7 +652,7 @@ float APlayerCar::GetTAtkTime()
 void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                            UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	const auto World = GetWorld();
+	const UWorld* World = GetWorld();
 	Timer = World->GetTimeSeconds();
 	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>() && OtherComponent->IsA<UCapsuleComponent>())
 	{

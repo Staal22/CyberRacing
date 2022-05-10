@@ -23,10 +23,16 @@ public:
 
 	UFUNCTION()
 	float GetTAtkDifficulty();
+
+	UFUNCTION()
+	int GetLap();
+
+	UFUNCTION()
+	int GetMaxLap();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString ActiveMode;
+	FString ActiveMode = "Race";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor MaterialColor;
@@ -41,6 +47,15 @@ protected:
 	UStaticMesh* VehicleMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float TAtkDifficulty = 15.f;
+	float TAtkDifficulty = 120.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int LapCounter = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AILapCounter = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int LapMax = 3;
 	
 };

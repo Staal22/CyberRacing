@@ -10,8 +10,6 @@
 #include"PlayerCar.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/CapsuleComponent.h"
-
 
 
 // Sets default values
@@ -20,40 +18,31 @@ AEnemyC::AEnemyC()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	///A standard box collider with Overlap Events:
-	Root = Super::GetCapsuleComponent();
-	Root->SetGenerateOverlapEvents(true);
-
 	PlayerSensingSphere=CreateDefaultSubobject<USphereComponent>(TEXT("PlayerSensingSphere"));
 	PlayerSensingSphere->SetupAttachment(GetRootComponent());
 	PlayerSensingSphere->InitSphereRadius(3000.f);
-	GetCharacterMovement()->MaxWalkSpeed = 800.f;
+	GetCharacterMovement()->MaxWalkSpeed = 450.f;
 }
 
 // Called when the game starts or when spawned
 void AEnemyC::BeginPlay()
 {
 	AIController=Cast<AAIController>(GetController());
-
 	Super::BeginPlay();
-	
-
 	PlayerSensingSphere->OnComponentBeginOverlap.AddDynamic(this,&AEnemyC::OnOverlap);
 	PlayerSensingSphere->OnComponentEndOverlap.AddDynamic(this,&AEnemyC::OnEndOverlap);
-	
 }
 
 // Called every frame
 void AEnemyC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
 void AEnemyC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void AEnemyC::IsHit()
@@ -62,9 +51,8 @@ void AEnemyC::IsHit()
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
 	//death sound
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
-
+	//remove actor
 	Destroy();
-	UE_LOG(LogTemp, Warning, TEXT("Enemy killed"));
 }
 
 
@@ -76,7 +64,6 @@ void AEnemyC::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 	{
 		MoveToTarget(RefPlayerCar);
 	}
-	
 }
 
 void AEnemyC::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -89,12 +76,11 @@ void AEnemyC::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		UE_LOG(LogTemp, Warning, TEXT("Player Ends Overlap"));
 		AIController->StopMovement();
 	}
-
 }
 
 void AEnemyC::MoveToTarget(APlayerCar* RefPlayerCar)
 {
-	//have to include "AIModule" in ProjectNameBuild.cs file for this to work (V)
+	// included "AIModule" in ProjectNameBuild.cs file for this to function
 	if (AIController&&RefPlayerCar)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Overlaps"));
@@ -108,18 +94,5 @@ void AEnemyC::MoveToTarget(APlayerCar* RefPlayerCar)
 		FNavPathSharedPtr NavPath;	//Will contain all location nodes for the path
 	
 		AIController->MoveTo(AIMoverequest, &NavPath);
-	
-		// **************** this just shows us the path *********************
-		//auto guesses the type for us
-		// auto PathPoints = NavPath->GetPathPoints();
-	
-		// for (auto Point : PathPoints)
-		// {
-		// 	FVector Location = Point.Location;
-		// 	UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 3, 0.5f);
-		// }
 	}
-
-
-
 }
