@@ -78,7 +78,7 @@ void AAICar::Tick(float DeltaTime)
 			{
 				MHit = false;
 			}
-			AICarMesh->SetRelativeRotation(LastRotation);
+			Collision->SetRelativeRotation(LastRotation);
 		}
 		if (MHit == false)
 		{
