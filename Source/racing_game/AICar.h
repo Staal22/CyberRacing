@@ -52,17 +52,19 @@ public:
 	void MissileFlip();
 	void MineFlip();
 
-	int randInt;
+	float randInt;
+	float randInt2;
 	bool PUAct = false;
 	bool ColCheck = true;
 	bool MHit = false;
 	bool MisPU = false;
 	bool MiPU = false;
+	bool Count = true;
 	float HoverHeight = 250;
 	float WallCheck = 3500;
 	float WallCheck2 = 500;
 	float InterpSpeed = 200.f;
-	float InterpSpeed2 = 0.2f;
+	float InterpSpeed2 = 0.05f;
 	FVector Ruler;
 	FVector RulerRight;
 	FVector RulerLeft;

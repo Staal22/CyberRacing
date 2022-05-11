@@ -29,8 +29,6 @@ AAICar::AAICar()
 	AICarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AICarMesh"));
 	AICarMesh->SetupAttachment(GetRootComponent());
 
-	ForceStrength = 30000.0f;
-	ForceStrength2 = 50000.0f;
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +40,11 @@ void AAICar::BeginPlay()
 	Super::BeginPlay();
 
 	SmoothRot = GetActorRotation();
+
+	randInt2 = FMath::FRandRange(25, 28);
+
+	ForceStrength = 1000.f * randInt2;
+	ForceStrength2 = 50000.0f;
 }
 
 // Called every frame 
@@ -55,53 +58,56 @@ void AAICar::Tick(float DeltaTime)
 	BoostTime += DeltaTime;
 	RotationCheck += DeltaTime;
 	PUTime += DeltaTime;
-
+	
+	if (Time > 3.f)
+	{
+		Count = false;
+	}
 	/*
 	FVector NewLocation = GetActorLocation();
 	NewLocation += Collision->GetForwardVector() * Speed;
 	SetActorLocation(NewLocation);
 	*/
-	if (MHit == true)
+	if (Count == false)
 	{
-		AICarMesh->SetRelativeRotation(FRotator(Turn * 180.f, 0.f, 0.f));
-		if (Turn > 2.f)
+		if (MHit == true)
 		{
-			MHit = false;
-		}
-	}
-	if (MHit == false)
-	{
-		if (PUAct == true)
-		{
-
-			if (PUTime > randInt)
+			AICarMesh->SetRelativeRotation(FRotator(Turn * 180.f, 0.f, 0.f));
+			if (Turn > 2.f)
 			{
-				if (MisPU == true)
+				MHit = false;
+			}
+			AICarMesh->SetRelativeRotation(LastRotation);
+		}
+		if (MHit == false)
+		{
+			if (PUAct == true)
+			{
+
+				if (PUTime > randInt)
 				{
-					MissilePU();
-				}
-				if (MiPU == true)
-				{
-					MinePU();
+					if (MisPU == true)
+					{
+						MissilePU();
+					}
+					if (MiPU == true)
+					{
+						MinePU();
+					}
 				}
 			}
-		}
-		Forward = Collision->GetForwardVector();
+			Forward = Collision->GetForwardVector();
 
-		AICarMesh->AddForce(Forward * FMath::FInterpTo(0.0f, ForceStrength, Time, InterpSpeed2) * AICarMesh->GetMass());
+			AICarMesh->AddForce(Forward * FMath::FInterpTo(0.0f, ForceStrength, Time, InterpSpeed2) * AICarMesh->GetMass());
 
-		MyRotator4 = MyRotator + MyRotator2 + MyRotator3;
+			MyRotator4 = MyRotator + MyRotator2 + MyRotator3;
 
-		Collision->SetWorldRotation(FMath::RInterpTo(Collision->GetComponentRotation(), MyRotator4, Time, InterpSpeed));
+			Collision->SetWorldRotation(FMath::RInterpTo(Collision->GetComponentRotation(), MyRotator4, Time, InterpSpeed));
 
-		if (RotationCheck > 0.5f)
-		{
-			LastRotation = Collision->GetRelativeRotation();
-		}
-
-		if (BoostTime > 3.f)
-		{
-			ForceStrength = 30000.0f;
+			if (BoostTime > 3.f)
+			{
+				ForceStrength = 1000.f * randInt2;
+			}
 		}
 	}
 }
@@ -241,12 +247,13 @@ void AAICar::LineTrace()
 void AAICar::SpeedBoost()
 {
 	BoostTime = 0.f;
-	ForceStrength = 25000.0f;
-	AICarMesh->AddImpulse(Forward * 2000.f * AICarMesh->GetMass());
+	ForceStrength = 40000.0f;
+	AICarMesh->AddImpulse(Forward * 500.f * AICarMesh->GetMass());
 }
 
 void AAICar::Missile()
 {
+	
 	ForceStrength = 0.0f;
 	Up = Collision->GetUpVector();
 
@@ -265,6 +272,8 @@ void AAICar::MissilePU()
 
 void AAICar::MinePU()
 {
+	LastRotation = Collision->GetRelativeRotation();
+
 	UWorld* World = GetWorld();
 
 	FVector Location = GetActorLocation();

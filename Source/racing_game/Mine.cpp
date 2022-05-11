@@ -36,7 +36,7 @@ void AMine::Tick(float DeltaTime)
 	BombTime += DeltaTime;
 	ActTime += DeltaTime;
 
-	if (BombTime > 3.0f)
+	if (BombTime > 1.5)
 	{
 		Explosion();
 	}
