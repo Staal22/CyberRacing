@@ -10,7 +10,6 @@
 #include "AmmoCounter.h"
 #include <Kismet/GameplayStatics.h>
 #include <Components/CapsuleComponent.h>
-
 #include "AICar.h"
 #include "Bullet.h"
 #include "Enemy.h"
@@ -18,9 +17,9 @@
 #include "HealthBar.h"
 #include "LapCounter.h"
 #include "Mine.h"
+#include "PowerUpDisplay.h"
 #include "RacingGameInstance.h"
 #include "racing_gameGameModeBase.h"
-#include "SNodePanel.h"
 #include "Speedometer.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -112,6 +111,13 @@ void APlayerCar::BeginPlay()
 	{
 		AmmoCounter->AddToViewport();
 	}
+
+	if (IsValid(PUDisplayClass))
+		PowerUpDisplay = Cast<UPowerUpDisplay>(CreateWidget(GetWorld(), PUDisplayClass));
+	if (RacingGameInstance->GetActiveMode() != "TimeAttack")
+	{
+		PowerUpDisplay->AddToViewport();
+	}
 	
 	if (IsValid(LapCounterWidgetClass))
 		LapCounter = Cast<ULapCounter>(CreateWidget(GetWorld(), LapCounterWidgetClass));
@@ -175,6 +181,7 @@ void APlayerCar::BeginPlay()
 	FollowHealthBar->HealthUpdate();
 	HealthBar->HealthUpdate();
 	LapCounter->LapUpdate();
+	PowerUpDisplay->PuImageUpdate();
 }
 
 // Called every frame
@@ -343,7 +350,6 @@ void APlayerCar::ShootLaser()
 	else if (Ammo > 0 && RacingGameInstance->GetActiveMode() == "Horde")
 	{
 		// const FVector Right = PlayerMesh->GetRightVector();
-		
 		if (bShotgun == true)
 		{
 			TArray<ABullet*> Bullets;
@@ -387,6 +393,7 @@ void APlayerCar::ShootLaser()
 			World->SpawnActor<ABullet>(PVPMissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 			bShotgun = false;
+			PowerUpDisplay->PuImageUpdate();
 		}
 	}
 	else if (RacingGameInstance->GetActiveMode() == "Race" && bMine == true)
@@ -396,6 +403,7 @@ void APlayerCar::ShootLaser()
 			World->SpawnActor<AMine>(MineToSpawn, Location + GetActorForwardVector() * -50.f, GetActorRotation());
 			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
 			bMine = false;
+			PowerUpDisplay->PuImageUpdate();
 		}
 	}
 }
@@ -501,17 +509,45 @@ void APlayerCar::OnEnemyHit(AActor* Actor)
 	// }
 }
 
+int APlayerCar::GetPU()
+{
+	if (bMissile == true)
+		return 1;
+
+	if (bMine == true)
+		return 2;
+
+	// No powerup pick-up
+	return 0;
+}
+
+bool APlayerCar::ShotgunActive()
+{
+	return bShotgun;
+}
+
 void APlayerCar::ShotgunPU()
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("SHOTGUN")));
-	if (bMine == false)
-		bShotgun = true;
+	bShotgun = true;
 }
 
 void APlayerCar::MinePU()
 {
-	if (bShotgun == false)
+	if (bMissile == false)
+	{
 		bMine = true;
+		PowerUpDisplay->PuImageUpdate();
+	}
+}
+
+void APlayerCar::MissilePU()
+{
+	if (bMine == false)
+	{
+		bMissile = true;
+		PowerUpDisplay->PuImageUpdate();
+	}
 }
 
 void APlayerCar::SpeedPU()
