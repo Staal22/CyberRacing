@@ -215,7 +215,6 @@ void APlayerCar::Tick(float DeltaTime)
 	WallCheck();
 	if (bHitState == true)
 	{
-		PlayerMesh->SetRelativeRotation(FRotator(HitTimer * 120.f, 0.f, 0.f));
 		if (HitTimer > 3.f)
 		{
 			HitTimer = 0.f;
@@ -288,9 +287,8 @@ void APlayerCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	PlayerInputComponent->BindAxis("Forward", this, &APlayerCar::Drive);
 	PlayerInputComponent->BindAxis("TurnL", this, &APlayerCar::Turn);
-
 	PlayerInputComponent->BindAction("ShootLaser", IE_Pressed, this, &APlayerCar::ShootLaser);
-	PlayerInputComponent->BindAction("ShootMissile", IE_Pressed, this, &APlayerCar::ShootMissile);
+	// PlayerInputComponent->BindAction("ShootMissile", IE_Pressed, this, &APlayerCar::ShootMissile);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerCar::Reload);
 	PlayerInputComponent->BindAction("AileronRoll", IE_Pressed, this, &APlayerCar::AileronRoll);
 	PlayerInputComponent->BindAction("BackCam", IE_Pressed, this, &APlayerCar::BackCamOn);
@@ -347,7 +345,7 @@ void APlayerCar::ShootLaser()
 		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
 		AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
 	}
-	else if (Ammo > 0 && RacingGameInstance->GetActiveMode() == "Horde")
+	else if (Ammo > 0 && RacingGameInstance->GetActiveMode() == "Horde" && bMissile == false && bMine == false)
 	{
 		// const FVector Right = PlayerMesh->GetRightVector();
 		if (bShotgun == true)
@@ -386,17 +384,28 @@ void APlayerCar::ShootLaser()
 		AmmoCounter->AmmoUpdate();
 		UE_LOG(LogTemp, Warning, TEXT("Shooting Laser"));
 	}
-	else if (RacingGameInstance->GetActiveMode() == "Race" && bShotgun == true)
+	else if (RacingGameInstance->GetActiveMode() == "Race" && bMissile == true)
 	{
 		if (World)
 		{
 			World->SpawnActor<ABullet>(PVPMissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
 			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
-			bShotgun = false;
+			bMissile = false;
 			PowerUpDisplay->PuImageUpdate();
 		}
 	}
-	else if (RacingGameInstance->GetActiveMode() == "Race" && bMine == true)
+	else if (RacingGameInstance->GetActiveMode() == "Horde" && bMissile == true)
+	{
+		if (World)
+		{
+			Bullet = World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+			UGameplayStatics::PlaySound2D(World, ShootingSound, 1.0f, 1.0f, 0.0f);
+			bMissile = false;
+			PowerUpDisplay->PuImageUpdate();
+			Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+		}
+	}
+	else if (RacingGameInstance->GetActiveMode() != "TimeAttack" && bMine == true)
 	{
 		if (World)
 		{
@@ -413,61 +422,61 @@ void APlayerCar::Lap()
 	LapCounter->LapUpdate();
 }
 
-void APlayerCar::ShootMissile()
-{
-	if (Ammo <= 0 || RacingGameMode->GetScore() < 500)
-	{
-		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
-		if (Ammo <= 0)
-			AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
-		if (RacingGameMode->GetScore() < 500)
-		{
-			// maybe do something here
-		}
-	}
-	if (Ammo > 0 && RacingGameMode->GetScore() >= 500)
-	{
-		UWorld* World = GetWorld();
-		const FVector Location = GetActorLocation();
-		// const FVector Right = PlayerMesh->GetRightVector();
-		RacingGameMode->AddScore(-500);
-		RacingGameMode->ScoreUpdate();
-		
-		if (bShotgun == true)
-		{
-			TArray<ABullet*> Bullets;
-			Ammo -= 3;
-			if (Ammo < 0)
-			{
-				Ammo = 0;
-			}
-			//implement TArray of actors and so on
-			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
-			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
-			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
-			for (int i = 0; i < 3; i++)
-			{
-				Cast<ABullet>(Bullets[i])->SetOwner(this);
-				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
-			}
-		}
-		else
-		{
-			Ammo--;
-			if (World)
-			{
-				Bullet = World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
-				if (Bullet)
-				{
-					Bullet->SetOwner(this);
-					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
-				}
-			}
-		}
-	}
-	AmmoCounter->AmmoUpdate();
-	UE_LOG(LogTemp, Warning, TEXT("Shooting Missile"));
-}
+// void APlayerCar::ShootMissile()
+// {
+// 	if (Ammo <= 0 || RacingGameMode->GetScore() < 500)
+// 	{
+// 		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
+// 		if (Ammo <= 0)
+// 			AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
+// 		if (RacingGameMode->GetScore() < 500)
+// 		{
+// 			// maybe do something here
+// 		}
+// 	}
+// 	if (Ammo > 0 && RacingGameMode->GetScore() >= 500)
+// 	{
+// 		UWorld* World = GetWorld();
+// 		const FVector Location = GetActorLocation();
+// 		// const FVector Right = PlayerMesh->GetRightVector();
+// 		RacingGameMode->AddScore(-500);
+// 		RacingGameMode->ScoreUpdate();
+// 		
+// 		if (bShotgun == true)
+// 		{
+// 			TArray<ABullet*> Bullets;
+// 			Ammo -= 3;
+// 			if (Ammo < 0)
+// 			{
+// 				Ammo = 0;
+// 			}
+// 			//implement TArray of actors and so on
+// 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
+// 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
+// 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
+// 			for (int i = 0; i < 3; i++)
+// 			{
+// 				Cast<ABullet>(Bullets[i])->SetOwner(this);
+// 				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+// 			}
+// 		}
+// 		else
+// 		{
+// 			Ammo--;
+// 			if (World)
+// 			{
+// 				Bullet = World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
+// 				if (Bullet)
+// 				{
+// 					Bullet->SetOwner(this);
+// 					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
+// 				}
+// 			}
+// 		}
+// 	}
+// 	AmmoCounter->AmmoUpdate();
+// 	UE_LOG(LogTemp, Warning, TEXT("Shooting Missile"));
+// }
 
 void APlayerCar::OnEnemyHit(AActor* Actor)
 {
@@ -530,6 +539,7 @@ void APlayerCar::ShotgunPU()
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("SHOTGUN")));
 	bShotgun = true;
+	PowerUpDisplay->PuImageUpdate();
 }
 
 void APlayerCar::MinePU()
@@ -592,7 +602,6 @@ void APlayerCar::SpeedLimit()
 
 void APlayerCar::Reload()
 {
-	HitByMissile();
 	if (bIsReloading == false)
 	{
 		bIsReloading = true;
@@ -736,7 +745,7 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	const UWorld* World = GetWorld();
 	Timer = World->GetTimeSeconds();
-	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>() && OtherComponent->IsA<UCapsuleComponent>())
+	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>() && OtherComponent->IsA<UCapsuleComponent>() && bDoARoll == false)
 	{
 		if (Timer > TimeSinceEvent)
 		{

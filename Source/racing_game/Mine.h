@@ -27,7 +27,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MineMesh")
 		UStaticMeshComponent* MineMesh = nullptr;
 
@@ -58,5 +57,9 @@ public:
 	float BombTime = 0;
 	float ActTime = 0;
 	bool HitCar = false;
+
+private:
+	UPROPERTY()
+	class Aracing_gameGameModeBase* RacingGameMode;
 
 };
