@@ -3,6 +3,8 @@
 
 #include "Mine.h"
 #include "AICar.h"
+#include "Enemy.h"
+#include "EnemyC.h"
 #include "PlayerCar.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -48,7 +50,7 @@ void AMine::Explosion()
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MineExplosion, GetTransform(), true);
 
-	GetOverlappingActors(Result, AAICar::StaticClass());
+	GetOverlappingActors(Result);
 	//GetOverlappingActors(Result, APlayerCar::StaticClass());
 
 	for (int i = 0; i < Result.Num(); i++)
@@ -56,6 +58,18 @@ void AMine::Explosion()
 		if (Result[i]->IsA<AAICar>())
 		{
 			Cast<AAICar>(Result[i])->Missile();
+		}
+		else if (Result[i]->IsA<APlayerCar>())
+		{
+			Cast<APlayerCar>(Result[i])->HitByMissile();
+		}
+		else if (Result[i]->IsA<AEnemy>())
+		{
+			Cast<AEnemy>(Result[i])->IsHit();
+		}
+		else if (Result[i]->IsA<AEnemyC>())
+		{
+			Cast<AEnemyC>(Result[i])->IsHit();
 		}
 	}
 

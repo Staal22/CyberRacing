@@ -82,6 +82,10 @@ void APowerUpBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 		{
 			Cast<APlayerCar>(OtherActor)->ShotgunPU();
 		}
+		else if (randint == 2)
+		{
+			Cast<APlayerCar>(OtherActor)->MinePU();
+		}
 		Destruction();
 	}
 	else if (OtherActor->IsA<AAICar>())
