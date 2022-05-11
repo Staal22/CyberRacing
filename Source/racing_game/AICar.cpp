@@ -15,6 +15,7 @@
 #include "RacingGameInstance.h"
 #include "racing_gameGameModeBase.h"
 #include <Kismet/GameplayStatics.h>
+#include "Bullet.h"
 
 
 // Sets default values
@@ -253,6 +254,7 @@ void AAICar::SpeedBoost()
 
 void AAICar::Missile()
 {
+	LastRotation = Collision->GetRelativeRotation();
 	
 	ForceStrength = 0.0f;
 	Up = Collision->GetUpVector();
@@ -266,19 +268,24 @@ void AAICar::Missile()
 
 void AAICar::MissilePU()
 {
+	UWorld* World = GetWorld();
+
+	FVector Location = GetActorLocation();
+
+	ABullet* Missile = World->SpawnActor<ABullet>(MissileSpawn, Location + FVector(0.f, -1000.f, 0.f), GetActorRotation());
+
 	PUAct = false;
 	MisPU = false;
 }
 
 void AAICar::MinePU()
 {
-	LastRotation = Collision->GetRelativeRotation();
-
 	UWorld* World = GetWorld();
 
 	FVector Location = GetActorLocation();
 
 	AMine* Mine = World->SpawnActor<AMine>(MineSpawn, Location + FVector(0.f, 1000.f, 0.f), GetActorRotation());
+
 	PUAct = false;
 	MiPU = false;
 	//UE_LOG(LogTemp, Warning, TEXT("MINE SPAWNED"));
