@@ -96,6 +96,11 @@ void APowerUpBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 			Cast<AAICar>(OtherActor)->MineFlip();
 			Cast<AAICar>(OtherActor)->PUActive();
 		}
+		else if (randint == 2)
+		{
+			Cast<AAICar>(OtherActor)->MissileFlip();
+			Cast<AAICar>(OtherActor)->PUActive();
+		}
 		Destruction();
 	}
 }
