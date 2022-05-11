@@ -80,7 +80,7 @@ void APowerUpBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 		randint = FMath::RandRange(1, 2);
 		if (randint == 1)
 		{
-			Cast<APlayerCar>(OtherActor)->ShotgunPU();
+			Cast<APlayerCar>(OtherActor)->MissilePU();
 		}
 		else if (randint == 2)
 		{

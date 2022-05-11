@@ -110,8 +110,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Lap();
 	
-	UFUNCTION()
-	void ShootMissile();
+	// UFUNCTION()
+	// void ShootMissile();
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void Checkpoint();
@@ -173,7 +173,7 @@ public:
 	UFUNCTION()
 	void ToggleTopCam();
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	float GetTAtkTime();
 
 protected:

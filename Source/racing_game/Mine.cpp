@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "EnemyC.h"
 #include "PlayerCar.h"
+#include "racing_gameGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -28,7 +29,7 @@ void AMine::BeginPlay()
 	Super::BeginPlay();
 	//Collision->OnComponentBeginOverlap.AddDynamic(this, &AMine::OnOverlapBegin);
 
-
+	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame
@@ -66,10 +67,12 @@ void AMine::Explosion()
 		else if (Result[i]->IsA<AEnemy>())
 		{
 			Cast<AEnemy>(Result[i])->IsHit();
+			RacingGameMode->EnemyDied();
 		}
 		else if (Result[i]->IsA<AEnemyC>())
 		{
 			Cast<AEnemyC>(Result[i])->IsHit();
+			RacingGameMode->EnemyDied();
 		}
 	}
 

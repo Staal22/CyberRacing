@@ -19,8 +19,10 @@ void UPowerUpDisplay::PuImageUpdate()
 
 	const FString MinePath = FString("/Game/Textures/Icons/Legend/mine.mine");
 	const FString MissilePath = FString("/Game/Textures/Icons/Legend/missile.missile");
+	const FString ShotgunPath = FString("/Game/Textures/Icons/Legend/shotgun.shotgun");
 	UTexture2D* MineTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *MinePath));
 	UTexture2D* MissileTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *MissilePath));
+	UTexture2D* ShotgunTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *ShotgunPath));
 
 	if (PlayerCar->GetPU() == 0)
 		Powerup->SetVisibility(ESlateVisibility::Hidden);
@@ -43,6 +45,6 @@ void UPowerUpDisplay::PuImageUpdate()
 	if (PlayerCar->ShotgunActive() == true)
 	{
 		Shotgun->SetVisibility(ESlateVisibility::Visible);
-		
+		Shotgun->SetBrushFromTexture(ShotgunTexture);
 	}
 }
