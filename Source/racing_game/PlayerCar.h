@@ -110,17 +110,26 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Lap();
 	
-	UFUNCTION()
-	void ShootMissile();
+	// UFUNCTION()
+	// void ShootMissile();
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void Checkpoint();
 
 	UFUNCTION()
+	int GetPU();
+
+	UFUNCTION()
+	bool ShotgunActive();
+	
+	UFUNCTION()
 	void ShotgunPU();
 
 	UFUNCTION()
 	void MinePU();
+
+	UFUNCTION()
+	void MissilePU();
 
 	UFUNCTION()
 	void SpeedPU();
@@ -164,7 +173,7 @@ public:
 	UFUNCTION()
 	void ToggleTopCam();
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	float GetTAtkTime();
 
 protected:
@@ -180,6 +189,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> HealthWidgetClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> PUDisplayClass;
+
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HPComp;
 	
@@ -188,6 +200,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class ULapCounter* LapCounter;
+	
+	UPROPERTY(VisibleAnywhere)
+	class UPowerUpDisplay* PowerUpDisplay;
 	
 	UPROPERTY(VisibleAnywhere)
 	class USpeedometer* Speedometer;
@@ -246,6 +261,9 @@ private:
 
 	UPROPERTY()
 	bool bShotgun = false;
+
+	UPROPERTY()
+	bool bMissile = false;
 
 	UPROPERTY()
 	bool bMine = false;

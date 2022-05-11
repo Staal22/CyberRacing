@@ -39,6 +39,9 @@ public:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
 	TSubclassOf<AActor> MineSpawn;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<AActor> MissileSpawn;
+
 	FVector CarDirection = FVector(0.f, 0.f, 0.f);
 
 	void LineTrace();
