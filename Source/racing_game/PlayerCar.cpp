@@ -215,7 +215,6 @@ void APlayerCar::Tick(float DeltaTime)
 	WallCheck();
 	if (bHitState == true)
 	{
-		PlayerMesh->SetRelativeRotation(FRotator(HitTimer * 120.f, 0.f, 0.f));
 		if (HitTimer > 3.f)
 		{
 			HitTimer = 0.f;
