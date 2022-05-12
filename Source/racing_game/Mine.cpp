@@ -51,8 +51,8 @@ void AMine::Explosion()
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MineExplosion, GetTransform(), true);
 
-	GetOverlappingActors(Result, AAICar::StaticClass());
-	GetOverlappingActors(Result, APlayerCar::StaticClass());
+	GetOverlappingActors(Result);
+
 
 	for (int i = 0; i < Result.Num(); i++)
 	{
