@@ -535,6 +535,11 @@ bool APlayerCar::ShotgunActive()
 	return bShotgun;
 }
 
+void APlayerCar::CoinAcquired()
+{
+	InitTAtkTime += 1;
+}
+
 void APlayerCar::ShotgunPU()
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("SHOTGUN")));
@@ -568,6 +573,7 @@ void APlayerCar::SpeedPU()
 	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0.1;
 	PawnMovementComponent->MaxSpeed = MaxMoveSpeed * 3.f;
 	// SpringArm->CameraLagSpeed = 10.f;
+	NiagaraBoost();
 	Sphere->AddImpulse(Sphere->GetForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
@@ -590,6 +596,7 @@ void APlayerCar::SpeedLimit()
 		TraceLength = DefaultTraceLength;
 		GravityForce = DefaultGravityForce;
 		TurnForce = DefaultTurnForce;
+		NiagaraBoostOff();
 		// BackCamOff();
 		// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		// }

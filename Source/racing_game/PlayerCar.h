@@ -123,6 +123,15 @@ public:
 	bool ShotgunActive();
 	
 	UFUNCTION()
+	void CoinAcquired();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void NiagaraBoost();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void NiagaraBoostOff();
+	
+	UFUNCTION()
 	void ShotgunPU();
 
 	UFUNCTION()

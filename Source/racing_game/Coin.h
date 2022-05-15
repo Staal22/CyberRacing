@@ -52,8 +52,8 @@ private:
 	UPROPERTY()
 	class Aracing_gameGameModeBase* RacingGameMode;
 
-
-
+	UPROPERTY()
+	class APlayerCar* PlayerCar;
 	
 };
 

@@ -32,6 +32,7 @@ void ACoin::BeginPlay()
 	
 	const auto World = GetWorld();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
+	PlayerCar = Cast<APlayerCar>(UGameplayStatics::GetPlayerPawn(World, 0));
 }
 
 // Called every frame
@@ -72,6 +73,7 @@ void ACoin::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		{
 			RacingGameMode->CoinAcquired();
 		}
+		PlayerCar->CoinAcquired();
 		Destroy();
 		UGameplayStatics::PlaySound2D(GetWorld(), PickUpSound, 1.f, 1.f, 0.f, 0);
 		UE_LOG(LogTemp, Warning, TEXT("Coin obtained"));
