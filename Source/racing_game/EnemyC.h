@@ -35,9 +35,9 @@ private:
 	//DeathFX, init through blueprint
 	UPROPERTY(EditAnywhere, Category = "EnemyFX")
 	UParticleSystem* ExplosionUponDeath = nullptr;
-    
 	UPROPERTY(EditAnywhere, Category = "EnemyFX")
 	USoundBase* DeathSound = nullptr;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

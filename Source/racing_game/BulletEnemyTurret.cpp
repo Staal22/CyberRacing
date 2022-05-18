@@ -17,7 +17,7 @@ ABulletEnemyTurret::ABulletEnemyTurret()
 	SetRootComponent(Root);
 	
 	//Setting up mesh and attach it to root
-	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));//Actual mesh is set in BP
+	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));//Mesh set in BP
 	BulletMesh->SetupAttachment(GetRootComponent());
 
 }
@@ -37,7 +37,7 @@ void ABulletEnemyTurret::Tick(float DeltaTime)
 	
 	//Update time lived
 	TimeLived += DeltaTime;
-	if (TimeLived >= TimeToLive)
+	if (TimeLived >= TimeToLive)//>10secs
 	{
 		//trigger death
 		this->Death();
@@ -62,7 +62,7 @@ void ABulletEnemyTurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		return;
 	}
-	//calls function in player class (make function ( ) )***
+	//calls function in player class
 	if (OtherActor->IsA<APlayerCar>())
 	{
 		OnBulletHitEnemy.Broadcast(OtherActor);																
