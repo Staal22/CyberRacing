@@ -23,6 +23,7 @@
 #include "Speedometer.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 // #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -33,13 +34,12 @@ APlayerCar::APlayerCar()
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	SetRootComponent(Sphere);
-
-	WallArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("WallArrow"));
-	WallArrow->SetupAttachment(GetRootComponent());
 	
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
 	PlayerMesh->SetupAttachment(GetRootComponent());
-	// SetRootComponent(PlayerMesh);
+	
+	WallArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("WallArrow"));
+	WallArrow->SetupAttachment(GetRootComponent());
 
 	VfxArrow1 = CreateDefaultSubobject<UArrowComponent>(TEXT("VFXArrow1"));
 	VfxArrow2 = CreateDefaultSubobject<UArrowComponent>(TEXT("VFXArrow2"));
@@ -101,6 +101,9 @@ void APlayerCar::BeginPlay()
 	//Forward = GetActorForwardVector();
 	RacingGameMode = Cast<Aracing_gameGameModeBase>(GetWorld()->GetAuthGameMode());
 	RacingGameInstance = Cast<URacingGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	// if (IsValid(WallPhysMaterialClass))
+	// 	WallPhysMaterial = WallPhysMaterialClass.GetDefaultObject();
 	
 	if (IsValid(AmmoWidgetClass))
 		AmmoCounter = Cast<UAmmoCounter>(CreateWidget(GetWorld(), AmmoWidgetClass));
@@ -307,6 +310,7 @@ void APlayerCar::WallCheck()
 {
 	const auto World = GetWorld();
 	const FVector Location = WallArrow->GetComponentLocation();
+	Timer = World->GetTimeSeconds();
 	
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
@@ -316,16 +320,18 @@ void APlayerCar::WallCheck()
 	World->LineTraceSingleByChannel(*HitLeft, Location, Location * WallArrow->GetRightVector() * -300.f, ECC_Visibility, Params);
 	World->LineTraceSingleByChannel(*HitRight, Location, Location * WallArrow->GetRightVector() * 300.f, ECC_Visibility, Params);
 
-	if((HitLeft->Location - Location).Size() < 200.f)
+	if((HitLeft->Location - Location).Size() < 200.f && Timer > TimeSinceBounce)
 	{
-		Sphere->AddImpulse(HitLeft->ImpactNormal * 2000 * Sphere->GetMass());
+		Sphere->AddImpulse(HitLeft->ImpactNormal * 1000 * Sphere->GetMass());
 		Velocity.Normalize();
 		AddMovementInput(-1 * Velocity, Speed * 10);
+		TimeSinceBounce = Timer + 1.f;
 	}
-	else if ((HitRight->Location - Location).Size() < 200.f)
+	else if ((HitRight->Location - Location).Size() < 200.f && Timer > TimeSinceBounce)
 	{
-		Sphere->AddImpulse(HitRight->ImpactNormal * 2000 * Sphere->GetMass());
+		Sphere->AddImpulse(HitRight->ImpactNormal * 1000 * Sphere->GetMass());
 		AddMovementInput(-1 * Velocity, Speed * 10);
+		TimeSinceBounce = Timer + 1.f;
 	}
 }
 
@@ -421,62 +427,6 @@ void APlayerCar::Lap()
 {
 	LapCounter->LapUpdate();
 }
-
-// void APlayerCar::ShootMissile()
-// {
-// 	if (Ammo <= 0 || RacingGameMode->GetScore() < 500)
-// 	{
-// 		// GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("No ammo. Reload")));
-// 		if (Ammo <= 0)
-// 			AmmoCounter->SetColorAndOpacity(FLinearColor(255, 0, 0));
-// 		if (RacingGameMode->GetScore() < 500)
-// 		{
-// 			// maybe do something here
-// 		}
-// 	}
-// 	if (Ammo > 0 && RacingGameMode->GetScore() >= 500)
-// 	{
-// 		UWorld* World = GetWorld();
-// 		const FVector Location = GetActorLocation();
-// 		// const FVector Right = PlayerMesh->GetRightVector();
-// 		RacingGameMode->AddScore(-500);
-// 		RacingGameMode->ScoreUpdate();
-// 		
-// 		if (bShotgun == true)
-// 		{
-// 			TArray<ABullet*> Bullets;
-// 			Ammo -= 3;
-// 			if (Ammo < 0)
-// 			{
-// 				Ammo = 0;
-// 			}
-// 			//implement TArray of actors and so on
-// 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * -50.f, GetActorRotation()));
-// 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn,Location + GetActorForwardVector() * 100.f, GetActorRotation()));
-// 			Bullets.Emplace(World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f + GetActorRightVector() * 50.f, GetActorRotation()));
-// 			for (int i = 0; i < 3; i++)
-// 			{
-// 				Cast<ABullet>(Bullets[i])->SetOwner(this);
-// 				Cast<ABullet>(Bullets[i])->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
-// 			}
-// 		}
-// 		else
-// 		{
-// 			Ammo--;
-// 			if (World)
-// 			{
-// 				Bullet = World->SpawnActor<ABullet>(MissileToSpawn, Location + GetActorForwardVector() * 100.f, GetActorRotation());
-// 				if (Bullet)
-// 				{
-// 					Bullet->SetOwner(this);
-// 					Bullet->OnBulletHitEnemy.AddDynamic(this, &APlayerCar::OnEnemyHit);
-// 				}
-// 			}
-// 		}
-// 	}
-// 	AmmoCounter->AmmoUpdate();
-// 	UE_LOG(LogTemp, Warning, TEXT("Shooting Missile"));
-// }
 
 void APlayerCar::OnEnemyHit(AActor* Actor)
 {
@@ -632,12 +582,12 @@ void APlayerCar::AileronRoll()
 {
 	const UWorld* World = GetWorld();
 	Timer = World->GetTimeSeconds();
-	if (Timer > TimeSinceEvent)
+	if (Timer > TimeSinceRoll)
 	{
 		bDoARoll = true;
 		// SpringArm->AttachTo(GetRootComponent());
 		TraceLength = DefaultTraceLength * 1.2f;
-		TimeSinceEvent = Timer + 3.f;
+		TimeSinceRoll = Timer + 3.f;
 		TimerDelegateRoll.BindLambda([&]
 		{
 			// PlayerMesh->SetRelativeRotation(FRotator(Rotation.Pitch, Rotation.Yaw, 0.f));
@@ -753,7 +703,7 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	Timer = World->GetTimeSeconds();
 	if (OtherActor->IsA<AEnemy>() || OtherActor->IsA<AEnemyC>() && OtherComponent->IsA<UCapsuleComponent>() && bDoARoll == false)
 	{
-		if (Timer > TimeSinceEvent)
+		if (Timer > TimeSinceDamage)
 		{
 			Health--;
 			FollowHealthBar->HealthUpdate();
@@ -762,7 +712,7 @@ void APlayerCar::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 			{
 				RacingGameMode->GameOver( "Damage from enemies" );
 			}
-			TimeSinceEvent = Timer + 1.5f;
+			TimeSinceDamage = Timer + 1.5f;
 		}
 	}
 }

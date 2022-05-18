@@ -30,7 +30,7 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
-	class USphereComponent * Sphere = nullptr;
+	class USphereComponent* Sphere = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "PlayerCar")
 	UStaticMeshComponent* PlayerMesh = nullptr;
@@ -198,6 +198,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> PUDisplayClass;
 
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<UPhysicalMaterial> WallPhysMaterialClass;
+
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HPComp;
 	
@@ -218,6 +221,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UHealthBar* FollowHealthBar;
+
+	// UPROPERTY(VisibleAnywhere)
+	// class UPhysicalMaterial* WallPhysMaterial;
 	
 	UPROPERTY(BlueprintReadWrite, Category= "PlayerCar")
 	float InitTAtkTime = 15.f;
@@ -302,7 +308,13 @@ private:
 	float ToRoll;
 	
 	UPROPERTY()
-	float TimeSinceEvent = 0.f;
+	float TimeSinceDamage = 0.f;
+
+	UPROPERTY()
+	float TimeSinceRoll = 0.f;
+
+	UPROPERTY()
+	float TimeSinceBounce = 0.f;
 
 	UPROPERTY()
 	float Timer = 0.f;
@@ -311,7 +323,7 @@ private:
 	float MaxMoveSpeed = 6000.f;
 
 	UPROPERTY()
-	float DefaultTraceLength = 300.f;
+	float DefaultTraceLength = 400.f;
 
 	UPROPERTY()
 	float DefaultTurnForce = 60000.f;
