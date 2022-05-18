@@ -527,8 +527,6 @@ void APlayerCar::SpeedPU()
 	Sphere->AddImpulse(Sphere->GetForwardVector() * Sphere->GetMass()* 2000.f);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
-	GravityForce = DefaultGravityForce * 0.8f;
-	TraceLength = DefaultTraceLength + 50.f;
 	TurnForce = DefaultTurnForce * 1.5f;
 	SpeedLimit();
 }
@@ -543,9 +541,8 @@ void APlayerCar::SpeedLimit()
 		// {
 		PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
 		HoverForce = DefaultHoverForce;
-		TraceLength = DefaultTraceLength;
-		GravityForce = DefaultGravityForce;
 		TurnForce = DefaultTurnForce;
+		GravityForce = DefaultGravityForce;
 		// BackCamOff();
 		// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		// }
