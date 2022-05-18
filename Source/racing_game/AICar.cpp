@@ -250,6 +250,7 @@ void AAICar::SpeedBoost()
 	BoostTime = 0.f;
 	ForceStrength = 40000.0f;
 	AICarMesh->AddImpulse(Forward * 500.f * AICarMesh->GetMass());
+	NiagaraBoost();
 }
 
 void AAICar::Missile()
