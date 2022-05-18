@@ -596,7 +596,6 @@ void APlayerCar::SpeedLimit()
 		TraceLength = DefaultTraceLength;
 		GravityForce = DefaultGravityForce;
 		TurnForce = DefaultTurnForce;
-		NiagaraBoostOff();
 		// BackCamOff();
 		// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
 		// }

@@ -127,9 +127,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void NiagaraBoost();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void NiagaraBoostOff();
 	
 	UFUNCTION()
 	void ShotgunPU();
@@ -314,7 +311,7 @@ private:
 	float MaxMoveSpeed = 6000.f;
 
 	UPROPERTY()
-	float DefaultTraceLength = 250.f;
+	float DefaultTraceLength = 300.f;
 
 	UPROPERTY()
 	float DefaultTurnForce = 60000.f;

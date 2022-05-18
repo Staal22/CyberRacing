@@ -44,6 +44,9 @@ public:
 
 	FVector CarDirection = FVector(0.f, 0.f, 0.f);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void NiagaraBoost();
+	
 	void LineTrace();
 	void SpeedBoost();
 
