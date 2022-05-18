@@ -49,7 +49,7 @@ void ABulletEnemyTurret::Death()
 	//explosions fx	
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
 	//death sound
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation(), 0.2f);
 	//removes actor from world instance
 	Destroy();																								
 }
