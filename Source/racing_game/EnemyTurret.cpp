@@ -39,10 +39,6 @@ void AEnemyTurret::BeginPlay()
 	//gets AI Controller
 	GetController();
 	Cast<AAIController>(GetController())->RunBehaviorTree(EnemyTurretBehaviorTree);
-	//rotates turret towards player
-	//RotationDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
-	//RotationDirection.Normalize();
-	//SetActorRotation(RotationDirection.Rotation());
 
 }
 
@@ -50,9 +46,6 @@ void AEnemyTurret::BeginPlay()
 void AEnemyTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//RotationDirection = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();					//rotate towards player
-	//RotationDirection.Normalize();
-	//SetActorRotation(RotationDirection.Rotation());
 }
 
 void AEnemyTurret::Shoot()																											//redundant, done in BP

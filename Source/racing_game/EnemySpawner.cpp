@@ -17,7 +17,7 @@ void AEnemySpawner::BeginPlay()
 	Super::BeginPlay();
 	
 }
-void AEnemySpawner::SpawnEnemy()							//spawns enemy at spawners world location
+void AEnemySpawner::SpawnEnemy()//spawns enemy at spawners world location
 {
 	//get location of spawner
 	UWorld* World = GetWorld();
@@ -35,7 +35,7 @@ void AEnemySpawner::SpawnEnemy()							//spawns enemy at spawners world location
 	
 }
 // Called every frame
-void AEnemySpawner::Tick(float DeltaTime)					// spawn an enemy if there is currently no enemy spawned and the cooldown (5 secs) is over
+void AEnemySpawner::Tick(float DeltaTime)// spawn an enemy if there is currently no enemy spawned and the cooldown (5 secs) is over
 {
 	Super::Tick(DeltaTime);
 	EnemyTime += DeltaTime;
@@ -46,7 +46,7 @@ void AEnemySpawner::Tick(float DeltaTime)					// spawn an enemy if there is curr
 	}
 }
 
-void AEnemySpawner::EnemyDestroyed()						//starts cooldown timer and enables spawning of further enemies
+void AEnemySpawner::EnemyDestroyed() //starts cooldown timer and enables spawning of further enemies
 {
 	EnemyTime = 0.f;
 	WhichEnemy = 1;

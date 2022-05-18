@@ -21,7 +21,7 @@ AEnemyC::AEnemyC()
 	PlayerSensingSphere=CreateDefaultSubobject<USphereComponent>(TEXT("PlayerSensingSphere"));
 	PlayerSensingSphere->SetupAttachment(GetRootComponent());
 	PlayerSensingSphere->InitSphereRadius(3000.f);
-	GetCharacterMovement()->MaxWalkSpeed = 450.f;
+	GetCharacterMovement()->MaxWalkSpeed = 450.f;//set max-walkspeed
 }
 
 // Called when the game starts or when spawned
@@ -80,18 +80,17 @@ void AEnemyC::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void AEnemyC::MoveToTarget(APlayerCar* RefPlayerCar)
 {
-	// included "AIModule" in ProjectNameBuild.cs file for this to function
+	
 	if (AIController&&RefPlayerCar)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Overlaps"));
 
-		//https://docs.unrealengine.com/en-US/API/Runtime/AIModule/FAIMoveRequest/index.html
+		
 		FAIMoveRequest AIMoverequest;
-		AIMoverequest.SetGoalActor(RefPlayerCar);	//What to move towards
+		AIMoverequest.SetGoalActor(RefPlayerCar);	//Goal
 		AIMoverequest.SetAcceptanceRadius(0.f);	//How close before stop
 	
-		//https://docs.unrealengine.com/en-US/API/Runtime/Engine/AI/Navigation/FNavPathSharedPtr/index.html
-		FNavPathSharedPtr NavPath;	//Will contain all location nodes for the path
+		FNavPathSharedPtr NavPath;	//Contains nodes for pathing
 	
 		AIController->MoveTo(AIMoverequest, &NavPath);
 	}

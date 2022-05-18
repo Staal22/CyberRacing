@@ -60,13 +60,11 @@ private:
     //Particle FX
     UPROPERTY(EditAnywhere, Category = "EnemyFX")
         UParticleSystem* ExplosionUponDeath = nullptr;
-
     //DeathSound
     UPROPERTY(EditAnywhere, Category = "EnemyFX")
         USoundBase* DeathSound = nullptr;
-
+    
     //AI controller
     UPROPERTY(EditAnywhere, Category = "EnemyAIController")
         class AAIController* AIController = nullptr;
-   
 };

@@ -60,7 +60,6 @@ private:
 	//Particle FX
 	UPROPERTY(EditAnywhere, Category = "BulletEnemyTurretFX")
 	UParticleSystem* ExplosionUponDeath = nullptr;
-
 	//DeathSound
 	UPROPERTY(EditAnywhere, Category = "BulletEnemyTurretFX")
 	USoundBase* DeathSound = nullptr;

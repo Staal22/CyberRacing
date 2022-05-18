@@ -53,13 +53,13 @@ void AEnemy::Tick(float DeltaTime)
 	// AIController->AAIController::MoveToActor(PlayerCar, 1);
 }
 
-void AEnemy::IsHit()										//Called when enemy is shot
+void AEnemy::IsHit()								//Called when enemy is shot
 {						
 	//explosions fx
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionUponDeath, GetTransform(), true);
 	//death sound
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
-	//Remove actor from worldff
+	//Remove actor from world
 	Destroy();
 }
 
