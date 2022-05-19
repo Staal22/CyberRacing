@@ -42,4 +42,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
 		TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
 
+	UPROPERTY()
+		TArray<USplineMeshComponent*> MeshComponents;
+
 };
