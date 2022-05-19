@@ -524,7 +524,7 @@ void APlayerCar::SpeedPU()
 	PawnMovementComponent->MaxSpeed = MaxMoveSpeed * 3.f;
 	// SpringArm->CameraLagSpeed = 10.f;
 	NiagaraBoost();
-	Sphere->AddImpulse(Sphere->GetForwardVector() * Sphere->GetMass()* 2000.f);
+	Sphere->AddImpulse(Sphere->GetForwardVector() * Sphere->GetMass() * SpeedBoost);
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
 	TurnForce = DefaultTurnForce * 1.5f;
@@ -630,6 +630,11 @@ float APlayerCar::GetSpeed()
 		return 0.f;
 	}
 	return Speed;
+}
+
+void APlayerCar::SetSpeedBoost(float InBoost)
+{
+	SpeedBoost = InBoost;
 }
 
 void APlayerCar::BackCamOn()

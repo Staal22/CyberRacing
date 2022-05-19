@@ -168,6 +168,9 @@ public:
 	float GetSpeed();
 
 	UFUNCTION()
+	void SetSpeedBoost(float InBoost);
+
+	UFUNCTION()
 	void BackCamOn();
 
 	UFUNCTION()
@@ -294,6 +297,9 @@ private:
 	
 	UPROPERTY()
 	float TAtkTime = 0.f;
+	
+	UPROPERTY()
+	float SpeedBoost = 0.f;
 	
 	UPROPERTY()
 	int MaxAmmo = 20;

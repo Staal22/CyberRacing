@@ -42,5 +42,12 @@ public:
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
+			
+	UFUNCTION()
+	float GetSpeedBoost();
+			
+private:
+	UPROPERTY(EditAnywhere)
+	float SpeedBoost = 2000.f;
 };
 

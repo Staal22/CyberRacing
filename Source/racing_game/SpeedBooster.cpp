@@ -57,6 +57,7 @@ void ASpeedBooster::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	//if the object that overlaps the speedbooster is PlayerCar run the SpeedPU function in PlayerCar
 	if (OtherActor->IsA<APlayerCar>())
 	{
+		Cast<APlayerCar>(OtherActor)->SetSpeedBoost(SpeedBoost);
 		Cast<APlayerCar>(OtherActor)->SpeedPU();
 		UE_LOG(LogTemp, Warning, TEXT("Speed boosted"));
 	}
@@ -65,5 +66,10 @@ void ASpeedBooster::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 		Cast<AAICar>(OtherActor)->SpeedBoost();
 	}
 
+}
+
+float ASpeedBooster::GetSpeedBoost()
+{
+	return SpeedBoost;
 }
 
