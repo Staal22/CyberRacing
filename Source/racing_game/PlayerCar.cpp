@@ -663,6 +663,7 @@ void APlayerCar::BackCamOff()
 void APlayerCar::HitByMissile()
 {
 	RacingGameMode->SetGamePaused(true, false);
+	BackCamOff();
 	TimerDelegate.BindLambda([&]
 	{
 	RacingGameMode->SetGamePaused(false, false);
