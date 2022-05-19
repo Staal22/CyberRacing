@@ -325,13 +325,13 @@ void APlayerCar::WallCheck()
 		Sphere->AddImpulse(HitLeft->ImpactNormal * 1000 * Sphere->GetMass());
 		Velocity.Normalize();
 		AddMovementInput(-1 * Velocity, Speed * 10);
-		TimeSinceBounce = Timer + 1.f;
+		TimeSinceBounce = Timer + 3.f;
 	}
 	else if ((HitRight->Location - Location).Size() < 200.f && Timer > TimeSinceBounce)
 	{
 		Sphere->AddImpulse(HitRight->ImpactNormal * 1000 * Sphere->GetMass());
 		AddMovementInput(-1 * Velocity, Speed * 10);
-		TimeSinceBounce = Timer + 1.f;
+		TimeSinceBounce = Timer + 3.f;
 	}
 }
 
@@ -524,7 +524,12 @@ void APlayerCar::SpeedPU()
 	PawnMovementComponent->MaxSpeed = MaxMoveSpeed * 3.f;
 	// SpringArm->CameraLagSpeed = 10.f;
 	NiagaraBoost();
-	Sphere->AddImpulse(Sphere->GetForwardVector() * Sphere->GetMass() * SpeedBoost);
+	if (SpeedBoost == 2000)
+		Sphere->AddImpulse(Sphere->GetForwardVector() * Sphere->GetMass() * SpeedBoost);
+	else
+	{
+		Sphere->AddImpulse(SpeedBoostDirection * Sphere->GetMass() * SpeedBoost);
+	}
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
 	TurnForce = DefaultTurnForce * 1.5f;
@@ -635,6 +640,11 @@ float APlayerCar::GetSpeed()
 void APlayerCar::SetSpeedBoost(float InBoost)
 {
 	SpeedBoost = InBoost;
+}
+
+void APlayerCar::SetSpeedBoostDirection(FVector InVector)
+{
+	SpeedBoostDirection = InVector;
 }
 
 void APlayerCar::BackCamOn()

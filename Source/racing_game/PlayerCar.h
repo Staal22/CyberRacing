@@ -171,6 +171,9 @@ public:
 	void SetSpeedBoost(float InBoost);
 
 	UFUNCTION()
+	void SetSpeedBoostDirection(FVector InVector);
+
+	UFUNCTION()
 	void BackCamOn();
 
 	UFUNCTION()
@@ -300,6 +303,9 @@ private:
 	
 	UPROPERTY()
 	float SpeedBoost = 0.f;
+
+	UPROPERTY()
+	FVector SpeedBoostDirection;
 	
 	UPROPERTY()
 	int MaxAmmo = 20;

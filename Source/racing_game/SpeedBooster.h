@@ -45,6 +45,9 @@ public:
 			
 	UFUNCTION()
 	float GetSpeedBoost();
+
+	UFUNCTION()
+	FVector GetForwardVector();
 			
 private:
 	UPROPERTY(EditAnywhere)

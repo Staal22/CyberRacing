@@ -73,3 +73,8 @@ float ASpeedBooster::GetSpeedBoost()
 	return SpeedBoost;
 }
 
+FVector ASpeedBooster::GetForwardVector()
+{
+	return GetActorForwardVector();
+}
+
