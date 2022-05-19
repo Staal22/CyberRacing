@@ -28,6 +28,8 @@ void ASplineClass::OnConstruction(const FTransform& Transform)
 	{
 		USplineMeshComponent* SplineMeshComponent = NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass());
 
+
+
 		SplineMeshComponent->SetStaticMesh(SplineMesh);
 		SplineMeshComponent->SetMobility(EComponentMobility::Movable);
 		SplineMeshComponent->CreationMethod = EComponentCreationMethod::UserConstructionScript;
