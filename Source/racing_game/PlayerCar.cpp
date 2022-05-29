@@ -126,7 +126,7 @@ void APlayerCar::BeginPlay()
 		LapCounter = Cast<ULapCounter>(CreateWidget(GetWorld(), LapCounterWidgetClass));
 	// LapCounter->SetOwner(this);
 	LapCounter->SetDesiredSizeInViewport(FVector2D(360.f, 40.f));
-	LapCounter->SetPositionInViewport(FVector2D(0.f, 40.f));
+	LapCounter->SetPositionInViewport(FVector2D(0.f, 60.f));
 	if (RacingGameInstance->GetActiveMode() != "Horde")
 	{
 		LapCounter->AddToViewport();
@@ -526,36 +526,41 @@ void APlayerCar::SpeedPU()
 	NiagaraBoost();
 	if (true)
 		Sphere->AddImpulse(Sphere->GetForwardVector() * Sphere->GetMass() * SpeedBoost);
-	else
+	// else
 	// {
 	// 	Sphere->AddImpulse(SpeedBoostDirection * Sphere->GetMass() * SpeedBoost);
 	// }
 	HoverForce = DefaultHoverForce * 1.5f;
 	RoadTest = World->GetCurrentLevel()->GetName();
 	TurnForce = DefaultTurnForce * 1.5f;
-	SpeedLimit();
+	TimerDelegateSpeed.BindLambda([&]
+	{
+		if (IsValid(this))
+			SpeedLimit();
+	});
+	GetWorld()->GetTimerManager().SetTimer(TimerHandleSpeed, TimerDelegateSpeed, 3.f, false);
 }
 
 void APlayerCar::SpeedLimit()
 {
-	TimerDelegateSpeed.BindLambda([&]
-	{
-		// const UWorld* World = GetWorld();
-		// SpringArm->CameraLagSpeed = 20.f;
-		// if (World->GetCurrentLevel()->GetName() == RoadTest)
-		// {
-		PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
-		HoverForce = DefaultHoverForce;
-		TurnForce = DefaultTurnForce;
-		GravityForce = DefaultGravityForce;
-		// BackCamOff();
-		// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
-		// }
-		// CommandString = "r.MotionBlur.Amount 0";
-		// World->Exec(World, *CommandString);
-	});
+	// const UWorld* World = GetWorld();
+	// SpringArm->CameraLagSpeed = 20.f;
+	// if (World->GetCurrentLevel()->GetName() == RoadTest)
+	// {
+	PawnMovementComponent->MaxSpeed = MaxMoveSpeed;
+	HoverForce = DefaultHoverForce;
+	TurnForce = DefaultTurnForce;
+	GravityForce = DefaultGravityForce;
+	// BackCamOff();
+	// Camera->PostProcessSettings.WeightedBlendables.Array[0].Weight = 0;
+	// }
+	// CommandString = "r.MotionBlur.Amount 0";
+	// World->Exec(World, *CommandString);
+}
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandleSpeed, TimerDelegateSpeed, 3.f, false);
+void APlayerCar::ClearTimers()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandleSpeed);
 }
 
 void APlayerCar::Reload()

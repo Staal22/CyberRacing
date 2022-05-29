@@ -164,6 +164,9 @@ public:
 	UFUNCTION()
 	void SpeedLimit();
 	
+	UFUNCTION(BlueprintCallable)
+	void ClearTimers();
+	
 	UFUNCTION()
 	float GetSpeed();
 
